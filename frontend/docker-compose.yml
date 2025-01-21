@@ -1,0 +1,17 @@
+services:
+  suporteflow:
+    build:
+      context: . # Define o contexto de construção como o diretório atual (pasta frontend)
+      dockerfile: Dockerfile-dev # Especifica o nome do Dockerfile (se for diferente de 'Dockerfile')
+    ports:
+      - "3000:3000" # Mapeia a porta 3000 do container para a porta 3000 da máquina host
+    volumes:
+      - .:/app # Monta o diretório atual no container, permitindo atualizações em tempo real
+      - /app/node_modules # Cria um volume anônimo para a pasta node_modules, evitando sobreposição com a pasta local
+    command: pnpm run dev # Comando a ser executado dentro do container ao iniciar
+
+    networks:
+      - suporteflow-network
+networks:
+  suporteflow-network:
+    driver: bridge

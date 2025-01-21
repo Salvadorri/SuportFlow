@@ -5,14 +5,12 @@ services:
       dockerfile: backend/Dockerfile
     ports:
       - "8080:8080"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/mydatabase
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=password
+    env_file:
+      - .env
     depends_on:
       - db
     networks:
-      - app-network
+      - suporteflow-network
 
   frontend:
     build:
@@ -22,26 +20,25 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend:/app # Sincroniza as alterações em tempo real
+      - /app/node_modules # Cria um volume anônimo para a pasta node_modules, evitando sobreposição com a pasta local
     networks:
-      - app-network
+      - suporteflow-network
 
   db:
     image: postgres:17-alpine # Ou mysql:8.0, se preferir MySQL
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_DB=mydatabase
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
+    env_file:
+      - .env
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql # Inicializa o banco (opcional)
     networks:
-      - app-network
+      - suporteflow-network
 
 volumes:
   db-data:
 
 networks:
-  app-network:
+  suporteflow-network:
     driver: bridge
