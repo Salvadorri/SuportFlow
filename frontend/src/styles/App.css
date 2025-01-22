@@ -86,7 +86,9 @@ body {
   text-align: center;
   padding: 4rem 2rem;
   height: 500px;
-  width: 2542px;
+  width: 100vw;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .banner h1 {
@@ -140,7 +142,7 @@ body {
   border-radius: 8px;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: 400px;
+  height: 300px;
 }
 
 /* Contact style */
@@ -151,6 +153,9 @@ body {
   border-radius: 5px;
   max-width: 400px; /* Largura máxima do container */
   margin: 0 auto; /* Centraliza o container */
+  margin-top: 100px;
+  height: 200px;
+  margin-bottom: 200px;
 }
 
 .contatos-container h2 {

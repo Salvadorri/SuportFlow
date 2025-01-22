@@ -2,7 +2,7 @@ import React from "react";
 
 const Features = () => {
   return (
-    <div className="feature-card">
+    <div className="features">
       <div className="feature-card">
         <h2>Recurso X</h2>
         <p>
