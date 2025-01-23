@@ -1,4 +1,8 @@
 package com.suportflow.backend.model;
 
-public class StatusChamado {
+public enum StatusChamado {
+    ABERTO,
+    EM_ANDAMENTO,
+    RESOLVIDO,
+    FECHADO
 }

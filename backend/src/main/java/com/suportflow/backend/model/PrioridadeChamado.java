@@ -1,4 +1,8 @@
 package com.suportflow.backend.model;
 
-public class PrioridadeChamado {
+public enum PrioridadeChamado {
+    BAIXA,
+    MEDIA,
+    ALTA,
+    URGENTE
 }

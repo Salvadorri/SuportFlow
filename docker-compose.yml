@@ -8,7 +8,8 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - suporteflow-network
 
@@ -35,6 +36,11 @@ services:
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql # Inicializa o banco (opcional)
     networks:
       - suporteflow-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   db-data:
