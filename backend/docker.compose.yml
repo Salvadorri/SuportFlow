@@ -13,7 +13,6 @@ services:
     networks:
       - suporteflow-network
 
-
   db:
     image: postgres:17-alpine # Ou mysql:8.0, se preferir MySQL
     ports:
@@ -22,7 +21,6 @@ services:
       - .env
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql # Inicializa o banco (opcional)
     networks:
       - suporteflow-network
     healthcheck:
