@@ -30,9 +30,6 @@ node_modules/
 
 # Arquivos locais e temporários
 *.local
-.env
-.env.*
-!.env.example  # Mantém um arquivo de exemplo, se você tiver um
 *.tmp
 *.temp
 
