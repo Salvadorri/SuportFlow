@@ -2,15 +2,15 @@ spring:
   application:
     name: backend
   datasource:
-    url: jdbc:postgresql://localhost:5432/suportflow # Or jdbc:postgresql://db:5432/suportflow if using Docker
+    url: jdbc:postgresql://localhost:5432/suportflow
     username: admin
     password: PGSuportflow
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true  # Mostrar SQL gerado no console (útil para desenvolvimento)
+    show-sql: true
     properties:
       hibernate:
-        format_sql: true # Formatar SQL (útil para desenvolvimento)
+        format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
