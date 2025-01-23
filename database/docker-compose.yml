@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:17-alpine # Usa a imagem PostgreSQL 17-alpine
+    ports:
+      - "5432:5432" # Mapeia a porta 5432 do container para a porta 5432 do host
+    env_file:
+      - .env
+    volumes:
+      - db-data:/var/lib/postgresql/data # Monta um volume nomeado para persistir os dados do banco
+    networks:
+      - suporteflow-network # Conecta o container à rede suporteflow-network
+    healthcheck: # Define um healthcheck para verificar se o banco está pronto
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data: # Define o volume nomeado db-data
+
+networks:
+  suporteflow-network: # Define a rede suporteflow-network
+    driver: bridge
