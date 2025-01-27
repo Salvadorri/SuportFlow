@@ -8,7 +8,7 @@ import Features from "../components/specific/users/Features.jsx";
 import Contact from '../components/specific/users/Contact.jsx'
 
 
-function LoginForm() {
+function LandingPage() {
   const [count, setCount] = useState(0); // Você não está usando count no momento, pode remover se não for necessário depois
 
   return (
@@ -23,4 +23,4 @@ function LoginForm() {
   );
 }
 
-export default LoginForm;
+export default LandingPage;
