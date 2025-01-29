@@ -1,13 +1,10 @@
-import React from 'react';
 //import AppRoutes from './routes/index.jsx'; // ou './routes/index' se você nomeou o arquivo como index.jsx
-import LandingPage from './pages/LandingPage.jsx'
-
-
+import Login from "./components/common/login.jsx";
 
 function App() {
   return (
     <div className="app">
-      <LandingPage />
+      <Login />
     </div>
   );
 }
