@@ -1,8 +1,9 @@
 package com.suportflow.backend.service.auth;
 
+import com.suportflow.backend.exception.UserNotFoundException;
 import com.suportflow.backend.model.CustomUserDetails;
 import com.suportflow.backend.model.User;
-import com.suportflow.backend.service.auth.UserService;
+import com.suportflow.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,12 +14,12 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository; // Injete o UserRepository
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // Busca o usuário pelo email usando o UserService
-        User user = userService.findByEmail(email);
+        // Busca o usuário pelo email usando o UserRepository diretamente
+        User user = userRepository.findByEmail(email);
 
         // Se o usuário não for encontrado, lança a exceção UsernameNotFoundException
         if (user == null) {

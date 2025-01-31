@@ -1,14 +1,9 @@
 package com.suportflow.backend.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "usuarios")
@@ -22,10 +17,6 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "empresa_id")
     private Empresa empresa;
-
-    @ManyToOne
-    @JoinColumn(name = "cargo_id")
-    private Cargo cargo;
 
     @Column(name = "nome", nullable = false)
     private String nome;
@@ -42,7 +33,13 @@ public class User {
     @Column(name = "ativo")
     private Boolean ativo;
 
-    // Getters e Setters
+    @ManyToMany
+    @JoinTable(
+            name = "usuario_permissao",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "permissao_id")
+    )
+    private Set<Permissao> permissoes;
 
     public Long getId() {
         return id;
@@ -58,14 +55,6 @@ public class User {
 
     public void setEmpresa(Empresa empresa) {
         this.empresa = empresa;
-    }
-
-    public Cargo getCargo() {
-        return cargo;
-    }
-
-    public void setCargo(Cargo cargo) {
-        this.cargo = cargo;
     }
 
     public String getNome() {
@@ -88,7 +77,7 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setSenha(String password) {
         this.password = password;
     }
 
@@ -107,35 +96,11 @@ public class User {
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
     }
-
-    // Construtores (opcional, mas recomendado)
-
-    public User() {
-        // Construtor padrão vazio (necessário para o JPA)
+    public Set<Permissao> getPermissoes() {
+        return permissoes;
     }
 
-    public User(Empresa empresa, Cargo cargo, String nome, String email, String password, Boolean ativo) {
-        this.empresa = empresa;
-        this.cargo = cargo;
-        this.nome = nome;
-        this.email = email;
-        this.password = password;
-        this.dataCriacao = LocalDateTime.now(); // Define a data de criação automaticamente
-        this.ativo = ativo;
-    }
-
-    // Outros métodos (se necessário)
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", empresa=" + empresa +
-                ", cargo=" + cargo +
-                ", nome='" + nome + '\'' +
-                ", email='" + email + '\'' +
-                ", dataCriacao=" + dataCriacao +
-                ", ativo=" + ativo +
-                '}';
+    public void setPermissoes(Set<Permissao> permissoes) {
+        this.permissoes = permissoes;
     }
 }

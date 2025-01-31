@@ -33,9 +33,6 @@ public class Empresa {
     private LocalDateTime dataCriacao;
 
     @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Cargo> cargos;
-
-    @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> usuarios;
 
     // Construtores
@@ -101,14 +98,6 @@ public class Empresa {
         this.dataCriacao = dataCriacao;
     }
 
-    public List<Cargo> getCargos() {
-        return cargos;
-    }
-
-    public void setCargos(List<Cargo> cargos) {
-        this.cargos = cargos;
-    }
-
     public List<User> getUsuarios() {
         return usuarios;
     }
@@ -117,5 +106,4 @@ public class Empresa {
         this.usuarios = usuarios;
     }
 
-    // Outros métodos, se necessário (como equals, hashCode, toString)
 }
