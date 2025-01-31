@@ -37,35 +37,43 @@ public class UserService {
     private PermissaoRepository permissaoRepository;
 
     @Transactional
-    public UserDetailsDTO registerNewUser(UserRegistrationDTO userDTO) {
-        User user = new User();
-        user.setNome(userDTO.getNome());
-        user.setEmail(userDTO.getEmail());
-        user.setSenha(passwordEncoder.encode(userDTO.getPassword()));
-        user.setDataCriacao(LocalDateTime.now());
-        user.setAtivo(true);
+    public UserDetailsDTO registerNewUser(UserRegistrationDTO registrationDTO) {
+        // 1. Criptografar a senha
+        String encodedPassword = passwordEncoder.encode(registrationDTO.getPassword());
 
-        // Associa o usuário a uma empresa, se fornecida
-        if (userDTO.getEmpresaNome() != null) {
-            Empresa empresa = empresaRepository.findByNome(userDTO.getEmpresaNome());
+        // 2. Buscar a empresa pelo nome (se fornecido)
+        Empresa empresa = null;
+        if (registrationDTO.getEmpresaNome() != null) {
+            empresa = empresaRepository.findByNome(registrationDTO.getEmpresaNome());
             if (empresa == null) {
-                // Tratar caso a empresa não exista (criar ou lançar exceção)
-                throw new RuntimeException("Empresa não encontrada: " + userDTO.getEmpresaNome());
+                // Tratar o caso em que a empresa não existe
+                throw new RuntimeException("Empresa não encontrada: " + registrationDTO.getEmpresaNome());
             }
-            user.setEmpresa(empresa);
         }
 
+        // 3. Criar o objeto User
+        User user = new User();
+        user.setNome(registrationDTO.getNome());
+        user.setEmail(registrationDTO.getEmail());
+        user.setSenha(encodedPassword);
+        user.setEmpresa(empresa);
+        user.setAtivo(true); // Ou defina como false e implemente um processo de ativação
+        user.setDataCriacao(LocalDateTime.now());
+
+        // 4. Salvar o usuário no banco de dados
         user = userRepository.save(user);
+
+        // 5. Retornar o UserDetailsDTO
         return new UserDetailsDTO(user);
     }
 
     @Transactional(readOnly = true)
-    public UserDetailsDTO findByEmail(String email) {
+    public User findByEmail(String email) {
         User user = userRepository.findByEmail(email);
         if (user == null) {
             throw new UserNotFoundException("Usuário não encontrado com o email: " + email);
         }
-        return new UserDetailsDTO(user);
+        return user;
     }
 
     @Transactional(readOnly = true)
@@ -89,6 +97,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public UserDetailsDTO updateUser(Long userId, UserRegistrationDTO userDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o ID: " + userId));
@@ -113,6 +122,7 @@ public class UserService {
         return new UserDetailsDTO(user);
     }
 
+    @Transactional
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o ID: " + userId));
