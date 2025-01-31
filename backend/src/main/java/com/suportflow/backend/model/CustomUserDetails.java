@@ -1,4 +1,4 @@
 package com.suportflow.backend.model;
 
-public class Empresa {
+public class CustomUserDetails {
 }
