@@ -7,40 +7,36 @@ CREATE TABLE empresas (
     endereco TEXT,
     email VARCHAR(255) UNIQUE NOT NULL,
     telefone VARCHAR(20),
-    cnpj VARCHAR(14) UNIQUE, -- CNPJ que pode ser nulo
+    cnpj VARCHAR(14) UNIQUE,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela Cargos
-CREATE TABLE cargos (
-    cargo_id SERIAL PRIMARY KEY,
-    empresa_id INT,
-    nome_cargo VARCHAR(255) NOT NULL,
-    descricao TEXT,
-    is_admin BOOLEAN DEFAULT FALSE,
-    is_gerente BOOLEAN DEFAULT FALSE,
-    pode_ver_todos_chamados BOOLEAN DEFAULT FALSE,
-    pode_criar_chamados BOOLEAN DEFAULT FALSE,
-    pode_responder_chamados BOOLEAN DEFAULT FALSE,
-    pode_fechar_chamados BOOLEAN DEFAULT FALSE,
-    pode_atribuir_chamados BOOLEAN DEFAULT FALSE,
-    pode_gerenciar_base_conhecimento BOOLEAN DEFAULT FALSE,
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (empresa_id) REFERENCES empresas(empresa_id)
+-- Tabela Permissoes
+CREATE TABLE permissoes (
+    permissao_id SERIAL PRIMARY KEY,
+    nome VARCHAR(255) UNIQUE NOT NULL,
+    descricao TEXT
 );
 
 -- Tabela Usuarios
 CREATE TABLE usuarios (
     usuario_id SERIAL PRIMARY KEY,
     empresa_id INT,
-    cargo_id INT,
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ativo BOOLEAN DEFAULT TRUE,
-    FOREIGN KEY (empresa_id) REFERENCES empresas(empresa_id),
-    FOREIGN KEY (cargo_id) REFERENCES cargos(cargo_id)
+    FOREIGN KEY (empresa_id) REFERENCES empresas(empresa_id)
+);
+
+-- Tabela Usuario_Permissao (associativa entre Usuários e Permissoes)
+CREATE TABLE usuario_permissao (
+    usuario_id INT,
+    permissao_id INT,
+    PRIMARY KEY (usuario_id, permissao_id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(usuario_id),
+    FOREIGN KEY (permissao_id) REFERENCES permissoes(permissao_id)
 );
 
 -- Tabela Clientes
@@ -107,16 +103,3 @@ CREATE TABLE feedbacks (
     FOREIGN KEY (cliente_id) REFERENCES clientes(cliente_id)
 );
 
--- Índices (opcional, mas recomendado para melhor desempenho)
-CREATE INDEX idx_empresa_id ON cargos (empresa_id);
-CREATE INDEX idx_empresa_id_usuarios ON usuarios (empresa_id);
-CREATE INDEX idx_cargo_id ON usuarios (cargo_id);
-CREATE INDEX idx_empresa_id_clientes ON clientes (empresa_id);
-CREATE INDEX idx_cliente_id_chamados ON chamados (cliente_id);
-CREATE INDEX idx_funcionario_id_chamados ON chamados (funcionario_id);
-CREATE INDEX idx_empresa_id_chamados ON chamados (empresa_id);
-CREATE INDEX idx_chamado_id_mensagens ON mensagens_chamado (chamado_id);
-CREATE INDEX idx_usuario_id_mensagens ON mensagens_chamado (usuario_id);
-CREATE INDEX idx_empresa_id_base_conhecimento ON base_conhecimento (empresa_id);
-CREATE INDEX idx_chamado_id_feedbacks ON feedbacks (chamado_id);
-CREATE INDEX idx_cliente_id_feedbacks ON feedbacks (cliente_id);
