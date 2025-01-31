@@ -1,4 +1,4 @@
-package com.suportflow.backend.repository;
+package com.suportflow.backend.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

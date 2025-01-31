@@ -33,7 +33,6 @@ services:
       - .env
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql # Inicializa o banco (opcional)
     networks:
       - suporteflow-network
     healthcheck:

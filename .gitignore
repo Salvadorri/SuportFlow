@@ -59,11 +59,3 @@ database/data/          # Dados locais do PostgreSQL (não devem ser commitados)
 database/pg_log/        # Logs do PostgreSQL
 database/backup/        # Backups locais do banco de dados
 *.sql.gz               # Backups compactados
-
-# Outros
-coverage/             # Relatórios de cobertura de testes
-.nyc_output/          # Saída do NYC (cobertura de testes)
-*.egg-info/           # Metadados de pacotes Python (se aplicável)
-.pytest_cache/        # Cache do pytest (se aplicável)
-__pycache__/          # Cache do Python (se aplicável)
-*.pyc                  # Arquivos compilados do Python (se aplicável)

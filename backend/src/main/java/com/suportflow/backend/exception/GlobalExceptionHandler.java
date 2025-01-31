@@ -1,4 +1,4 @@
-package com.suportflow.backend.util;
+package com.suportflow.backend.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
