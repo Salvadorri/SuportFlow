@@ -62,7 +62,7 @@ public class DataInitializer implements ApplicationRunner {
         Permissao criarUsuarioPermissao = criarPermissaoSeNaoExistir("CRIAR_USUARIO", "Permissão para Criar Usuários");
         Permissao atualizarUsuarioPermissao = criarPermissaoSeNaoExistir("ATUALIZAR_USUARIO", "Permissão para Modificar Usuários");
         Permissao excluirUsuarioPermissao = criarPermissaoSeNaoExistir("EXCLUIR_USUARIO", "Permissão para Excluir Usuários");
-        Permissao gerenciarPermissoesEmpresasPermissao = criarPermissaoSeNaoExistir("GERENCIAR_PERMISSOES_EMPRESAS", "Permissão para gerenciar permissões de usuários");
+        Permissao gerenciarPermissoesEmpresasPermissao = criarPermissaoSeNaoExistir("GERENCIAR_PERMISSOES_EMPRESAS", "Permissão para gerenciar permissões de usuários de outras empresas");
 
         // **********************************************
         // ****** Permissões de Gerentes de Empresas *****
@@ -95,9 +95,6 @@ public class DataInitializer implements ApplicationRunner {
         // **********************************************
         Permissao usarChatbotPermissao = criarPermissaoSeNaoExistir("USAR_CHATBOT", "Usar o chatbot IA");
         Permissao abrirChamadoPermissao = criarPermissaoSeNaoExistir("ABRIR_CHAMADO", "Abrir um chamado");
-        Permissao visualizarPropriosChamadosPermissao = criarPermissaoSeNaoExistir("VISUALIZAR_PROPRIOS_CHAMADOS", "Visualizar seus próprios chamados abertos");
-        Permissao acessarBaseConhecimentoClientePermissao = criarPermissaoSeNaoExistir("ACESSAR_BASE_CONHECIMENTO_CLIENTE", "Acessar artigos e FAQs para autoatendimento");
-        Permissao fornecerFeedbackPermissao = criarPermissaoSeNaoExistir("FORNECER_FEEDBACK", "Avaliar o serviço e fornecer feedback");
 
         // Cria o usuário Admin se não existir
         User adminUser = userRepository.findByEmail("admin@suportflow.com");
@@ -148,9 +145,6 @@ public class DataInitializer implements ApplicationRunner {
             // Permissoes de Cliente
             permissoes.add(usarChatbotPermissao);
             permissoes.add(abrirChamadoPermissao);
-            permissoes.add(visualizarPropriosChamadosPermissao);
-            permissoes.add(acessarBaseConhecimentoClientePermissao);
-            permissoes.add(fornecerFeedbackPermissao);
 
             adminUser.setPermissoes(permissoes);
 
