@@ -1,11 +1,12 @@
+// file:///home/rodrigo/Desenvolvimento/SuportFlow/backend/src/main/java/com/suportflow/backend/controller/AuthController.java
 package com.suportflow.backend.controller;
 
-import com.suportflow.backend.dto.AuthenticationResponse;
-import com.suportflow.backend.dto.UserDetailsDTO;
-import com.suportflow.backend.dto.UserLoginDTO;
-import com.suportflow.backend.dto.UserRegistrationDTO;
+import com.suportflow.backend.dto.*;
+import com.suportflow.backend.exception.TokenRefreshException;
+import com.suportflow.backend.model.RefreshToken;
 import com.suportflow.backend.model.User;
 import com.suportflow.backend.security.JwtUtil;
+import com.suportflow.backend.service.auth.RefreshTokenService;
 import com.suportflow.backend.service.auth.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,9 +40,11 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody UserLoginDTO userLoginDTO) throws Exception {
-
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userLoginDTO.getEmail(), userLoginDTO.getPassword())
@@ -53,7 +56,11 @@ public class AuthController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(userLoginDTO.getEmail());
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+        // Criar e salvar o refresh token
+        User user = userService.findByEmail(userLoginDTO.getEmail());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+
+        return ResponseEntity.ok(new AuthenticationResponse(jwt, refreshToken.getToken()));
     }
 
     @PostMapping("/register")
@@ -79,6 +86,20 @@ public class AuthController {
 
         // 4. Retorna o usuário registrado na resposta (ou um status de sucesso)
         return ResponseEntity.ok(registeredUser);
+    }
 
+    @PostMapping("/refreshtoken")
+    public ResponseEntity<?> refreshtoken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
+        String requestRefreshToken = refreshTokenDTO.getRefreshToken();
+
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+                    String token = jwtUtil.generateToken(userDetails);
+                    return ResponseEntity.ok(new AuthenticationResponse(token, requestRefreshToken));
+                })
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token is not in database!"));
     }
 }
