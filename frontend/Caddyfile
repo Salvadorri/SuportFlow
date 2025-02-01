@@ -1,0 +1,6 @@
+:80 {
+  root * /app/www
+  file_server
+  # Optional: Enable compression
+  encode zstd gzip
+}

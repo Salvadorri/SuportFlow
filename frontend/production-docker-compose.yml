@@ -1,0 +1,20 @@
+services:
+  suporteflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - suporteflow_data:/app/www
+    networks:
+      - suporteflow-network
+
+volumes:
+  suporteflow_data:
+
+networks:
+  suporteflow-network:
+    driver: bridge
