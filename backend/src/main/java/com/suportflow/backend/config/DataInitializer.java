@@ -50,6 +50,8 @@ public class DataInitializer implements ApplicationRunner {
             suportFlowEmpresa = empresaRepository.save(suportFlowEmpresa);
         }
 
+        Set<Permissao> todasPermissoes = new HashSet<>();
+
         // **********************************************
         // ******* Permissões de Administrador **********
         // **********************************************
@@ -146,12 +148,10 @@ public class DataInitializer implements ApplicationRunner {
             permissoes.add(usarChatbotPermissao);
             permissoes.add(abrirChamadoPermissao);
 
-            adminUser.setPermissoes(permissoes);
+            adminUser.setPermissoes(todasPermissoes);
 
             userRepository.save(adminUser);
-        } else {
-            // Usa o UserService para adicionar a permissão SUPER_ADMIN se necessário
-            userService.adicionarPermissaoSuperAdminSeNecessario(adminUser.getEmail(), superAdminPermissao);
+
         }
     }
 
