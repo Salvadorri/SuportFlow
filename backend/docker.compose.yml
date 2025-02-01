@@ -1,5 +1,5 @@
 services:
-  backend:
+  java:
     build:
       context: .
       dockerfile: Dockerfile
@@ -14,7 +14,7 @@ services:
       - suporteflow-network
 
   db:
-    image: postgres:17-alpine # Ou mysql:8.0, se preferir MySQL
+    image: postgres:17-alpine
     ports:
       - "5432:5432"
     env_file:
