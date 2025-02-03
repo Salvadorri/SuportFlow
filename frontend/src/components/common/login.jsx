@@ -24,16 +24,13 @@ function Login() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block mb-2 text-sm font-medium text-gray-300"
-            >
+            <label htmlFor="password" className="login-texto-senha">
               Senha
             </label>
             <input
               type="password"
               id="password"
-              className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className="login-campo-senha"
               placeholder="••••••••"
               required
             />
