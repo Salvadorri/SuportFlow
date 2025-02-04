@@ -1,5 +1,5 @@
 import React from "react";
-import "C:/Users/jvdal/OneDrive/Área de Trabalho/Desenvolvimento/SuportFlow/frontend/src/styles/tailwind.css";
+import "../styles/tailwind.css";
 
 export default function Tela() {
   return (
