@@ -1,5 +1,7 @@
-import React from "react";
+
 import "../styles/tailwind.css";
+import ProdutosEServicos from "../components/Ferramentas/produtoseservicos.jsx";
+
 
 export default function Tela() {
   return (
@@ -15,44 +17,27 @@ export default function Tela() {
           <h1 className="text-xl font-bold mb-6">Home</h1>
           <nav className="space-y-4">
             <div>
-              <h2 className="text-gray-400">Cadastrar/Editar:</h2>
               <ul className="ml-2 space-y-2">
+                <li>Dashboard</li>
                 <li>Empresas</li>
-                <li>Gerente</li>
                 <li>Funcionários</li>
-                <li>Cliente Final</li>
+                <li>Clientes</li>
+              </ul>
+            </div>
+            <ProdutosEServicos/>
+            <div>
+              <ul className="ml-2 space-y-2">
+                <li>Chamados</li>
               </ul>
             </div>
             <div>
-              <h2 className="text-gray-400">Produtos & Serviços Empresas:</h2>
               <ul className="ml-2 space-y-2">
-                <li>Cadastrar</li>
-                <li>Editar</li>
+                <li>Relatorios</li>
               </ul>
             </div>
             <div>
-              <h2 className="text-gray-400">Chamados:</h2>
               <ul className="ml-2 space-y-2">
-                <li>Atribuir Chamado</li>
-                <li>Feedbacks</li>
-                <li>Abrir/Editar</li>
-                <li>Priorizar</li>
-                <li>Histórico</li>
-                <li>Abertos/Finalizados cliente view</li>
-              </ul>
-            </div>
-            <div>
-              <h2 className="text-gray-400">Relatórios:</h2>
-              <ul className="ml-2 space-y-2">
-                <li>Feedbacks</li>
-              </ul>
-            </div>
-            <div>
-              <h2 className="text-gray-400">Chat AI:</h2>
-              <ul className="ml-2 space-y-2">
-                <li>Perguntar</li>
-                <li>Conversas</li>
-                <li>Histórico Chat AI</li>
+                <li>Chat AI</li>
               </ul>
             </div>
           </nav>
