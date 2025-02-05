@@ -1,7 +1,6 @@
-
 import "../styles/tailwind.css";
 import ProdutosEServicos from "../components/Ferramentas/produtoseservicos.jsx";
-
+import homeIcon from "../assets/home.png"; // Importe a imagem do ícone
 
 export default function Tela() {
   return (
@@ -12,19 +11,33 @@ export default function Tela() {
       </header>
 
       <div className="flex flex-1">
-        {/* Sidebar */}
-        <aside className="w-64 bg-gray-900 text-white p-6 flex-shrink-0">
-          <h1 className="text-xl font-bold mb-6">Home</h1>
+       {/* Sidebar */}
+       <aside className="w-64 bg-gray-900 text-white p-6 flex-shrink-0">
+          {/* Substitua o texto "Home" por uma tag <img> */}
+          <div className="flex items-center mb-6 pl-0 pr-0">
+            <img src={homeIcon} alt="Home" className="h-20 w-20" /> 
+            {/* Ajuste w-6 e h-6 para o tamanho desejado do ícone */}
+            <h1 className="text-xl font-bold pr-2">Home</h1>
+          </div>
           <nav className="space-y-4">
             <div>
               <ul className="ml-2 space-y-2">
-                <li>Dashboard</li>
                 <li>Empresas</li>
-                <li>Funcionários</li>
+              </ul>
+            </div>
+            <div>
+              <ul className="ml-2 space-y-2">
+                <li>Atendentes</li>
+              </ul>
+            </div>
+            <div>
+              <ul className="ml-2 space-y-2">
                 <li>Clientes</li>
               </ul>
             </div>
-            <ProdutosEServicos/>
+            <div>
+              <ProdutosEServicos />
+            </div>
             <div>
               <ul className="ml-2 space-y-2">
                 <li>Chamados</li>
@@ -52,11 +65,15 @@ export default function Tela() {
             </div>
             <div className="bg-white shadow-lg p-6 rounded-xl text-center">
               <h3 className="text-lg font-bold">Funcionários</h3>
-              <p className="text-gray-600">Crie, edite ou exclua logins dos funcionários.</p>
+              <p className="text-gray-600">
+                Crie, edite ou exclua logins dos funcionários.
+              </p>
             </div>
             <div className="bg-white shadow-lg p-6 rounded-xl text-center">
               <h3 className="text-lg font-bold">Relatórios</h3>
-              <p className="text-gray-600">Acompanhe o desempenho e histórico de interações.</p>
+              <p className="text-gray-600">
+                Acompanhe o desempenho e histórico de interações.
+              </p>
             </div>
           </div>
 
