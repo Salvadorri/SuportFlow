@@ -1,10 +1,10 @@
-import "../../styles/tailwind.css"; // Certifique-se de que as diretivas do Tailwind CSS estão neste arquivo
+import "../styles/tailwind.css"; // Certifique-se de que as diretivas do Tailwind CSS estão neste arquivo
 
 function Login() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
       <div className="w-full max-w-md p-8 space-y-8 bg-gray-800 rounded-xl shadow-2xl">
-        <h2 className="text-3xl font-bold text-center text-white">Login</h2>
+        <h2 className="text-3xl font-bold text-center text-green-500">SuportFlowAI</h2>
 
         <form className="space-y-6" action="#" method="POST">
           <div>
@@ -60,17 +60,10 @@ function Login() {
           </div>
           <button
             type="submit"
-            className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            className="w-full text-white bg-green-600! hover:bg-green-800! focus:ring-4 focus:outline-none focus:ring-green-200! font-medium rounded-lg text-sm px-5 py-2.5 text-center"
           >
             Entrar
           </button>
-
-          <p className="text-sm font-light text-gray-400">
-            Ainda não tem uma conta?{" "}
-            <a href="#" className="font-medium text-blue-500 hover:underline">
-              Cadastre-se
-            </a>
-          </p>
         </form>
       </div>
     </div>
