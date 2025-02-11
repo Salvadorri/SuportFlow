@@ -5,7 +5,9 @@ FROM node:23-alpine AS build
 WORKDIR /app
 
 # Copia os arquivos de dependência (primeiro para cache eficiente)
+
 COPY package.json pnpm-lock.yaml ./
+
 
 # Instala as dependências usando pnpm (instale globalmente se não estiver presente)
 RUN npm install -g pnpm && pnpm install --frozen-lockfile

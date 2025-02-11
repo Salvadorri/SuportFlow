@@ -1,7 +1,7 @@
 services:
-  backend:
+  java:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
@@ -13,20 +13,8 @@ services:
     networks:
       - suporteflow-network
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app # Sincroniza as alterações em tempo real
-      - /app/node_modules # Cria um volume anônimo para a pasta node_modules, evitando sobreposição com a pasta local
-    networks:
-      - suporteflow-network
-
   db:
-    image: postgres:17-alpine # Ou mysql:8.0, se preferir MySQL
+    image: postgres:17-alpine
     ports:
       - "5432:5432"
     env_file:
