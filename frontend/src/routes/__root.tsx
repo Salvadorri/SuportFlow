@@ -10,6 +10,7 @@ import { CodigoDeVerificacaoRoute } from "./codigoDeVerificacao";
 import { ChamadosRoute } from "./chamados";
 import { CriarChamadoRoute } from "./criarChamados";
 import { ChamadoHistoricoRoute } from "./chamadosHistorico";
+import { Edit_VerChamado } from "./Edit_VerChamado";
 
 // Cria um cliente para react-query (opcional, mas útil para gerenciamento de dados)
 const queryClient = new QueryClient();
