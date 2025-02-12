@@ -1,7 +1,7 @@
-import Edit_VerChamado from "../components/dashboard/Edit_VerChamado";
+import VisualizarChamado from "../components/dashboard/edit_VerChamado";
 
 function Edit_VerChamadoPage() {
-  return <Edit_VerChamado />;
+  return <VisualizarChamado />;
 }
 
 export default Edit_VerChamadoPage;
