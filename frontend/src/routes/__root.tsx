@@ -11,6 +11,7 @@ import { ChamadosRoute } from "./chamados";
 import { CriarChamadoRoute } from "./criarChamados";
 import { ChamadoHistoricoRoute } from "./chamadosHistorico";
 import { Edit_VerChamado } from "./edit_VerChamado";
+import { chatchamadoRoute } from "./chatchamado";
 
 // Cria um cliente para react-query (opcional, mas útil para gerenciamento de dados)
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const routeTree = rootRoute.addChildren([
   CriarChamadoRoute,
   ChamadoHistoricoRoute,
   Edit_VerChamado,
+  chatchamadoRoute,
 ]);
 // Cria o roteador
 export const router = new Router({ routeTree });

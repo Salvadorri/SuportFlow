@@ -205,7 +205,7 @@ export default function VisualizarChamado() {
 
           {/* Histórico e Comentários */}
           <div className="mt-8">
-            <h2 className="text-xl font-bold mb-4">Histórico</h2>
+            <h2 className="text-xl font-bold mb-4">Histórico Resolução</h2>
             <div className="space-y-4 mb-4">
               {chamado.historico.map((item, index) => (
                 <div key={index} className="bg-gray-50 p-4 rounded">

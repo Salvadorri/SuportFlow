@@ -71,6 +71,7 @@ const index = () => {
             <li className="mb-2 hover:bg-gray-700 p-2 rounded"><a href="#">Histórico</a></li>
             <li className="mb-2 hover:bg-gray-700 p-2 rounded"><a href="#">Feedbacks</a></li>
             <li className="mb-2 hover:bg-gray-700 p-2 rounded"><a href="#">Atribuir para atendente</a></li>
+            <li className="mb-2 hover:bg-gray-700 p-2 rounded"><a href="#">Chat Cliente</a></li>
           </ul>
         </nav>
       </aside>
