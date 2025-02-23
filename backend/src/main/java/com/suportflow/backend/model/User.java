@@ -3,6 +3,7 @@ package com.suportflow.backend.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet; // Importante!
 import java.util.Set;
 
 @Entity
@@ -39,8 +40,10 @@ public class User {
             joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "permissao_id")
     )
-    private Set<Permissao> permissoes;
+    private Set<Permissao> permissoes = new HashSet<>(); // Inicializa com HashSet vazio!
 
+
+    //Getters and Setters (Como antes)
     public Long getId() {
         return id;
     }

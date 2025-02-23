@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -148,21 +149,29 @@ public class DataInitializer implements ApplicationRunner {
             permissoes.add(usarChatbotPermissao);
             permissoes.add(abrirChamadoPermissao);
 
-            adminUser.setPermissoes(todasPermissoes);
 
-            userRepository.save(adminUser);
+            adminUser.setPermissoes(permissoes);
 
+
+            // Salva/Atualiza o usuário *e* garante o relacionamento.
+            userRepository.save(adminUser); // Isso salva (ou atualiza, se já existir) o usuário
+            User finalAdminUser = adminUser;
+            adminUser.getPermissoes().forEach(permissao -> {
+                permissao.addUsuario(finalAdminUser);
+                permissaoRepository.save(permissao);   // Salva a permissão (e o relacionamento)
+            });
         }
     }
 
     private Permissao criarPermissaoSeNaoExistir(String nome, String descricao) {
-        Permissao permissao = permissaoRepository.findByNome(nome);
-        if (permissao == null) {
-            permissao = new Permissao();
-            permissao.setNome(nome);
-            permissao.setDescricao(descricao);
-            permissao = permissaoRepository.save(permissao);
+        Optional<Permissao> permissaoOptional = Optional.ofNullable(permissaoRepository.findByNome(nome));
+        if (permissaoOptional.isPresent()) {
+            return permissaoOptional.get(); // Já existe, retorna a existente
+        } else {
+            Permissao newPermissao = new Permissao();
+            newPermissao.setNome(nome);
+            newPermissao.setDescricao(descricao);
+            return permissaoRepository.save(newPermissao); // Cria e retorna a nova
         }
-        return permissao;
     }
 }
