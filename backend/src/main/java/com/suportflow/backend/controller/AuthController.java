@@ -15,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api") // Prefixo base para todos os endpoints neste controlador
 public class AuthController {
 
     @Autowired
@@ -43,7 +41,7 @@ public class AuthController {
     @Autowired
     private RefreshTokenService refreshTokenService;
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login") // Mantém o /login em /api/auth
     public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody UserLoginDTO userLoginDTO) {
         try {
             authenticationManager.authenticate(
@@ -66,7 +64,24 @@ public class AuthController {
     }
 
 
-    @PostMapping("/refreshtoken")
+    // Novo endpoint para registro: /api/users/register
+    @PostMapping("/users/register")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
+        try {
+            UserDetailsDTO registeredUser = userService.registerNewUser(registrationDTO);
+            return ResponseEntity.ok(registeredUser);
+        } catch (DataIntegrityViolationException e) {
+            // Trata erro de e-mail duplicado
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Já existe um usuário com este e-mail.");
+        } catch (Exception e) {
+            // Trata outros erros genéricos (logar o erro é importante)
+            System.err.println("Erro ao registrar usuário: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao registrar usuário.");
+        }
+    }
+
+
+    @PostMapping("/auth/refreshtoken") // Mantém o /refreshtoken em /api/auth
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
         String requestRefreshToken = refreshTokenDTO.getRefreshToken();
 
