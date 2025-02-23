@@ -1,6 +1,8 @@
 package com.suportflow.backend.model;
 
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "permissoes")
@@ -11,16 +13,34 @@ public class Permissao {
     @Column(name = "permissao_id")
     private Long id;
 
-    @Column(name = "nome", nullable = false, unique = true) // Corrigido para "nome"
+    @Column(name = "nome", nullable = false, unique = true)
     private String nome;
 
     @Column(name = "descricao")
     private String descricao;
 
-    // Construtores
-    public Permissao() {}
+    @ManyToMany(mappedBy = "permissoes")
+    private Set<User> usuarios = new HashSet<>();
 
-    // Getters e Setters
+    public Set<User> getUsuarios() {
+        return usuarios;
+    }
+
+    public void setUsuarios(Set<User> usuarios) {
+        this.usuarios = usuarios;
+    }
+
+
+    public void addUsuario(User usuario) {
+        this.usuarios.add(usuario);
+        usuario.getPermissoes().add(this); // Mantém a consistência bidirecional
+    }
+
+    public void removeUsuario(User usuario) {
+        this.usuarios.remove(usuario);
+        usuario.getPermissoes().remove(this); // Mantém a consistência bidirecional
+    }
+
 
     public Long getId() {
         return id;

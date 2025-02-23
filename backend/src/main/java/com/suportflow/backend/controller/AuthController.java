@@ -1,4 +1,3 @@
-// file:///home/rodrigo/Desenvolvimento/SuportFlow/backend/src/main/java/com/suportflow/backend/controller/AuthController.java
 package com.suportflow.backend.controller;
 
 import com.suportflow.backend.dto.*;
@@ -8,15 +7,14 @@ import com.suportflow.backend.model.User;
 import com.suportflow.backend.security.JwtUtil;
 import com.suportflow.backend.service.auth.RefreshTokenService;
 import com.suportflow.backend.service.auth.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api") // Prefixo base para todos os endpoints neste controlador
 public class AuthController {
 
     @Autowired
@@ -43,14 +41,16 @@ public class AuthController {
     @Autowired
     private RefreshTokenService refreshTokenService;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody UserLoginDTO userLoginDTO) throws Exception {
+    @PostMapping("/auth/login") // Mantém o /login em /api/auth
+    public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody UserLoginDTO userLoginDTO) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userLoginDTO.getEmail(), userLoginDTO.getPassword())
             );
         } catch (BadCredentialsException e) {
-            throw new Exception("Email ou senha incorretos.", e);
+            // Usar um logger em produção!
+            System.err.println("Credenciais inválidas: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas.");
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(userLoginDTO.getEmail());
@@ -63,33 +63,26 @@ public class AuthController {
         return ResponseEntity.ok(new AuthenticationResponse(jwt, refreshToken.getToken()));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDTO registrationDTO) {
-        // 1. Verificar se o usuário está autenticado
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado.");
+
+    // Novo endpoint para registro: /api/users/register
+    @PostMapping("/users/register")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
+        try {
+            UserDetailsDTO registeredUser = userService.registerNewUser(registrationDTO);
+            return ResponseEntity.ok(registeredUser);
+        } catch (DataIntegrityViolationException e) {
+            // Trata erro de e-mail duplicado
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Já existe um usuário com este e-mail.");
+        } catch (Exception e) {
+            // Trata outros erros genéricos (logar o erro é importante)
+            System.err.println("Erro ao registrar usuário: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao registrar usuário.");
         }
-
-        // 2. Verificar se o usuário tem a permissão 'CREATE_USER'
-        boolean hasCreateUserPermission = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(authority -> authority.equals("CREATE_USER"));
-
-        if (!hasCreateUserPermission) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário não tem permissão para registrar novos usuários.");
-        }
-
-        // 3. Se chegou aqui, o usuário está autenticado e tem a permissão necessária
-        // Registra o novo usuário
-        UserDetailsDTO registeredUser = userService.registerNewUser(registrationDTO);
-
-        // 4. Retorna o usuário registrado na resposta (ou um status de sucesso)
-        return ResponseEntity.ok(registeredUser);
     }
 
-    @PostMapping("/refreshtoken")
-    public ResponseEntity<?> refreshtoken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
+
+    @PostMapping("/auth/refreshtoken") // Mantém o /refreshtoken em /api/auth
+    public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
         String requestRefreshToken = refreshTokenDTO.getRefreshToken();
 
         return refreshTokenService.findByToken(requestRefreshToken)
@@ -100,6 +93,6 @@ public class AuthController {
                     String token = jwtUtil.generateToken(userDetails);
                     return ResponseEntity.ok(new AuthenticationResponse(token, requestRefreshToken));
                 })
-                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token is not in database!"));
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token inválido ou não encontrado."));
     }
 }

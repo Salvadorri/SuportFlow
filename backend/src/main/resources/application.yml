@@ -17,8 +17,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 jwt:
   secret: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.ct7vAd_BpNxhgKAhgXNntnXn8_Ek2ZdZOVhQJarEdvE
-  expiration: 86400000 # 1 dia em milissegundos (JWT)
-  refreshExpiration: 604800000 # 7 dias em milissegundos (Refresh Token)
+  expiration: 86400000
+  refreshExpiration: 604800000
 logging:
   level:
     root: INFO
