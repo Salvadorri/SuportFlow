@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+
 const CriarChamado = () => {
   return (
     <div className="flex h-screen">
@@ -6,10 +8,14 @@ const CriarChamado = () => {
         <h1 className="text-2xl font-bold mb-6">Support Flow.AI</h1>
         <nav>
           <ul>
-            <li className="mb-4 font-semibold">Chamados</li>
+            <li className="mb-4 font-semibold">Chamados:</li>
+
             <li className="mb-2 hover:bg-gray-700 p-2 rounded">
-              <a href="#" className="text-blue-400">Dashboard</a>
-            </li>
+  <Link to="/dashboard" className="text-blue-400 block w-full h-full">
+    Dashboard
+  </Link>
+</li>
+            
             <li className="mb-2 hover:bg-gray-700 p-2 rounded">
               <a href="#" className="text-blue-400">Meus Chamados</a>
             </li>

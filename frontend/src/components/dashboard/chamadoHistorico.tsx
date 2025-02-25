@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 
 export default function HistoricoChamados() {
   const [chamados, setChamados] = useState([
@@ -43,8 +44,13 @@ export default function HistoricoChamados() {
         <h2 className="text-xl font-bold mb-4">Support Flow.AI</h2>
         <nav>
           <ul>
-            <li className="mb-2"><a href="#" className="text-gray-300 hover:text-white">Dashboard</a></li>
-            <li className="mb-2"><a href="#" className="text-gray-300 hover:text-white">Meus Chamados</a></li>
+          <li className="mb-2 hover:bg-gray-700 p-2 rounded">
+  <Link to="/dashboard" className="text-blue-400 block w-full h-full">
+    Dashboard
+  </Link>
+</li>
+<li className="mb-2 hover:bg-gray-700 p-2 rounded"><a href="#" className="text-blue-400">Meus Chamados</a>
+            </li>
           </ul>
         </nav>
       </div>

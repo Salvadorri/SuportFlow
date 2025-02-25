@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from "@tanstack/react-router";
 
 const index = () => {
   // Sample data with added dates
@@ -66,12 +67,34 @@ const index = () => {
         <nav>
           <ul>
             <li className="mb-4 font-semibold">Chamados:</li>
-            <li className="mb-2 hover:bg-gray-700 p-2 rounded"><a href="#">Abrir/Editar</a></li>
-            <li className="mb-2 hover:bg-gray-700 p-2 rounded"><a href="#">Priorizar</a></li>
-            <li className="mb-2 hover:bg-gray-700 p-2 rounded"><a href="#">Histórico</a></li>
-            <li className="mb-2 hover:bg-gray-700 p-2 rounded"><a href="#">Feedbacks</a></li>
-            <li className="mb-2 hover:bg-gray-700 p-2 rounded"><a href="#">Atribuir para atendente</a></li>
-            <li className="mb-2 hover:bg-gray-700 p-2 rounded"><a href="#">Chat Cliente</a></li>
+
+            <li className="mb-2 hover:bg-gray-700 p-2 rounded">
+  <Link to="/criar-chamado" className="text-blue-400 block w-full h-full">
+    Abrir Chamado
+  </Link>
+</li>
+<li className="mb-2 hover:bg-gray-700 p-2 rounded">
+  <Link to="/editar-chamado" className="text-blue-400 block w-full h-full">
+  Editar/Priorizar/Atribuir
+  </Link>
+</li>
+<li className="mb-2 hover:bg-gray-700 p-2 rounded">
+  <Link to="/chamados-historico" className="text-blue-400 block w-full h-full">
+  Histórico Chamados
+  </Link>
+</li>
+<li className="mb-2 hover:bg-gray-700 p-2 rounded">
+  <Link to="/meuschatsclientes" className="text-blue-400 block w-full h-full">
+  Chat Clientes
+  </Link>
+</li>
+<li className="mb-2 hover:bg-gray-700 p-2 rounded">
+  <Link to="/chatchamado" className="text-blue-400 block w-full h-full">
+    Chat
+  </Link>
+</li>
+            
+            
           </ul>
         </nav>
       </aside>
