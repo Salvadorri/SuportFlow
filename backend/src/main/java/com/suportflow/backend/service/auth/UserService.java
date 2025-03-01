@@ -1,3 +1,4 @@
+// UserService.java
 package com.suportflow.backend.service.auth;
 
 import com.suportflow.backend.dto.UserDetailsDTO;
@@ -10,6 +11,7 @@ import com.suportflow.backend.repository.EmpresaRepository;
 import com.suportflow.backend.repository.PermissaoRepository;
 import com.suportflow.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException; // Importante
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -38,10 +40,15 @@ public class UserService {
 
     @Transactional
     public UserDetailsDTO registerNewUser(UserRegistrationDTO registrationDTO) {
-        // 1. Criptografar a senha
+        // 1. Verificar se o email já existe ANTES de tentar criar o usuário
+        if (userRepository.findByEmail(registrationDTO.getEmail()) != null) {
+            throw new DataIntegrityViolationException("Já existe um usuário com este e-mail.");
+        }
+
+        // 2. Criptografar a senha
         String encodedPassword = passwordEncoder.encode(registrationDTO.getPassword());
 
-        // 2. Buscar a empresa pelo nome (se fornecido)
+        // 3. Buscar a empresa pelo nome (se fornecido)
         Empresa empresa = null;
         if (registrationDTO.getEmpresaNome() != null) {
             empresa = empresaRepository.findByNome(registrationDTO.getEmpresaNome());
@@ -51,7 +58,7 @@ public class UserService {
             }
         }
 
-        // 3. Criar o objeto User
+        // 4. Criar o objeto User
         User user = new User();
         user.setNome(registrationDTO.getNome());
         user.setEmail(registrationDTO.getEmail());
@@ -60,10 +67,15 @@ public class UserService {
         user.setAtivo(true); // Ou defina como false e implemente um processo de ativação
         user.setDataCriacao(LocalDateTime.now());
 
-        // 4. Salvar o usuário no banco de dados
-        user = userRepository.save(user);
+        // 5. Salvar o usuário no banco de dados
+        try {
+            user = userRepository.save(user);  //Tentar salvar
+        } catch (DataIntegrityViolationException e) {
+            // Tratar Excecao especifica.
+            throw new DataIntegrityViolationException("Já existe um usuário com este e-mail.", e);
+        }
 
-        // 5. Retornar o UserDetailsDTO
+        // 6. Retornar o UserDetailsDTO
         return new UserDetailsDTO(user);
     }
 
@@ -129,6 +141,4 @@ public class UserService {
 
         userRepository.delete(user);
     }
-
-    // Outros métodos, se necessário, podem ser adicionados aqui
 }

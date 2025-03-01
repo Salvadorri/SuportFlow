@@ -71,10 +71,8 @@ public class AuthController {
             UserDetailsDTO registeredUser = userService.registerNewUser(registrationDTO);
             return ResponseEntity.ok(registeredUser);
         } catch (DataIntegrityViolationException e) {
-            // Trata erro de e-mail duplicado
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Já existe um usuário com este e-mail.");
         } catch (Exception e) {
-            // Trata outros erros genéricos (logar o erro é importante)
             System.err.println("Erro ao registrar usuário: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao registrar usuário.");
         }
