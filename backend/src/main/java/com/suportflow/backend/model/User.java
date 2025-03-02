@@ -1,14 +1,23 @@
 package com.suportflow.backend.model;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.HashSet; // Importante!
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 @Entity
 @Table(name = "usuarios")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +35,7 @@ public class User {
     private String email;
 
     @Column(name = "senha", nullable = false)
-    private String password;
+    private String senha;
 
     @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;
@@ -34,16 +43,58 @@ public class User {
     @Column(name = "ativo")
     private Boolean ativo;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "usuario_permissao",
             joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "permissao_id")
     )
-    private Set<Permissao> permissoes = new HashSet<>(); // Inicializa com HashSet vazio!
+    private Set<Permissao> permissoes = new HashSet<>(); // Mantém o HashSet para persistência
 
 
-    //Getters and Setters (Como antes)
+    // Métodos da interface UserDetails
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Ordena as permissões alfabeticamente antes de mapear para GrantedAuthority
+        List<Permissao> sortedPermissoes = new ArrayList<>(permissoes); // Cria uma lista a partir do Set
+        Collections.sort(sortedPermissoes, Comparator.comparing(Permissao::getNome)); // Ordena a lista
+
+        return sortedPermissoes.stream()
+                .map(permissao -> new SimpleGrantedAuthority(permissao.getNome()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.ativo;
+    }
+
+    //Getters and Setters
     public Long getId() {
         return id;
     }
@@ -75,13 +126,12 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
-
-    public String getPassword() {
-        return password;
+    public String getSenha() {
+        return senha;
     }
 
-    public void setSenha(String password) {
-        this.password = password;
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
     public LocalDateTime getDataCriacao() {
