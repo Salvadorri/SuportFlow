@@ -9,11 +9,15 @@ import com.suportflow.backend.repository.EmpresaRepository;
 import com.suportflow.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,5 +105,19 @@ public class UserManagementService {
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o ID: " + userId));
 
         userRepository.delete(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> getCurrentUserPermissions() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        //Verificação se o usuário está autenticado
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return Collections.emptyList(); // Ou lançar uma exceção, dependendo da sua necessidade
+        }
+
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
     }
 }

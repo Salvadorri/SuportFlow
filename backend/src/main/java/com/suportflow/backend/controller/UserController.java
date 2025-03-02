@@ -8,10 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
-@RequestMapping("/api/users") // Prefixo /api/users
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
@@ -29,4 +35,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/me/permissions")
+    public ResponseEntity<List<String>> getMyPermissions() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401 Unauthorized
+        }
+
+        List<String> permissions = userManagementService.getCurrentUserPermissions();
+        return ResponseEntity.ok(permissions);
+    }
 }
