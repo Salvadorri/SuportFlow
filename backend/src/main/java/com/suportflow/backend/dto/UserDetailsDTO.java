@@ -32,6 +32,14 @@ public class UserDetailsDTO {
                 .collect(Collectors.toList());
     }
 
+    // ADICIONE ESTE CONSTRUTOR:
+    public UserDetailsDTO(Long id, String email, String nome) {
+        this.id = id;
+        this.email = email;
+        this.nome = nome;
+    }
+
+
     public Long getId() {
         return id;
     }
@@ -63,7 +71,7 @@ public class UserDetailsDTO {
     public void setEmpresaNome(String empresaNome) {
         this.empresaNome = empresaNome;
     }
-    public boolean isAtivo() {
+    public boolean getAtivo() {
         return ativo;
     }
 

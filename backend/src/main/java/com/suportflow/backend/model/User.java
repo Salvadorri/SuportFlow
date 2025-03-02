@@ -1,14 +1,19 @@
 package com.suportflow.backend.model;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.HashSet; // Importante!
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "usuarios")
-public class User {
+public class User implements UserDetails { // 1. Implementa UserDetails
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +31,7 @@ public class User {
     private String email;
 
     @Column(name = "senha", nullable = false)
-    private String password;
+    private String senha; // Renomeado para 'senha' para consistência
 
     @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;
@@ -34,16 +39,54 @@ public class User {
     @Column(name = "ativo")
     private Boolean ativo;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER) // MUITO IMPORTANTE: Use FetchType.EAGER
     @JoinTable(
             name = "usuario_permissao",
             joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "permissao_id")
     )
-    private Set<Permissao> permissoes = new HashSet<>(); // Inicializa com HashSet vazio!
+    private Set<Permissao> permissoes = new HashSet<>();
 
+    // Getters e Setters (como antes, mas com 'senha' em vez de 'password')
 
-    //Getters and Setters (Como antes)
+    // Métodos da interface UserDetails
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // 2. Mapeia Permissao para GrantedAuthority
+        return permissoes.stream()
+                .map(permissao -> new SimpleGrantedAuthority(permissao.getNome())) // Usa o nome da permissão
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha; // Retorna a senha
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email; // Retorna o email (usado como username)
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // Modifique se tiver lógica de expiração de conta
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // Modifique se tiver lógica de bloqueio de conta
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // Modifique se tiver lógica de expiração de credenciais
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.ativo; // Usa o campo 'ativo'
+    }
     public Long getId() {
         return id;
     }
@@ -75,13 +118,12 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
-
-    public String getPassword() {
-        return password;
+    public String getSenha() { // Corrigido o nome do getter para 'getSenha'
+        return senha;
     }
 
-    public void setSenha(String password) {
-        this.password = password;
+    public void setSenha(String senha) { // Corrigido o nome do setter para 'setSenha'
+        this.senha = senha;
     }
 
     public LocalDateTime getDataCriacao() {

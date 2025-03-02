@@ -6,20 +6,26 @@ import com.suportflow.backend.model.User;
 import com.suportflow.backend.repository.EmpresaRepository;
 import com.suportflow.backend.repository.PermissaoRepository;
 import com.suportflow.backend.repository.UserRepository;
-import com.suportflow.backend.service.auth.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Component
 public class DataInitializer implements ApplicationRunner {
+
+    @Value("${admin.email}")
+    private String adminEmail;
+
+    @Value("${admin.password}")
+    private String adminPassword;
 
     @Autowired
     private EmpresaRepository empresaRepository;
@@ -33,29 +39,22 @@ public class DataInitializer implements ApplicationRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private UserService userService;
-
     @Override
+    @Transactional
     public void run(ApplicationArguments args) throws Exception {
-        // Cria a empresa SuportFlow se não existir
-        Empresa suportFlowEmpresa = empresaRepository.findByNome("SuportFlow");
-        if (suportFlowEmpresa == null) {
-            suportFlowEmpresa = new Empresa();
-            suportFlowEmpresa.setNome("SuportFlow");
-            suportFlowEmpresa.setEmail("contato@suportflow.com");
-            suportFlowEmpresa.setEndereco("Rua Central, 123");
-            suportFlowEmpresa.setTelefone("(00) 1234-5678");
-            suportFlowEmpresa.setCnpj("12345678901234");
-            suportFlowEmpresa.setDataCriacao(LocalDateTime.now());
-            suportFlowEmpresa = empresaRepository.save(suportFlowEmpresa);
-        }
+        // Cria a empresa SuportFlow SE NÃO EXISTIR, usando orElseGet
+        Empresa suportFlowEmpresa = empresaRepository.findByNome("SuportFlow").orElseGet(() -> {
+            Empresa newEmpresa = new Empresa();
+            newEmpresa.setNome("SuportFlow");
+            newEmpresa.setEmail("contato@suportflow.com");
+            newEmpresa.setEndereco("Rua Central, 123");
+            newEmpresa.setTelefone("(00) 1234-5678");
+            newEmpresa.setCnpj("12345678901234");
+            newEmpresa.setDataCriacao(LocalDateTime.now());
+            return empresaRepository.save(newEmpresa);
+        });
 
-        Set<Permissao> todasPermissoes = new HashSet<>();
-
-        // **********************************************
-        // ******* Permissões de Administrador **********
-        // **********************************************
+        // Cria as permissões (usando o método auxiliar)
         Permissao superAdminPermissao = criarPermissaoSeNaoExistir("SUPER_ADMIN", "Permissão de Super Administrador");
         Permissao adminPermissao = criarPermissaoSeNaoExistir("ADMIN", "Permissão de Administrador");
         Permissao gerenciarEmpresasPermissao = criarPermissaoSeNaoExistir("GERENCIAR_EMPRESAS", "Gerenciar contas de empresas");
@@ -66,10 +65,6 @@ public class DataInitializer implements ApplicationRunner {
         Permissao atualizarUsuarioPermissao = criarPermissaoSeNaoExistir("ATUALIZAR_USUARIO", "Permissão para Modificar Usuários");
         Permissao excluirUsuarioPermissao = criarPermissaoSeNaoExistir("EXCLUIR_USUARIO", "Permissão para Excluir Usuários");
         Permissao gerenciarPermissoesEmpresasPermissao = criarPermissaoSeNaoExistir("GERENCIAR_PERMISSOES_EMPRESAS", "Permissão para gerenciar permissões de usuários de outras empresas");
-
-        // **********************************************
-        // ****** Permissões de Gerentes de Empresas *****
-        // **********************************************
         Permissao gerenciarEquipePermissao = criarPermissaoSeNaoExistir("GERENCIAR_EQUIPE", "Gerenciar contas de funcionários da própria empresa");
         Permissao criarFuncionarioPermissao = criarPermissaoSeNaoExistir("CRIAR_FUNCIONARIO", "Criar contas de funcionários");
         Permissao atualizarFuncionarioPermissao = criarPermissaoSeNaoExistir("ATUALIZAR_FUNCIONARIO", "Editar contas de funcionários");
@@ -80,10 +75,6 @@ public class DataInitializer implements ApplicationRunner {
         Permissao abrirChamadoSuportePermissao = criarPermissaoSeNaoExistir("ABRIR_CHAMADO_SUPORTE", "Abrir chamados para a equipe de administração do sistema");
         Permissao atualizarChatbotPermissao = criarPermissaoSeNaoExistir("ATUALIZAR_CHATBOT", "Atualizar e otimizar o chatbot IA");
         Permissao gerenciarPermissoesPermissao = criarPermissaoSeNaoExistir("GERENCIAR_PERMISSOES", "Permissão para gerenciar permissões de usuários");
-
-        // **********************************************
-        // ****** Permissões de Funcionários de Empresas **
-        // **********************************************
         Permissao gerenciarChamadosPermissao = criarPermissaoSeNaoExistir("GERENCIAR_CHAMADOS", "Gerenciar chamados de clientes");
         Permissao atribuirChamadosPermissao = criarPermissaoSeNaoExistir("ATRIBUIR_CHAMADOS", "Atribuir chamados");
         Permissao visualizarChamadosPermissao = criarPermissaoSeNaoExistir("VISUALIZAR_CHAMADOS", "Visualizar chamados");
@@ -92,25 +83,21 @@ public class DataInitializer implements ApplicationRunner {
         Permissao visualizarHistoricoChamadosPermissao = criarPermissaoSeNaoExistir("VISUALIZAR_HISTORICO_CHAMADOS", "Acessar o histórico de interações com clientes");
         Permissao acessarBaseConhecimentoPermissao = criarPermissaoSeNaoExistir("ACESSAR_BASE_CONHECIMENTO", "Consultar a base de conhecimento");
         Permissao classificarChamadosPermissao = criarPermissaoSeNaoExistir("CLASSIFICAR_CHAMADOS", "Organizar chamados por prioridade ou tipo de problema");
-
-        // **********************************************
-        // ********* Permissões de Clientes Finais *******
-        // **********************************************
         Permissao usarChatbotPermissao = criarPermissaoSeNaoExistir("USAR_CHATBOT", "Usar o chatbot IA");
         Permissao abrirChamadoPermissao = criarPermissaoSeNaoExistir("ABRIR_CHAMADO", "Abrir um chamado");
 
-        // Cria o usuário Admin se não existir
-        User adminUser = userRepository.findByEmail("admin@suportflow.com");
-        if (adminUser == null) {
-            adminUser = new User();
-            adminUser.setNome("Administrador do Sistema");
-            adminUser.setEmail("admin@suportflow.com");
-            adminUser.setSenha(passwordEncoder.encode("suportflow-admin"));
-            adminUser.setEmpresa(suportFlowEmpresa); // Associa à empresa SuportFlow
-            adminUser.setAtivo(true);
-            adminUser.setDataCriacao(LocalDateTime.now());
 
-            // Associa as permissões ao usuário Admin
+        // Cria o usuário Admin se não existir, usando orElseGet
+        User adminUser = userRepository.findByEmail(adminEmail).orElseGet(() -> {
+            User newUser = new User();
+            newUser.setNome("Administrador do Sistema");
+            newUser.setEmail(adminEmail);
+            newUser.setSenha(passwordEncoder.encode(adminPassword));
+            newUser.setEmpresa(suportFlowEmpresa);
+            newUser.setAtivo(true);
+            newUser.setDataCriacao(LocalDateTime.now());
+
+            // Adiciona TODAS as permissões criadas ao conjunto.
             Set<Permissao> permissoes = new HashSet<>();
             permissoes.add(superAdminPermissao);
             permissoes.add(adminPermissao);
@@ -122,8 +109,6 @@ public class DataInitializer implements ApplicationRunner {
             permissoes.add(atualizarUsuarioPermissao);
             permissoes.add(excluirUsuarioPermissao);
             permissoes.add(gerenciarPermissoesEmpresasPermissao);
-
-            // Permissões de Gerentes (algumas para exemplificar, ajuste conforme necessário)
             permissoes.add(gerenciarEquipePermissao);
             permissoes.add(criarFuncionarioPermissao);
             permissoes.add(atualizarFuncionarioPermissao);
@@ -134,8 +119,6 @@ public class DataInitializer implements ApplicationRunner {
             permissoes.add(abrirChamadoSuportePermissao);
             permissoes.add(atualizarChatbotPermissao);
             permissoes.add(gerenciarPermissoesPermissao);
-
-            // Permissões de Funcionários
             permissoes.add(gerenciarChamadosPermissao);
             permissoes.add(atribuirChamadosPermissao);
             permissoes.add(visualizarChamadosPermissao);
@@ -144,34 +127,21 @@ public class DataInitializer implements ApplicationRunner {
             permissoes.add(visualizarHistoricoChamadosPermissao);
             permissoes.add(acessarBaseConhecimentoPermissao);
             permissoes.add(classificarChamadosPermissao);
-
-            // Permissoes de Cliente
             permissoes.add(usarChatbotPermissao);
             permissoes.add(abrirChamadoPermissao);
 
+            newUser.setPermissoes(permissoes); // Associa as permissões
+            return userRepository.save(newUser); // Salva o novo usuário
 
-            adminUser.setPermissoes(permissoes);
-
-
-            // Salva/Atualiza o usuário *e* garante o relacionamento.
-            userRepository.save(adminUser); // Isso salva (ou atualiza, se já existir) o usuário
-            User finalAdminUser = adminUser;
-            adminUser.getPermissoes().forEach(permissao -> {
-                permissao.addUsuario(finalAdminUser);
-                permissaoRepository.save(permissao);   // Salva a permissão (e o relacionamento)
-            });
-        }
+        });
     }
-
     private Permissao criarPermissaoSeNaoExistir(String nome, String descricao) {
-        Optional<Permissao> permissaoOptional = Optional.ofNullable(permissaoRepository.findByNome(nome));
-        if (permissaoOptional.isPresent()) {
-            return permissaoOptional.get(); // Já existe, retorna a existente
-        } else {
-            Permissao newPermissao = new Permissao();
-            newPermissao.setNome(nome);
-            newPermissao.setDescricao(descricao);
-            return permissaoRepository.save(newPermissao); // Cria e retorna a nova
-        }
+        return permissaoRepository.findByNome(nome)
+                .orElseGet(() -> {
+                    Permissao newPermissao = new Permissao();
+                    newPermissao.setNome(nome);
+                    newPermissao.setDescricao(descricao);
+                    return permissaoRepository.save(newPermissao);
+                });
     }
 }
