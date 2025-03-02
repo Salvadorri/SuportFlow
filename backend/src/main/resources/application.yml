@@ -2,9 +2,9 @@ spring:
   application:
     name: backend
   datasource:
-    url: jdbc:postgresql://localhost:5432/suportflow
+    url: jdbc:postgresql://0.0.0.0:5432/suportflow
     name: suportflow
-    username: admin
+    username: postgres
     password: PGSuportflow
     driver-class-name: org.postgresql.Driver
   jpa:
