@@ -1,3 +1,4 @@
+// src/main/java/com/suportflow/backend/security/JwtAuthenticationFilter.java
 package com.suportflow.backend.security;
 
 import com.suportflow.backend.service.auth.UserDetailsServiceImpl;
@@ -7,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -14,6 +17,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -35,31 +40,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String email = null;
         String jwt = null;
+        List<String> roles = null; // Store extracted roles.
 
-        // 1. Extrai o token JWT do cabeçalho de autorização
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
-            email = jwtUtil.extractEmail(jwt); // Extrai o email do token
+            email = jwtUtil.extractEmail(jwt);
+            roles = jwtUtil.extractRoles(jwt); // Extract roles from the token!
         }
 
-        // 2. Se o email foi extraído e não há autenticação no contexto de segurança
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // 2.1 Carrega os detalhes do usuário usando o email
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
 
-            // 2.2 Valida o token JWT
+
             if (jwtUtil.validateToken(jwt, userDetails)) {
 
-                // 2.3 Cria um token de autenticação e define-o no contexto de segurança
+                // Use extracted roles to create GrantedAuthority objects.  CRITICAL!
+                List<GrantedAuthority> authorities = roles.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+                        userDetails, null, authorities); // Pass authorities here!
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
-
-        // 3. Continua a cadeia de filtros
         filterChain.doFilter(request, response);
     }
 }
