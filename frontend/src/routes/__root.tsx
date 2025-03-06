@@ -9,6 +9,10 @@ import { TrocarSenhaRoute } from "./trocarSenha";
 import { CodigoDeVerificacaoRoute } from "./codigoDeVerificacao";
 import { ChamadosRoute } from "./chamados";
 import { CriarChamadoRoute } from "./criarChamados";
+import { ChamadoHistoricoRoute } from "./chamadosHistorico";
+import { Edit_VerChamado } from "./edit_VerChamado";
+import { chatchamadoRoute } from "./chatchamado";
+import { meuschatsclientesRoute} from "./meuschatsclientes"
 
 // Cria um cliente para react-query (opcional, mas útil para gerenciamento de dados)
 const queryClient = new QueryClient();
@@ -35,6 +39,10 @@ const routeTree = rootRoute.addChildren([
   CodigoDeVerificacaoRoute,
   ChamadosRoute,
   CriarChamadoRoute,
+  ChamadoHistoricoRoute,
+  Edit_VerChamado,
+  chatchamadoRoute,
+  meuschatsclientesRoute,
 ]);
 // Cria o roteador
 export const router = new Router({ routeTree });
