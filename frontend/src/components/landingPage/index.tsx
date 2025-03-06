@@ -83,7 +83,7 @@ function Index() {
               Sobre
             </h2>{" "}
             {/* Ajustado text-2xl e mb */}
-            <p className="text-gray-200 text-base md:text-lg text-center">
+            <p className="text-gray-700 text-base md:text-lg text-center">
               {/* Ajustado text-base */}
               Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod
               tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim
@@ -97,21 +97,21 @@ function Index() {
         </section>
 
         {/* Features */}
-        <section id="recursos" className="py-12 md:py-16 bg-gray-50">
+        <section id="recursos" className="py-12 md:py-16 bg-black">
           {/* Ajustado py */}
-          <div className="container mx-auto px-4">
-            <h2 className="text-gray-700 text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">
+          <div className="container mx-auto px-4 bg-gray800">
+            <h2 className="text-gray-400 text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">
               Recursos
             </h2>{" "}
             {/* Ajustado text-2xl e mb */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {/* Feature Card 1 */}
-              <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition flex flex-col justify-center items-center">
-                <h3 className="text-gray-700 text-lg md:text-xl font-semibold mb-2 md:mb-4 text-center">
+              <div className="bg-gray-400 rounded-lg shadow-md p-6 hover:shadow-lg transition flex flex-col justify-center items-center">
+                <h3 className="text-black text-lg md:text-xl font-semibold mb-2 md:mb-4 text-center">
                   Recurso X
                 </h3>{" "}
                 {/* Ajustado text-lg e mb */}
-                <p className="text-gray-700 text-sm md:text-base text-center">
+                <p className="text-black text-sm md:text-base text-center">
                   {" "}
                   {/* Ajustado text-sm */}
                   Lorem ipsum dolor sit amet, consectetur adipisci elit, sed
@@ -119,12 +119,12 @@ function Index() {
                 </p>
               </div>
               {/* Feature Card 2 */}
-              <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition flex flex-col justify-center items-center">
-                <h3 className="text-gray-700 text-lg md:text-xl font-semibold mb-2 md:mb-4 text-center">
+              <div className="bg-gray-400 rounded-lg shadow-md p-6 hover:shadow-lg transition flex flex-col justify-center items-center">
+                <h3 className="text-black text-lg md:text-xl font-semibold mb-2 md:mb-4 text-center">
                   Recurso Y
                 </h3>{" "}
                 {/* Ajustado text-lg e mb */}
-                <p className="text-gray-700 text-sm md:text-base text-center">
+                <p className="text-black text-sm md:text-base text-center">
                   {" "}
                   {/* Ajustado text-sm */}
                   Lorem ipsum dolor sit amet, consectetur adipisci elit, sed
@@ -132,12 +132,12 @@ function Index() {
                 </p>
               </div>
               {/* Feature Card 3 */}
-              <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition flex flex-col justify-center items-center">
-                <h3 className="text-gray-700 text-lg md:text-xl font-semibold mb-2 md:mb-4 text-center">
+              <div className="bg-gray-400 rounded-lg shadow-md p-6 hover:shadow-lg transition flex flex-col justify-center items-center">
+                <h3 className="text-black text-lg md:text-xl font-semibold mb-2 md:mb-4 text-center">
                   Recurso Z
                 </h3>{" "}
                 {/* Ajustado text-lg e mb */}
-                <p className="text-gray-700 text-sm md:text-base text-center">
+                <p className="text-black text-sm md:text-base text-center">
                   {" "}
                   {/* Ajustado text-sm */}
                   Lorem ipsum dolor sit amet, consectetur adipisci elit, sed
@@ -149,7 +149,7 @@ function Index() {
         </section>
 
         {/* Contact */}
-        <section id="contato" className="py-12 md:py-16">
+        <section id="contato" className="py-12 md:py-16 bg-gray-300">
           {" "}
           {/* Ajustado py */}
           <div className="container mx-auto px-4">
@@ -164,7 +164,7 @@ function Index() {
                 <span className="font-semibold">Telefone:</span>
                 <a
                   href="tel:+1234567890"
-                  className="text-gray-300 hover:text-green-600"
+                  className="text-gray-700 hover:text-green-600"
                 >
                   {" "}
                   +123 456 7890
@@ -174,7 +174,7 @@ function Index() {
                 <span className="font-semibold">Email:</span>
                 <a
                   href="mailto:contato@suportflowai.com"
-                  className="text-gray-300 hover:text-green-600"
+                  className="text-gray-700 hover:text-green-600"
                 >
                   {" "}
                   contato@suportflow.com

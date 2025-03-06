@@ -1,8 +1,37 @@
+import React, { useState } from 'react';
+import { validateLoginForm, ValidationResult } from "./validation.ts"; // Importe as funções
+
 function Index() {
+
+  {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [errors, setErrors] = useState<ValidationResult["errors"]>({}); //Usa o tipo da interface
+    const [rememberMe, setRememberMe] = useState(false);
+  
+    const handleSubmit = (event: React.FormEvent) => {
+      event.preventDefault();
+  
+      const validationResult = validateLoginForm(email, password);
+  
+      if (validationResult.isValid) {
+          // Lógica de envio do formulário
+          console.log('Formulário válido. Dados:', { email, password, rememberMe });
+      } else {
+          setErrors(validationResult.errors); //Atualiza o estado com os erros
+          console.log("Formulário inválido")
+      }
+    };
+  
+  
+      const handleRememberMeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+          setRememberMe(event.target.checked);
+      };
+  
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
       <div className="w-full max-w-md p-8 space-y-8 bg-gray-800 rounded-xl shadow-2xl">
-        <h2 className="text-3xl font-bold text-center text-white">Login</h2>
+        <h2 className="text-3xl font-bold text-center text-white">SuportFlowAI</h2>
 
         <form className="space-y-6" action="#" method="POST">
           <div>
@@ -17,8 +46,17 @@ function Index() {
               id="email"
               className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                // Limpa o erro quando o usuário começa a digitar novamente
+                if (errors.email) {
+                  setErrors(prevErrors => ({ ...prevErrors, email: '' }));
+                }
+              }}
               required
             />
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
 
           <div>
@@ -30,8 +68,17 @@ function Index() {
               id="password"
               className="login-campo-senha"
               placeholder="••••••••"
+              value={password}
+               onChange={(e) => {
+                setPassword(e.target.value);
+                // Limpa o erro quando o usuário começa a digitar novamente
+                if (errors.password) {
+                   setErrors(prevErrors => ({ ...prevErrors, password: '' }));
+                }
+              }}
               required
             />
+            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
 
           <div className="flex items-center justify-between">
@@ -62,17 +109,11 @@ function Index() {
           >
             Entrar
           </button>
-
-          <p className="text-sm font-light text-gray-400">
-            Ainda não tem uma conta?{" "}
-            <a href="#" className="font-medium text-blue-500 hover:underline">
-              Cadastre-se
-            </a>
-          </p>
         </form>
       </div>
     </div>
   );
+}
 }
 
 export default Index;
