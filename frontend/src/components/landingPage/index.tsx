@@ -13,7 +13,7 @@ function Index() {
               alt="SupportFlowAI Logo"
               className="h-8 w-auto mr-2"
             />
-            <span className="text-lg font-bold text-white">SupportFlowAI</span>
+            <span className="text-lg font-bold text-white">SupportFlow</span>
           </div>
           {/* Container para os links e botão (Alinhados à direita) */}
           <div className="flex items-center">
@@ -65,7 +65,7 @@ function Index() {
           {/* Ajustado py */}
           <div className="container mx-auto px-4">
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              SupportFlowAI
+              SupportFlow
             </h1>{" "}
             {/* Ajustado text-xl */}
             <p className="text-base md:text-xl">
@@ -177,7 +177,7 @@ function Index() {
                   className="text-gray-300 hover:text-green-600"
                 >
                   {" "}
-                  contato@suportflowai.com
+                  contato@suportflow.com
                 </a>
               </p>
             </div>
@@ -210,7 +210,7 @@ function Index() {
             </a>
           </div>
           <p className="text-sm">
-            © 2025 SupportFlowAI. Todos os direitos reservados.
+            © 2025 SupportFlow. Todos os direitos reservados.
           </p>
         </div>
       </footer>
