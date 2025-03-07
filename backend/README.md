@@ -1,42 +1,63 @@
-Estrutura:
-com/
-┗ suportflow/
-┗ backend/
-┃   ┣ config/
-┃ ┃ ┃ ┣ DataInitializer.java
-┃ ┃ ┃ ┣ PasswordEncoderConfig.java
-┃ ┃ ┃ ┗ SecurityConfig.java
-┃   ┣ controller/
-┃ ┃ ┃ ┣ AuthController.java
-┃ ┃ ┃ ┗ EmpresaController.java
-┃   ┣ dto/
-┃ ┃ ┃ ┣ AuthenticationRequest.java
-┃ ┃ ┃ ┣ AuthenticationResponse.java
-┃ ┃ ┃ ┣ UserDetailsDTO.java
-┃ ┃ ┃ ┣ UserLoginDTO.java
-┃ ┃ ┃ ┗ UserRegistrationDTO.java
-┃   ┣ exception/
-┃ ┃ ┃ ┣ GlobalExceptionHandler.java
-┃ ┃ ┃ ┗ UserNotFoundException.java
-┃   ┣ model/
-┃ ┃ ┃ ┣ CustomUserDetails.java
-┃ ┃ ┃ ┣ Empresa.java
-┃ ┃ ┃ ┣ Permissao.java
-┃ ┃ ┃ ┗ User.java
-┃   ┣ repository/
-┃ ┃ ┃ ┣ EmpresaRepository.java
-┃ ┃ ┃ ┣ PermissaoRepository.java
-┃ ┃ ┃ ┗ UserRepository.java
-┃   ┣ security/
-┃ ┃ ┃ ┣ JwtAuthenticationFilter.java
-┃ ┃ ┃ ┗ JwtUtil.java
-┃   ┣ service/
-┃ ┃ ┃ ┗ auth/
-┃ ┃ ┃   ┣ CustomUserDetailsService.java
-┃ ┃ ┃   ┣ EmpresaService.java
-┃ ┃ ┃   ┗ UserService.java
-┃   ┣ util/
-┃   ┗ BackendApplication.java
+
+```
+# main
+
+* [java/](./main/java)
+  * [com/](./main/java/com)
+    * [suportflow/](./main/java/com/suportflow)
+      * [backend/](./main/java/com/suportflow/backend)
+        * [config/](./main/java/com/suportflow/backend/config)
+          * [DataInitializer.java](./main/java/com/suportflow/backend/config/DataInitializer.java)
+          * [PasswordEncoderConfig.java](./main/java/com/suportflow/backend/config/PasswordEncoderConfig.java)
+          * [SecurityConfig.java](./main/java/com/suportflow/backend/config/SecurityConfig.java)
+        * [controller/](./main/java/com/suportflow/backend/controller)
+          * [AuthController.java](./main/java/com/suportflow/backend/controller/AuthController.java)
+          * [UserController.java](./main/java/com/suportflow/backend/controller/UserController.java)
+        * [dto/](./main/java/com/suportflow/backend/dto)
+          * [AuthenticationRequest.java](./main/java/com/suportflow/backend/dto/AuthenticationRequest.java)
+          * [AuthenticationResponse.java](./main/java/com/suportflow/backend/dto/AuthenticationResponse.java)
+          * [RefreshTokenDTO.java](./main/java/com/suportflow/backend/dto/RefreshTokenDTO.java)
+          * [UserDetailsDTO.java](./main/java/com/suportflow/backend/dto/UserDetailsDTO.java)
+          * [UserLoginDTO.java](./main/java/com/suportflow/backend/dto/UserLoginDTO.java)
+          * [UserRegistrationDTO.java](./main/java/com/suportflow/backend/dto/UserRegistrationDTO.java)
+        * [exception/](./main/java/com/suportflow/backend/exception)
+          * [GlobalExceptionHandler.java](./main/java/com/suportflow/backend/exception/GlobalExceptionHandler.java)
+          * [TokenRefreshException.java](./main/java/com/suportflow/backend/exception/TokenRefreshException.java)
+          * [UserNotFoundException.java](./main/java/com/suportflow/backend/exception/UserNotFoundException.java)
+        * [model/](./main/java/com/suportflow/backend/model)
+          * [Empresa.java](./main/java/com/suportflow/backend/model/Empresa.java)
+          * [Permissao.java](./main/java/com/suportflow/backend/model/Permissao.java)
+          * [RefreshToken.java](./main/java/com/suportflow/backend/model/RefreshToken.java)
+          * [User.java](./main/java/com/suportflow/backend/model/User.java)
+        * [repository/](./main/java/com/suportflow/backend/repository)
+          * [EmpresaRepository.java](./main/java/com/suportflow/backend/repository/EmpresaRepository.java)
+          * [PermissaoRepository.java](./main/java/com/suportflow/backend/repository/PermissaoRepository.java)
+          * [RefreshTokenRepository.java](./main/java/com/suportflow/backend/repository/RefreshTokenRepository.java)
+          * [UserRepository.java](./main/java/com/suportflow/backend/repository/UserRepository.java)
+        * [security/](./main/java/com/suportflow/backend/security)
+          * [JwtAuthenticationFilter.java](./main/java/com/suportflow/backend/security/JwtAuthenticationFilter.java)
+          * [JwtUtil.java](./main/java/com/suportflow/backend/security/JwtUtil.java)
+        * [service/](./main/java/com/suportflow/backend/service)
+          * [auth/](./main/java/com/suportflow/backend/service/auth)
+            * [AuthenticationService.java](./main/java/com/suportflow/backend/service/auth/AuthenticationService.java)
+            * [EmpresaService.java](./main/java/com/suportflow/backend/service/auth/EmpresaService.java)
+            * [RefreshTokenService.java](./main/java/com/suportflow/backend/service/auth/RefreshTokenService.java)
+            * [UserDetailsServiceImpl.java](./main/java/com/suportflow/backend/service/auth/UserDetailsServiceImpl.java)
+          * [cliente/](./main/java/com/suportflow/backend/service/cliente)
+          * [user/](./main/java/com/suportflow/backend/service/user)
+            * [UserManagementService.java](./main/java/com/suportflow/backend/service/user/UserManagementService.java)
+        * [util/](./main/java/com/suportflow/backend/util)
+          * [RequestLoggingMiddleware.java](./main/java/com/suportflow/backend/util/RequestLoggingMiddleware.java)
+        * [BackendApplication.java](./main/java/com/suportflow/backend/BackendApplication.java)
+* [resources/](./main/resources)
+  * [db/](./main/resources/db)
+    * [migration/](./main/resources/db/migration)
+      * [V1__criar_tabelas_e_indices.sql](./main/resources/db/migration/V1__criar_tabelas_e_indices.sql)
+  * [application-dev.yml](./main/resources/application-dev.yml)
+  * [application-test.yml](./main/resources/application-test.yml)
+  * [application.yml](./main/resources/application.yml)
+```
+
 
 1. config/ (Configuração):
 
