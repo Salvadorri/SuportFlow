@@ -1,6 +1,8 @@
+// AuthController.java (MODIFICADO)
 package com.suportflow.backend.controller;
 
 import com.suportflow.backend.dto.AuthenticationResponse;
+import com.suportflow.backend.dto.ClienteLoginDTO;
 import com.suportflow.backend.dto.RefreshTokenDTO;
 import com.suportflow.backend.dto.UserLoginDTO;
 import com.suportflow.backend.exception.TokenRefreshException;
@@ -19,17 +21,29 @@ public class AuthController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody UserLoginDTO userLoginDTO) {
+    // Login para USUÁRIOS
+    @PostMapping("/login/user")
+    public ResponseEntity<?> createAuthenticationTokenUser(@Valid @RequestBody UserLoginDTO userLoginDTO) {
         try {
             AuthenticationResponse response = authenticationService.authenticateAndGenerateToken(userLoginDTO);
-            return ResponseEntity.ok(response); // Retorna AuthenticationResponse (com JWT e refreshToken)
+            return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
-            // Captura especificamente BadCredentialsException
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais de usuário inválidas.");
         } catch (Exception e) {
-            // Captura outras exceções (improvável, mas bom ter)
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao autenticar: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao autenticar usuário: " + e.getMessage());
+        }
+    }
+
+    // Login para CLIENTES (NOVO)
+    @PostMapping("/login/cliente")
+    public ResponseEntity<?> createAuthenticationTokenCliente(@Valid @RequestBody ClienteLoginDTO clienteLoginDTO) {
+        try {
+            AuthenticationResponse response = authenticationService.authenticateAndGenerateTokenCliente(clienteLoginDTO);
+            return ResponseEntity.ok(response);
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais de cliente inválidas.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao autenticar cliente: " + e.getMessage());
         }
     }
 
@@ -37,11 +51,10 @@ public class AuthController {
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
         try {
             AuthenticationResponse response = authenticationService.refreshToken(refreshTokenDTO);
-            return ResponseEntity.ok(response); // Retorna AuthenticationResponse (com novo JWT)
+            return ResponseEntity.ok(response);
         } catch (TokenRefreshException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (Exception e) {
-            // Captura outras exceções (improvável, mas bom ter)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao renovar o token: " + e.getMessage());
         }
     }

@@ -1,9 +1,10 @@
-// file:///home/rodrigo/Desenvolvimento/SuportFlow/backend/src/main/java/com/suportflow/backend/service/auth/RefreshTokenService.java
 package com.suportflow.backend.service.auth;
 
 import com.suportflow.backend.exception.TokenRefreshException;
+import com.suportflow.backend.model.Cliente;
 import com.suportflow.backend.model.RefreshToken;
 import com.suportflow.backend.model.User;
+import com.suportflow.backend.repository.ClienteRepository;
 import com.suportflow.backend.repository.RefreshTokenRepository;
 import com.suportflow.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,27 +28,35 @@ public class RefreshTokenService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ClienteRepository clienteRepository; // Importante
+
     public Optional<RefreshToken> findByToken(String token) {
         return refreshTokenRepository.findByToken(token);
     }
 
-    public RefreshToken createRefreshToken(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Optional<RefreshToken> existingRefreshToken = refreshTokenRepository.findByUser(user);
-        RefreshToken refreshToken;
-        if (existingRefreshToken.isPresent()) {
-            refreshToken = existingRefreshToken.get();
-            refreshToken.setToken(UUID.randomUUID().toString()); // Gerar um novo token
-            refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
+    @Transactional
+    public RefreshToken createRefreshToken(Long id) { // Recebe o ID
+        RefreshToken refreshToken = new RefreshToken();
+
+        // Tenta encontrar um usuário com o ID fornecido
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            refreshToken.setUser(userOptional.get());
         } else {
-            refreshToken = new RefreshToken();
-            refreshToken.setUser(user);
-            refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
-            refreshToken.setToken(UUID.randomUUID().toString());
+            // Se não encontrou um usuário, tenta encontrar um cliente
+            Optional<Cliente> clienteOptional = clienteRepository.findById(id);
+            if (clienteOptional.isPresent()) {
+                refreshToken.setCliente(clienteOptional.get());
+            } else {
+                // Se nem usuário nem cliente forem encontrados, lança uma exceção
+                throw new RuntimeException("Nenhum usuário ou cliente encontrado com o ID: " + id);
+            }
         }
 
-        refreshToken = refreshTokenRepository.save(refreshToken); //Salvar/Atualizar
+        refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
+        refreshToken.setToken(UUID.randomUUID().toString());
+        refreshToken = refreshTokenRepository.save(refreshToken);
         return refreshToken;
     }
 
@@ -56,14 +65,18 @@ public class RefreshTokenService {
             refreshTokenRepository.delete(token);
             throw new TokenRefreshException(token.getToken(), "Refresh token was expired. Please make a new signin request");
         }
-
         return token;
     }
 
     @Transactional
     public void deleteByUserId(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        refreshTokenRepository.deleteByUser(user);
+        Optional<User> user = userRepository.findById(userId);
+        user.ifPresent(refreshTokenRepository::deleteByUser);
+    }
+    @Transactional
+    public void deleteByClienteId(Long clienteId) {
+        Optional<Cliente> cliente = clienteRepository.findById(clienteId); //Verifica se existe o cliente
+        cliente.ifPresent(refreshTokenRepository::deleteByCliente); // Deleta usando o método do repositório
+
     }
 }

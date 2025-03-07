@@ -32,6 +32,10 @@ public class Cliente {
     @Column(name = "data_cadastro")
     private LocalDateTime dataCadastro;
 
+    //Adicione o atributo
+    @Column(name = "senha", nullable = false)
+    private String senha;
+
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Chamado> chamados; // Um cliente pode ter vários chamados
 
@@ -102,5 +106,13 @@ public class Cliente {
 
     public void setChamados(List<Chamado> chamados) {
         this.chamados = chamados;
+    }
+    //Adicione o getter e setter
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 }
