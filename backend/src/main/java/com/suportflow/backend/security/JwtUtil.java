@@ -1,3 +1,4 @@
+// src/main/java/com/suportflow/backend/security/JwtUtil.java
 package com.suportflow.backend.security;
 
 import io.jsonwebtoken.Claims;
@@ -18,12 +19,18 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
-    private String SECRET_KEY;
+    private final String secretKey; // Use final for constructor-injected dependencies
+    private final long jwtExpirationMs;
 
-    @Value("${jwt.expirationMs}")
-    private long jwtExpirationMs;
+    // Constructor Injection
+    public JwtUtil(
+            @Value("${jwt.secret}") String secretKey,
+            @Value("${jwt.expirationMs}") long jwtExpirationMs) {
+        this.secretKey = secretKey;
+        this.jwtExpirationMs = jwtExpirationMs;
+    }
 
+    // ... rest of your JwtUtil methods (no changes needed here) ...
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -70,7 +77,7 @@ public class JwtUtil {
     }
 
     private SecretKey getSignKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey); // Use the injected secretKey
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

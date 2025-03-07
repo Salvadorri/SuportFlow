@@ -1,3 +1,4 @@
+// src/main/java/com/suportflow/backend/service/cliente/ClienteService.java (Já existe. Sem alterações, mas verifique o password encoding)
 package com.suportflow.backend.service.cliente;
 
 import com.suportflow.backend.dto.ClienteRegistrationDTO;

@@ -1,8 +1,10 @@
 package com.suportflow.backend.config;
 
+import com.suportflow.backend.model.Cliente;
 import com.suportflow.backend.model.Empresa;
 import com.suportflow.backend.model.Permissao;
 import com.suportflow.backend.model.User;
+import com.suportflow.backend.repository.ClienteRepository;
 import com.suportflow.backend.repository.EmpresaRepository;
 import com.suportflow.backend.repository.PermissaoRepository;
 import com.suportflow.backend.repository.UserRepository;
@@ -37,12 +39,15 @@ public class DataInitializer implements ApplicationRunner {
     private UserRepository userRepository;
 
     @Autowired
+    private ClienteRepository clienteRepository; // Injetar o ClienteRepository
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public void run(ApplicationArguments args) throws Exception {
-        // Cria a empresa SuportFlow SE NÃO EXISTIR, usando orElseGet
+
         Empresa suportFlowEmpresa = empresaRepository.findByNome("SuportFlow").orElseGet(() -> {
             Empresa newEmpresa = new Empresa();
             newEmpresa.setNome("SuportFlow");
@@ -54,12 +59,10 @@ public class DataInitializer implements ApplicationRunner {
             return empresaRepository.save(newEmpresa);
         });
 
-        // Cria as permissões (usando o método auxiliar)
         Permissao adminPermissao = criarPermissaoSeNaoExistir("ADMIN", "Permissão de Administrador");
         Permissao gerentePermissao = criarPermissaoSeNaoExistir("GERENTE", "Permissão de Gerente");
         Permissao atendentePermissao = criarPermissaoSeNaoExistir("ATENDENTE", "Permissão de Atendente");
 
-        // Cria o usuário Admin se não existir, usando orElseGet
         User adminUser = userRepository.findByEmail(adminEmail).orElseGet(() -> {
             User newUser = new User();
             newUser.setNome("Administrador do Sistema");
@@ -68,16 +71,32 @@ public class DataInitializer implements ApplicationRunner {
             newUser.setEmpresa(suportFlowEmpresa);
             newUser.setAtivo(true);
             newUser.setDataCriacao(LocalDateTime.now());
-
-            // Adiciona TODAS as permissões criadas ao conjunto.
             Set<Permissao> permissoes = new HashSet<>();
             permissoes.add(adminPermissao);
-
-            newUser.setPermissoes(permissoes); // Associa as permissões
-            return userRepository.save(newUser); // Salva o novo usuário
+            newUser.setPermissoes(permissoes);
+            return userRepository.save(newUser);
 
         });
+
+        // --- Criação de Clientes de Exemplo (OPCIONAL, mas útil) ---
+        criarClienteSeNaoExistir("cliente1@example.com", "12345678901", "Cliente 1", suportFlowEmpresa); // CPF
+        criarClienteSeNaoExistir("cliente2@example.com", "12345678901234", "Cliente 2", suportFlowEmpresa); // CNPJ
     }
+    private void criarClienteSeNaoExistir(String email, String cpfCnpj, String nome, Empresa empresa) {
+        // Usa existsByEmail e existsByCpfCnpj para evitar duplicidades
+        if (!clienteRepository.existsByEmail(email) && !clienteRepository.existsByCpfCnpj(cpfCnpj)) {
+            Cliente cliente = new Cliente();
+            cliente.setEmail(email);
+            cliente.setCpfCnpj(cpfCnpj);
+            cliente.setSenha(passwordEncoder.encode(cpfCnpj)); // Criptografa o CPF/CNPJ (que é a senha)
+            cliente.setNome(nome);
+            cliente.setEmpresa(empresa);
+            cliente.setDataCadastro(LocalDateTime.now());
+            //Não precisa setar a senha, por que estamos utilizando o cpfCnpj
+            clienteRepository.save(cliente);
+        }
+    }
+
     private Permissao criarPermissaoSeNaoExistir(String nome, String descricao) {
         return permissaoRepository.findByNome(nome)
                 .orElseGet(() -> {

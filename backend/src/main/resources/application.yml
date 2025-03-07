@@ -17,7 +17,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 jwt:
   secret: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.ct7vAd_BpNxhgKAhgXNntnXn8_Ek2ZdZOVhQJarEdvE
-  expiration: 86400000
+  expirationMs: 86400000
   refreshExpiration: 604800000
 admin:
   email: admin@suportflow.com.br

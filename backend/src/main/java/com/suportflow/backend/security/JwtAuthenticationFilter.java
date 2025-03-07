@@ -1,3 +1,4 @@
+// src/main/java/com/suportflow/backend/security/JwtAuthenticationFilter.java
 package com.suportflow.backend.security;
 
 import com.suportflow.backend.service.auth.ClienteDetailsService;
@@ -9,33 +10,29 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsServiceImpl userDetailsService;
-    private final ClienteDetailsService clienteDetailsService; // Injetar o ClienteDetailsService
+    private final UserDetailsService userDetailsService; // Use a interface, não a implementação específica
+    private final ClienteDetailsService clienteDetailsService;
 
     @Autowired
     public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService, ClienteDetailsService clienteDetailsService) {
         this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
-        this.clienteDetailsService = clienteDetailsService; // Injetar no construtor
+        this.userDetailsService = userDetailsService; // Injete a implementação UserDetailsServiceImpl
+        this.clienteDetailsService = clienteDetailsService;
     }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -47,39 +44,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
-            username = jwtUtil.extractUsername(jwt); // Usar extractUsername
+            username = jwtUtil.extractUsername(jwt);
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
             UserDetails userDetails = null;
-            // Tentar carregar como usuário
+
+            // 1. Tentar carregar como usuário
             try {
                 userDetails = this.userDetailsService.loadUserByUsername(username);
-            } catch (Exception e) {
-                // Tratamento do erro
-            }
-
-            // Se não for um usuário, tentar carregar como cliente
-            if (userDetails == null) {
+            } catch (UsernameNotFoundException ignored) {
+                // 2. Se falhar, tentar carregar como cliente
                 try {
                     userDetails = this.clienteDetailsService.loadUserByUsername(username);
-                } catch (Exception e) {
-                    // Tratamento do erro
+                } catch (UsernameNotFoundException e) {
+                    // Se ambos falharem, o usuário não existe.  O filtro continuará,
+                    // e a autenticação falhará mais adiante (provavelmente 403 Forbidden).
                 }
             }
-            // Se userDetails ainda for nulo após tentar carregar o usuário e o cliente,
-            // o token é inválido ou o usuário/cliente não existe mais.
+
+            // 3. Se encontramos um UserDetails (usuário ou cliente), validar o token
             if (userDetails != null && jwtUtil.validateToken(jwt, userDetails)) {
                 // Obter as permissões (authorities) diretamente do UserDetails.
                 Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
 
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, authorities);
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, authorities); // Usar as permissões do UserDetails
+
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-        filterChain.doFilter(request, response);
+
+        filterChain.doFilter(request, response); // Continuar a cadeia de filtros
     }
 }
