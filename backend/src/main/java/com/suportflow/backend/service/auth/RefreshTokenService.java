@@ -1,3 +1,5 @@
+// src/main/java/com/suportflow/backend/service/auth/RefreshTokenService.java
+
 package com.suportflow.backend.service.auth;
 
 import com.suportflow.backend.exception.TokenRefreshException;
@@ -29,28 +31,28 @@ public class RefreshTokenService {
     private UserRepository userRepository;
 
     @Autowired
-    private ClienteRepository clienteRepository; // Importante
+    private ClienteRepository clienteRepository;
 
     public Optional<RefreshToken> findByToken(String token) {
         return refreshTokenRepository.findByToken(token);
     }
 
     @Transactional
-    public RefreshToken createRefreshToken(Long id) { // Recebe o ID
+    public RefreshToken createRefreshToken(Long entityId) { // Receives the entity ID (User or Cliente)
         RefreshToken refreshToken = new RefreshToken();
 
-        // Tenta encontrar um usuário com o ID fornecido
-        Optional<User> userOptional = userRepository.findById(id);
+        // Try to find a user with the given ID
+        Optional<User> userOptional = userRepository.findById(entityId);
         if (userOptional.isPresent()) {
             refreshToken.setUser(userOptional.get());
         } else {
-            // Se não encontrou um usuário, tenta encontrar um cliente
-            Optional<Cliente> clienteOptional = clienteRepository.findById(id);
+            // If no user is found, try to find a client
+            Optional<Cliente> clienteOptional = clienteRepository.findById(entityId);
             if (clienteOptional.isPresent()) {
                 refreshToken.setCliente(clienteOptional.get());
             } else {
-                // Se nem usuário nem cliente forem encontrados, lança uma exceção
-                throw new RuntimeException("Nenhum usuário ou cliente encontrado com o ID: " + id);
+                // If neither user nor client is found, throw an exception
+                throw new RuntimeException("No user or client found with ID: " + entityId);
             }
         }
 
@@ -59,6 +61,7 @@ public class RefreshTokenService {
         refreshToken = refreshTokenRepository.save(refreshToken);
         return refreshToken;
     }
+
 
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
@@ -75,8 +78,8 @@ public class RefreshTokenService {
     }
     @Transactional
     public void deleteByClienteId(Long clienteId) {
-        Optional<Cliente> cliente = clienteRepository.findById(clienteId); //Verifica se existe o cliente
-        cliente.ifPresent(refreshTokenRepository::deleteByCliente); // Deleta usando o método do repositório
+        Optional<Cliente> cliente = clienteRepository.findById(clienteId);
+        cliente.ifPresent(refreshTokenRepository::deleteByCliente);
 
     }
 }

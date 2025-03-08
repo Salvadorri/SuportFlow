@@ -11,7 +11,6 @@ import com.suportflow.backend.model.User;
 import com.suportflow.backend.repository.ClienteRepository;
 import com.suportflow.backend.repository.UserRepository;
 import com.suportflow.backend.security.JwtUtil;
-import com.suportflow.backend.service.user.UserManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,57 +24,69 @@ public class AuthenticationService {
     private final AuthenticationHelper authenticationHelper;
     private final UserDetailsServiceImpl userDetailsService;
     private final ClienteDetailsService clienteDetailsService;
-    private final UserManagementService userService;
-    private final ClienteRepository clienteRepository;
     private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;  // Added for direct access
+    private final ClienteRepository clienteRepository;
 
     @Autowired
     public AuthenticationService(
             AuthenticationHelper authenticationHelper,
             UserDetailsServiceImpl userDetailsService,
             ClienteDetailsService clienteDetailsService,
-            UserManagementService userService,
-            ClienteRepository clienteRepository,
             JwtUtil jwtUtil,
-            RefreshTokenService refreshTokenService) {
+            RefreshTokenService refreshTokenService,
+            UserRepository userRepository,
+            ClienteRepository clienteRepository) {
         this.authenticationHelper = authenticationHelper;
         this.userDetailsService = userDetailsService;
         this.clienteDetailsService = clienteDetailsService;
-        this.userService = userService;
-        this.clienteRepository = clienteRepository;
         this.jwtUtil = jwtUtil;
         this.refreshTokenService = refreshTokenService;
+        this.userRepository = userRepository;
+        this.clienteRepository = clienteRepository;
     }
 
     @Transactional
     public AuthenticationResponse authenticateAndGenerateToken(AuthenticationRequest authenticationRequest) {
         String email = authenticationRequest.getEmail();
         String password = authenticationRequest.getPassword();
-        System.out.println("Tentando autenticar: " + email);
-        System.out.println("Usuário existe: " + userRepository.existsByEmail(email));
-        System.out.println("Cliente existe: " + clienteRepository.existsByEmail(email));
-        // Variables to store result
+        System.out.println("AuthenticationService: Trying to authenticate: " + email);
+
         UserDetails userDetails = null;
         RefreshToken refreshToken = null;
+        Long entityId = null; // To store either user or client ID
 
-        // First, try to authenticate as a regular user
+        try {
+            // First, try to authenticate as a regular user
+            userDetails = authenticationHelper.authenticateUser(email, password);
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+            entityId = user.getId(); // Get User ID
+            refreshToken = refreshTokenService.createRefreshToken(entityId);
 
-        // Try to authenticate the user directly with our helper
-        userDetails = authenticationHelper.authenticateUser(email, password);
+        } catch (UsernameNotFoundException | BadCredentialsException userException) {
+            System.out.println("AuthenticationService: User authentication failed, trying client. " + userException.getMessage());
+            // If user authentication fails, try client authentication
+            try {
+                userDetails = authenticationHelper.authenticateCliente(email, password);
+                Cliente cliente = clienteRepository.findByEmail(email)
+                        .orElseThrow(() -> new UsernameNotFoundException("Cliente not found: "+ email));
+                entityId = cliente.getId();
+                refreshToken = refreshTokenService.createRefreshToken(entityId);
 
-        // If authentication succeeded, get the user for the refresh token
-        User user = userService.findByEmail(email);
-        refreshToken = refreshTokenService.createRefreshToken(user.getId());
+
+            } catch (UsernameNotFoundException | BadCredentialsException clientException) {
+                System.out.println("AuthenticationService: Cliente authentication failed" + clientException.getMessage());
+                // If both fail, throw a combined exception
+                throw new BadCredentialsException("Invalid credentials for both user and client.");
+            }
+        }
 
         // Generate JWT token
         String jwt = jwtUtil.generateToken(userDetails);
         return new AuthenticationResponse(jwt, refreshToken.getToken());
-
     }
-
     @Transactional
     public AuthenticationResponse refreshToken(RefreshTokenDTO refreshTokenDTO) {
         String requestRefreshToken = refreshTokenDTO.getRefreshToken();
@@ -86,8 +97,10 @@ public class AuthenticationService {
                     UserDetails userDetails = null;
 
                     if (refreshToken.getUser() != null) {
+                        System.out.println("Refreshing token for user: " + refreshToken.getUser().getEmail());
                         userDetails = userDetailsService.loadUserByUsername(refreshToken.getUser().getEmail());
                     } else if (refreshToken.getCliente() != null) {
+                        System.out.println("Refreshing token for cliente: " + refreshToken.getCliente().getEmail());
                         userDetails = clienteDetailsService.loadUserByUsername(refreshToken.getCliente().getEmail());
                     } else {
                         throw new TokenRefreshException(requestRefreshToken,

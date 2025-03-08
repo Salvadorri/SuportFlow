@@ -1,4 +1,4 @@
-// UserDetailsServiceImpl.java (modificado) - Foca em USUÁRIOS
+// src/main/java/com/suportflow/backend/service/auth/UserDetailsServiceImpl.java
 package com.suportflow.backend.service.auth;
 
 import com.suportflow.backend.model.User;
@@ -21,6 +21,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com email: " + email));
-        return user; // Retorna o User, que implementa UserDetails.
+        return user;  // Return the actual User object
     }
 }

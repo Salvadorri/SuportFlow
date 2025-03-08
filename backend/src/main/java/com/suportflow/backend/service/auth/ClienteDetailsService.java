@@ -1,4 +1,4 @@
-// ClienteDetailsService.java
+// src/main/java/com/suportflow/backend/service/auth/ClienteDetailsService.java
 package com.suportflow.backend.service.auth;
 
 import com.suportflow.backend.model.Cliente;
@@ -24,11 +24,13 @@ public class ClienteDetailsService implements UserDetailsService {
         Cliente cliente = clienteRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Cliente não encontrado com email: " + email));
 
-        // Use the senha field instead of cpfCnpj for authentication
+        // Return a UserDetails object representing the client.  This is crucial!
         return new org.springframework.security.core.userdetails.User(
                 cliente.getEmail(),
-                cliente.getSenha(), // Use senha field instead of cpfCnpj
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_CLIENTE")) // Add a role for clients
+                cliente.getSenha(), // Use the senha field
+                cliente.isAtivo(),
+                true, true, true,
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_CLIENTE"))
         );
     }
 }
