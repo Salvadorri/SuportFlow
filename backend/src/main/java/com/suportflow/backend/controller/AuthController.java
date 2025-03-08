@@ -49,9 +49,4 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao renovar o token: " + e.getMessage());
         }
     }
-    @PostMapping("/test-user")
-    public ResponseEntity<?> testUser(@RequestBody AuthenticationRequest request) {
-        boolean userExists = userRepository.existsByEmail(request.getEmail()); // Changed from authenticationRequest to request
-        return ResponseEntity.ok("Usuário existe: " + userExists);
-    }
 }

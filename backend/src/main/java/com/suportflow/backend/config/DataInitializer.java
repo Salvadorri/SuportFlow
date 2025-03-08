@@ -64,9 +64,9 @@ public class DataInitializer implements ApplicationRunner {
         });
 
         // Criar/Encontrar Permissões
-        Permissao adminPermissao = criarPermissaoSeNaoExistir("ADMIN", "Permissão de Administrador");
-        Permissao gerentePermissao = criarPermissaoSeNaoExistir("GERENTE", "Permissão de Gerente");
-        Permissao atendentePermissao = criarPermissaoSeNaoExistir("ATENDENTE", "Permissão de Atendente");
+        Permissao adminPermissao = criarPermissaoSeNaoExistir("ROLE_ADMIN", "Permissão de Administrador");
+        Permissao gerentePermissao = criarPermissaoSeNaoExistir("ROLE_GERENTE", "Permissão de Gerente");
+        Permissao atendentePermissao = criarPermissaoSeNaoExistir("ROLE_ATENDENTE", "Permissão de Atendente");
 
         // Criar/Encontrar Usuário Administrador
         User adminUser = userRepository.findByEmail(adminEmail).orElseGet(() -> {
