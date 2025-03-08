@@ -2,8 +2,6 @@ package com.suportflow.backend.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.ArrayList;
 
 @Entity
 @Table(name = "chamados")
@@ -16,11 +14,11 @@ public class Chamado {
 
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
-    private Cliente cliente;
+    private Cliente cliente; // Cada chamado pertence a um cliente
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private User atendente;
+    @JoinColumn(name = "usuario_id")  //Pode ser nulo se não tiver sido atribuido
+    private User atendente; // Atendente (User) responsável pelo chamado
 
     @Column(name = "titulo", nullable = false)
     private String titulo;
@@ -30,33 +28,25 @@ public class Chamado {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private StatusChamado status;
+    private StatusChamado status; // Status do chamado (ver enum abaixo)
 
     @Enumerated(EnumType.STRING)
     @Column(name = "prioridade", nullable = false)
-    private PrioridadeChamado prioridade;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "categoria", nullable = false)
-    private CategoriaChamado categoria;
+    private PrioridadeChamado prioridade; // Prioridade do chamado
 
     @Column(name = "data_abertura", nullable = false)
     private LocalDateTime dataAbertura;
 
     @Column(name = "data_fechamento")
-    private LocalDateTime dataFechamento;
+    private LocalDateTime dataFechamento;  // Pode ser nulo se o chamado estiver aberto
 
     @Column(name = "avaliacao")
-    private Integer avaliacao;
+    private Integer avaliacao; // Avaliação do cliente (opcional)
 
-    @OneToMany(mappedBy = "chamado", cascade = CascadeType.ALL, orphanRemoval = true) // VERY IMPORTANT
-    private List<ChatChamado> chatMessages = new ArrayList<>(); // Initialize to avoid NullPointerExceptions
-
-
-    // Constructors
+    // Construtores
     public Chamado() {}
 
-    // Getters and Setters (including for chatMessages)
+    // Getters e Setters
 
     public Long getId() {
         return id;
@@ -114,14 +104,6 @@ public class Chamado {
         this.prioridade = prioridade;
     }
 
-    public CategoriaChamado getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(CategoriaChamado categoria) {
-        this.categoria = categoria;
-    }
-
     public LocalDateTime getDataAbertura() {
         return dataAbertura;
     }
@@ -137,33 +119,10 @@ public class Chamado {
     public void setDataFechamento(LocalDateTime dataFechamento) {
         this.dataFechamento = dataFechamento;
     }
-
     public Integer getAvaliacao() {
         return avaliacao;
     }
-
     public void setAvaliacao(Integer avaliacao) {
         this.avaliacao = avaliacao;
     }
-
-    public List<ChatChamado> getChatMessages() {
-        return chatMessages;
-    }
-
-    public void setChatMessages(List<ChatChamado> chatMessages) {
-        this.chatMessages = chatMessages;
-    }
-
-    // Helper method to add a chat message (VERY important for maintaining consistency)
-    public void addChatMessage(ChatChamado chatMessage) {
-        chatMessages.add(chatMessage);
-        chatMessage.setChamado(this);  // Keep the relationship consistent!
-    }
-
-    // Helper method to remove a chat message (Important for orphanRemoval)
-    public void removeChatMessage(ChatChamado chatMessage) {
-        chatMessages.remove(chatMessage);
-        chatMessage.setChamado(null); // Break the relationship
-    }
-
 }
