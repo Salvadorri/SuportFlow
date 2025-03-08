@@ -43,23 +43,24 @@ public class ClienteService {
                 .orElseThrow(() -> new UserNotFoundException("Cliente não encontrado com o email: " + email));
     }
 
-    @Transactional
-    public Cliente save(Cliente cliente) {
-        // Verifica se o email já existe
-        if (clienteRepository.existsByEmail(cliente.getEmail())) {
-            throw new DataIntegrityViolationException("Já existe um cliente com este email.");
-        }
-
-        // Verifica se o CPF/CNPJ já existe
-        if (clienteRepository.existsByCpfCnpj(cliente.getCpfCnpj())) {
-            throw new DataIntegrityViolationException("Já existe um cliente com este CPF/CNPJ.");
-        }
-
-        // Criptografa a senha (que é o CPF/CNPJ) antes de salvar
-        cliente.setSenha(passwordEncoder.encode(cliente.getCpfCnpj()));
-        cliente.setDataCadastro(LocalDateTime.now()); // Define a data de cadastro
-        return clienteRepository.save(cliente);
+// Update the save method in ClienteService.java
+@Transactional
+public Cliente save(Cliente cliente) {
+    // Verifica se o email já existe
+    if (clienteRepository.existsByEmail(cliente.getEmail())) {
+        throw new DataIntegrityViolationException("Já existe um cliente com este email.");
     }
+
+    // Verifica se o CPF/CNPJ já existe
+    if (clienteRepository.existsByCpfCnpj(cliente.getCpfCnpj())) {
+        throw new DataIntegrityViolationException("Já existe um cliente com este CPF/CNPJ.");
+    }
+
+    // Criptografa a senha antes de salvar (agora usando o campo senha)
+    cliente.setSenha(passwordEncoder.encode(cliente.getSenha()));
+    cliente.setDataCadastro(LocalDateTime.now()); // Define a data de cadastro
+    return clienteRepository.save(cliente);
+}
 
     @Transactional // Sem readOnly, pois é uma operação de escrita
     public Cliente update(Long id, Cliente clienteAtualizado) {

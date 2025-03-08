@@ -32,12 +32,14 @@ public class Cliente {
     @Column(name = "data_cadastro")
     private LocalDateTime dataCadastro;
 
-    //Adicione o atributo
     @Column(name = "senha", nullable = false)
     private String senha;
 
+    @Column(name = "ativo", nullable = false)
+    private boolean ativo = true; // Default to true for new clients
+
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Chamado> chamados; // Um cliente pode ter vários chamados
+    private List<Chamado> chamados;
 
     // Construtores (importante ter um construtor padrão sem argumentos para JPA)
     public Cliente() {}
@@ -107,12 +109,20 @@ public class Cliente {
     public void setChamados(List<Chamado> chamados) {
         this.chamados = chamados;
     }
-    //Adicione o getter e setter
+
     public String getSenha() {
         return senha;
     }
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 }

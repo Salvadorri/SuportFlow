@@ -9,81 +9,93 @@ import com.suportflow.backend.model.Cliente;
 import com.suportflow.backend.model.RefreshToken;
 import com.suportflow.backend.model.User;
 import com.suportflow.backend.repository.ClienteRepository;
+import com.suportflow.backend.repository.UserRepository;
 import com.suportflow.backend.security.JwtUtil;
+import com.suportflow.backend.service.auth.AuthenticationHelper;
 import com.suportflow.backend.service.user.UserManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.suportflow.backend.repository.UserRepository;
 
 @Service
 public class AuthenticationService {
 
+    private final AuthenticationHelper authenticationHelper;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final ClienteDetailsService clienteDetailsService;
+    private final UserManagementService userService;
+    private final ClienteRepository clienteRepository;
+    private final JwtUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
     @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private UserDetailsService userDetailsService; // Para usuários
-    @Autowired
-    private ClienteDetailsService clienteDetailsService; // Para clientes
-    @Autowired
-    private UserManagementService userService;
-    @Autowired
-    private ClienteRepository clienteRepository;
-    @Autowired
-    private JwtUtil jwtUtil;
-    @Autowired
-    private RefreshTokenService refreshTokenService;
+    private UserRepository userRepository; // ADD THIS LINE
 
-
+    @Autowired
+    public AuthenticationService(
+            AuthenticationHelper authenticationHelper,
+            UserDetailsServiceImpl userDetailsService,
+            ClienteDetailsService clienteDetailsService,
+            UserManagementService userService,
+            ClienteRepository clienteRepository,
+            JwtUtil jwtUtil,
+            RefreshTokenService refreshTokenService) {
+        this.authenticationHelper = authenticationHelper;
+        this.userDetailsService = userDetailsService;
+        this.clienteDetailsService = clienteDetailsService;
+        this.userService = userService;
+        this.clienteRepository = clienteRepository;
+        this.jwtUtil = jwtUtil;
+        this.refreshTokenService = refreshTokenService;
+    }
 
     @Transactional
     public AuthenticationResponse authenticateAndGenerateToken(AuthenticationRequest authenticationRequest) {
+        String email = authenticationRequest.getEmail();
+        String password = authenticationRequest.getPassword();
+        System.out.println("Tentando autenticar: " + email);
+        System.out.println("Usuário existe: " + userRepository.existsByEmail(email));
+        System.out.println("Cliente existe: " + clienteRepository.existsByEmail(email));
+        // Variables to store result
         UserDetails userDetails = null;
         RefreshToken refreshToken = null;
-        String jwt = null;
 
         try {
-            // Tenta autenticar como usuário primeiro
-            authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
-            );
-            userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
-            User user = userService.findByEmail(authenticationRequest.getEmail());
-            refreshToken = refreshTokenService.createRefreshToken(user.getId());
+            // First, try to authenticate as a regular user
+            try {
+                // Try to authenticate the user directly with our helper
+                userDetails = authenticationHelper.authenticateUser(email, password);
 
-        } catch (AuthenticationException userAuthException) {
-            // Se a autenticação do usuário falhar, tenta autenticar como cliente
+                // If authentication succeeded, get the user for the refresh token
+                User user = userService.findByEmail(email);
+                refreshToken = refreshTokenService.createRefreshToken(user.getId());
+            } catch (UsernameNotFoundException | BadCredentialsException userException) {
+                // If user authentication fails, try client authentication
+                try {
+                    // Authenticate as client directly
+                    userDetails = authenticationHelper.authenticateCliente(email, password);
 
-            try{
-                Cliente cliente = clienteRepository.findByEmail(authenticationRequest.getEmail())
-                        .orElseThrow(() -> new BadCredentialsException("Cliente não encontrado"));
-
-                if (!authenticationRequest.getPassword().equals(cliente.getCpfCnpj()))
-                {
-                    throw new BadCredentialsException("Credenciais de cliente inválidas");
+                    // If authentication succeeded, get the cliente for the refresh token
+                    Cliente cliente = clienteRepository.findByEmail(email)
+                            .orElseThrow(() -> new BadCredentialsException("Cliente não encontrado"));
+                    refreshToken = refreshTokenService.createRefreshToken(cliente.getId());
+                } catch (UsernameNotFoundException | BadCredentialsException clientException) {
+                    // Both authentication methods failed
+                    throw new BadCredentialsException("Credenciais inválidas", clientException);
                 }
-
-                userDetails = clienteDetailsService.loadUserByUsername(authenticationRequest.getEmail());
-                refreshToken = refreshTokenService.createRefreshToken(cliente.getId());
-            }
-            catch(AuthenticationException clientAuthException)
-            {
-                // Se ambas as autenticações falharem, lança a exceção original do usuário (ou uma nova, se preferir)
-                throw new BadCredentialsException("Credenciais inválidas.", userAuthException);
             }
 
+            // Generate JWT token
+            String jwt = jwtUtil.generateToken(userDetails);
+            return new AuthenticationResponse(jwt, refreshToken.getToken());
 
+        } catch (Exception e) {
+            throw new BadCredentialsException("Falha na autenticação: " + e.getMessage(), e);
         }
-        jwt = jwtUtil.generateToken(userDetails);
-        return new AuthenticationResponse(jwt, refreshToken.getToken());
     }
-
-
 
     @Transactional
     public AuthenticationResponse refreshToken(RefreshTokenDTO refreshTokenDTO) {
@@ -99,13 +111,14 @@ public class AuthenticationService {
                     } else if (refreshToken.getCliente() != null) {
                         userDetails = clienteDetailsService.loadUserByUsername(refreshToken.getCliente().getEmail());
                     } else {
-                        // Trate o caso em que o refresh token não está associado a nenhum usuário/cliente
-                        throw new TokenRefreshException(requestRefreshToken, "Refresh token não está associado a nenhum usuário ou cliente.");
+                        throw new TokenRefreshException(requestRefreshToken,
+                                "Refresh token not associated with any user or client.");
                     }
 
                     String token = jwtUtil.generateToken(userDetails);
                     return new AuthenticationResponse(token, requestRefreshToken);
                 })
-                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token inválido ou não encontrado."));
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                        "Invalid or missing refresh token."));
     }
 }

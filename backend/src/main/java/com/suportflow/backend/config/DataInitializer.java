@@ -1,3 +1,4 @@
+// src/main/java/com/suportflow/backend/config/DataInitializer.java
 package com.suportflow.backend.config;
 
 import com.suportflow.backend.model.Cliente;
@@ -39,15 +40,18 @@ public class DataInitializer implements ApplicationRunner {
     private UserRepository userRepository;
 
     @Autowired
-    private ClienteRepository clienteRepository; // Injetar o ClienteRepository
+    private ClienteRepository clienteRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    private static final String DEFAULT_CLIENT_PASSWORD = "SenhaPadrao123!";
 
     @Override
     @Transactional
     public void run(ApplicationArguments args) throws Exception {
 
+        // Criar/Encontrar Empresa SuportFlow
         Empresa suportFlowEmpresa = empresaRepository.findByNome("SuportFlow").orElseGet(() -> {
             Empresa newEmpresa = new Empresa();
             newEmpresa.setNome("SuportFlow");
@@ -59,10 +63,12 @@ public class DataInitializer implements ApplicationRunner {
             return empresaRepository.save(newEmpresa);
         });
 
+        // Criar/Encontrar Permissões
         Permissao adminPermissao = criarPermissaoSeNaoExistir("ADMIN", "Permissão de Administrador");
         Permissao gerentePermissao = criarPermissaoSeNaoExistir("GERENTE", "Permissão de Gerente");
         Permissao atendentePermissao = criarPermissaoSeNaoExistir("ATENDENTE", "Permissão de Atendente");
 
+        // Criar/Encontrar Usuário Administrador
         User adminUser = userRepository.findByEmail(adminEmail).orElseGet(() -> {
             User newUser = new User();
             newUser.setNome("Administrador do Sistema");
@@ -75,24 +81,22 @@ public class DataInitializer implements ApplicationRunner {
             permissoes.add(adminPermissao);
             newUser.setPermissoes(permissoes);
             return userRepository.save(newUser);
-
         });
 
-        // --- Criação de Clientes de Exemplo (OPCIONAL, mas útil) ---
+        // Criar Clientes de Exemplo
         criarClienteSeNaoExistir("cliente1@example.com", "12345678901", "Cliente 1", suportFlowEmpresa); // CPF
         criarClienteSeNaoExistir("cliente2@example.com", "12345678901234", "Cliente 2", suportFlowEmpresa); // CNPJ
     }
+
     private void criarClienteSeNaoExistir(String email, String cpfCnpj, String nome, Empresa empresa) {
-        // Usa existsByEmail e existsByCpfCnpj para evitar duplicidades
         if (!clienteRepository.existsByEmail(email) && !clienteRepository.existsByCpfCnpj(cpfCnpj)) {
             Cliente cliente = new Cliente();
             cliente.setEmail(email);
             cliente.setCpfCnpj(cpfCnpj);
-            cliente.setSenha(passwordEncoder.encode(cpfCnpj)); // Criptografa o CPF/CNPJ (que é a senha)
+            cliente.setSenha(passwordEncoder.encode(DEFAULT_CLIENT_PASSWORD)); // Senha padrão criptografada
             cliente.setNome(nome);
             cliente.setEmpresa(empresa);
             cliente.setDataCadastro(LocalDateTime.now());
-            //Não precisa setar a senha, por que estamos utilizando o cpfCnpj
             clienteRepository.save(cliente);
         }
     }

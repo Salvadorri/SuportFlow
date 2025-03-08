@@ -1,6 +1,8 @@
 // src/main/java/com/suportflow/backend/config/SecurityConfig.java
 package com.suportflow.backend.config;
 
+import com.suportflow.backend.repository.ClienteRepository;
+import com.suportflow.backend.repository.UserRepository;
 import com.suportflow.backend.security.JwtAuthenticationFilter;
 import com.suportflow.backend.service.auth.ClienteDetailsService;
 import com.suportflow.backend.service.auth.UserDetailsServiceImpl;
@@ -25,6 +27,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
+import com.suportflow.backend.service.auth.AuthenticationHelper;
 
 @Configuration
 @EnableWebSecurity
@@ -67,7 +70,7 @@ public class SecurityConfig {
     // Remove @Autowired here!
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(userAuthenticationProvider())
-            .authenticationProvider(clienteAuthenticationProvider());
+                .authenticationProvider(clienteAuthenticationProvider());
     }
 
     @Bean
@@ -84,6 +87,13 @@ public class SecurityConfig {
         authProvider.setUserDetailsService(clienteDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
+    }
+    @Bean
+    public AuthenticationHelper authenticationHelper(
+            UserRepository userRepository,
+            ClienteRepository clienteRepository,
+            PasswordEncoder passwordEncoder) {
+        return new AuthenticationHelper(userRepository, clienteRepository, passwordEncoder);
     }
 
     @Bean

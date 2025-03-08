@@ -24,6 +24,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
     // Consulta para encontrar um cliente por CPF/CNPJ (retorna Optional)
     Optional<Cliente> findByCpfCnpj(String cpfCnpj);
+    
     // Consulta JPQL customizada para buscar clientes por parte do nome OU email (ignorando case)
     @Query("SELECT c FROM Cliente c WHERE LOWER(c.nome) LIKE LOWER(CONCAT('%', :termo, '%')) OR LOWER(c.email) LIKE LOWER(CONCAT('%', :termo, '%'))")
     List<Cliente> findByNomeOrEmailContainingIgnoreCase(@Param("termo") String termo);

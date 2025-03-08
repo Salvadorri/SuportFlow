@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,11 +25,11 @@ import java.util.Collection;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService; // Use a interface, não a implementação específica
+    private final UserDetailsService userDetailsService; // Use the interface, not the implementation específica
     private final ClienteDetailsService clienteDetailsService;
 
     @Autowired
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService, ClienteDetailsService clienteDetailsService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, @Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService, ClienteDetailsService clienteDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService; // Injete a implementação UserDetailsServiceImpl
         this.clienteDetailsService = clienteDetailsService;
