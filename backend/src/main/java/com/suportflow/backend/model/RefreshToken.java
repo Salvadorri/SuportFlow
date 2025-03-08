@@ -19,14 +19,18 @@ public class RefreshToken {
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "usuario_id")
-    private User user; // Referência para User
+    private User user;
 
-    @OneToOne
-    @JoinColumn(name = "cliente_id", referencedColumnName = "cliente_id")
-    private Cliente cliente; // Referência para Cliente
+    // Construtores
+    public RefreshToken() {}
 
+    public RefreshToken(String token, Instant expiryDate, User user) {
+        this.token = token;
+        this.expiryDate = expiryDate;
+        this.user = user;
+    }
 
-    // Getters e Setters (incluindo cliente)
+    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -57,13 +61,5 @@ public class RefreshToken {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
     }
 }
