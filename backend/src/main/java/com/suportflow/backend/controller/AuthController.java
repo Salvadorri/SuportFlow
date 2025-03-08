@@ -25,16 +25,14 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
-    //@Autowired  // REMOVE THIS LINE - AuthenticationRequest is not a bean.
-    //private AuthenticationRequest authenticationRequest; // REMOVE THIS LINE
-
-    @PostMapping("/login") // Endpoint unificado
+    @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody AuthenticationRequest authenticationRequest) {
+        System.out.println("AuthController: /login endpoint reached. Email: " + authenticationRequest.getEmail()); // ADICIONE ESTE LOG
         try {
             AuthenticationResponse response = authenticationService.authenticateAndGenerateToken(authenticationRequest);
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas."); // Mensagem genérica
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao autenticar: " + e.getMessage());
         }

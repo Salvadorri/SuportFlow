@@ -1,3 +1,4 @@
+// src/main/java/com/suportflow/backend/service/auth/AuthenticationHelper.java
 package com.suportflow.backend.service.auth;
 
 import com.suportflow.backend.model.Cliente;
@@ -18,8 +19,8 @@ public class AuthenticationHelper {
     private final PasswordEncoder passwordEncoder;
 
     public AuthenticationHelper(UserRepository userRepository,
-                                  ClienteRepository clienteRepository,
-                                  PasswordEncoder passwordEncoder) {
+                                ClienteRepository clienteRepository,
+                                PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.clienteRepository = clienteRepository;
         this.passwordEncoder = passwordEncoder;
@@ -45,12 +46,11 @@ public class AuthenticationHelper {
 
         System.out.println("Attempting to authenticate client: " + email);
         System.out.println("Password matches: " + passwordEncoder.matches(password, cliente.getSenha()));
-
         // Check encoded password - cliente uses getSenha instead of getCpfCnpj for comparison
         if (!passwordEncoder.matches(password, cliente.getSenha())) {
             throw new BadCredentialsException("Credenciais inválidas");
         }
-       return new org.springframework.security.core.userdetails.User(
+        return new org.springframework.security.core.userdetails.User(
                 cliente.getEmail(),
                 cliente.getSenha(),
                 cliente.isAtivo(),
