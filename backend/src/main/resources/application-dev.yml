@@ -15,7 +15,7 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.H2Dialect
 jwt:
-  secret: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.ct7vAd_BpNxhgKAhgXNntnXn8_Ek2ZdZOVhQJarEdvE
+  secret: ZXKFvAUFF6NwvQpw0AkzgsTqHT4iQSqb7MkEsTarhPU=
   expirationMs: 86400000
   refreshExpiration: 604800000
 admin:
