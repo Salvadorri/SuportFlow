@@ -30,9 +30,6 @@ public class AuthenticationHelper {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
 
-        System.out.println("Attempting to authenticate user: " + email);
-        System.out.println("Password matches: " + passwordEncoder.matches(password, user.getSenha()));
-
         // Check encoded password - use matches method from PasswordEncoder
         if (!passwordEncoder.matches(password, user.getSenha())) {
             throw new BadCredentialsException("Senha inválida");
@@ -44,8 +41,6 @@ public class AuthenticationHelper {
         Cliente cliente = clienteRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Cliente não encontrado: " + email));
 
-        System.out.println("Attempting to authenticate client: " + email);
-        System.out.println("Password matches: " + passwordEncoder.matches(password, cliente.getSenha()));
         // Check encoded password - cliente uses getSenha instead of getCpfCnpj for comparison
         if (!passwordEncoder.matches(password, cliente.getSenha())) {
             throw new BadCredentialsException("Credenciais inválidas");
