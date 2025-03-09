@@ -1,17 +1,18 @@
 // src/main/java/com/suportflow/backend/security/JwtAuthenticationFilter.java
 package com.suportflow.backend.security;
 
-import com.suportflow.backend.service.auth.UserDetailsServiceImpl;
+import com.suportflow.backend.service.auth.ClienteDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,12 +25,16 @@ import java.util.stream.Collectors;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsService userDetailsService;
+    private final ClienteDetailsService clienteDetailsService;
 
     @Autowired
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil,
+                                   @Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService,
+                                   ClienteDetailsService clienteDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.clienteDetailsService = clienteDetailsService;
     }
 
     @Override
@@ -38,34 +43,45 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String authorizationHeader = request.getHeader("Authorization");
 
-        String email = null;
+        String username = null;
         String jwt = null;
-        List<String> roles = null; // Store extracted roles.
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
-            email = jwtUtil.extractEmail(jwt);
-            roles = jwtUtil.extractRoles(jwt); // Extract roles from the token!
+            username = jwtUtil.extractUsername(jwt);
         }
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = null;
 
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
+            try {
+                userDetails = this.userDetailsService.loadUserByUsername(username);
+            } catch (Exception ignored) {
+            }
+             if (userDetails == null) { //adicionado para caso user details seja null
+                 try {
+                     userDetails = this.clienteDetailsService.loadUserByUsername(username);
+                 } catch (Exception e) {
+                     // Usuário/Cliente não encontrado.
+                 }
+             }
 
+            if (userDetails != null) {
+                if (jwtUtil.validateToken(jwt, userDetails)) {
+                    // Extrair as roles/authorities do token JWT
+                    List<String> roles = jwtUtil.extractRoles(jwt);
+                    List<SimpleGrantedAuthority> authorities = roles.stream()
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
 
-            if (jwtUtil.validateToken(jwt, userDetails)) {
-
-                // Use extracted roles to create GrantedAuthority objects.  CRITICAL!
-                List<GrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, authorities); // Pass authorities here!
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, authorities);
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }

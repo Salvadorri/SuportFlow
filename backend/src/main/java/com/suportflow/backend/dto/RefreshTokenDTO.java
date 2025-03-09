@@ -1,7 +1,10 @@
 package com.suportflow.backend.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class RefreshTokenDTO {
 
+    @NotBlank //Adicione
     private String refreshToken;
 
     // Construtores

@@ -1,9 +1,11 @@
+// src/main/java/com/suportflow/backend/controller/AuthController.java
 package com.suportflow.backend.controller;
 
+import com.suportflow.backend.dto.AuthenticationRequest;
 import com.suportflow.backend.dto.AuthenticationResponse;
 import com.suportflow.backend.dto.RefreshTokenDTO;
-import com.suportflow.backend.dto.UserLoginDTO;
 import com.suportflow.backend.exception.TokenRefreshException;
+import com.suportflow.backend.repository.UserRepository;
 import com.suportflow.backend.service.auth.AuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +22,14 @@ public class AuthController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody UserLoginDTO userLoginDTO) {
+    public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody AuthenticationRequest authenticationRequest) {
+        System.out.println("AuthController: /login endpoint reached. Email: " + authenticationRequest.getEmail());
         try {
-            AuthenticationResponse response = authenticationService.authenticateAndGenerateToken(userLoginDTO);
-            return ResponseEntity.ok(response); // Retorna AuthenticationResponse (com JWT e refreshToken)
+            AuthenticationResponse response = authenticationService.authenticateAndGenerateToken(authenticationRequest);
+            return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
-            // Captura especificamente BadCredentialsException
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas.");
         } catch (Exception e) {
-            // Captura outras exceções (improvável, mas bom ter)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao autenticar: " + e.getMessage());
         }
     }
@@ -37,11 +38,10 @@ public class AuthController {
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
         try {
             AuthenticationResponse response = authenticationService.refreshToken(refreshTokenDTO);
-            return ResponseEntity.ok(response); // Retorna AuthenticationResponse (com novo JWT)
+            return ResponseEntity.ok(response);
         } catch (TokenRefreshException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (Exception e) {
-            // Captura outras exceções (improvável, mas bom ter)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao renovar o token: " + e.getMessage());
         }
     }

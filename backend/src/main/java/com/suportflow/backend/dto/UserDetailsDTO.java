@@ -1,89 +1,37 @@
+// src/main/java/com/suportflow/backend/dto/UserDetailsDTO.java
 package com.suportflow.backend.dto;
 
-import com.suportflow.backend.model.Permissao;
 import com.suportflow.backend.model.User;
+import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+@Getter
+@Setter
+@NoArgsConstructor
 public class UserDetailsDTO {
-    private Long id;
-    private String nome;
-    private String email;
-    private String empresaNome;
-    private boolean ativo;
-    private List<String> permissoes;
 
-    // Construtores, Getters e Setters
+  private Long id;
+  private String nome;
+  private String email;
+  private String empresaNome; // Or an EmpresaDTO if you need more details
+  private LocalDateTime dataCriacao;
+  private Boolean ativo;
+  private String telefone;       // Added
+  private String cpfCnpj;      // Added
 
-    public UserDetailsDTO() {
+
+  public UserDetailsDTO(User user) {
+    this.id = user.getId();
+    this.nome = user.getNome();
+    this.email = user.getEmail();
+    if (user.getEmpresa() != null) {
+      this.empresaNome = user.getEmpresa().getNome();
     }
-
-    //Construtor que aceita um objeto User e popula os campos do DTO.
-    public UserDetailsDTO(User user) {
-        this.id = user.getId();
-        this.nome = user.getNome();
-        this.email = user.getEmail();
-        this.empresaNome = user.getEmpresa() != null ? user.getEmpresa().getNome() : null;
-        this.ativo = user.getAtivo() != null ? user.getAtivo() : false; //Considera false como padrão se for null
-        this.permissoes = user.getPermissoes().stream()
-                .map(Permissao::getNome)
-                .collect(Collectors.toList());
-    }
-
-    // ADICIONE ESTE CONSTRUTOR:
-    public UserDetailsDTO(Long id, String email, String nome) {
-        this.id = id;
-        this.email = email;
-        this.nome = nome;
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getEmpresaNome() {
-        return empresaNome;
-    }
-
-    public void setEmpresaNome(String empresaNome) {
-        this.empresaNome = empresaNome;
-    }
-    public boolean getAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
-
-    public List<String> getPermissoes() {
-        return permissoes;
-    }
-
-    public void setPermissoes(List<String> permissoes) {
-        this.permissoes = permissoes;
-    }
+    this.dataCriacao = user.getDataCriacao();
+    this.ativo = user.getAtivo();
+    this.telefone = user.getTelefone();   // Added
+    this.cpfCnpj = user.getCpfCnpj();      // Added
+  }
 }
