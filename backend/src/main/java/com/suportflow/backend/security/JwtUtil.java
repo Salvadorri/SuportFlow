@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.util.Collections;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -59,13 +60,21 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        // Adicione as permissões/roles como uma claim
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+        // Adicione as permissões/roles como uma claim, diferenciando User e Cliente
+        List<String> roles;
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE"))) {
+            // Se for um cliente, adiciona apenas a role ROLE_CLIENTE
+            roles = Collections.singletonList("ROLE_CLIENTE");
+        } else {
+            // Se for um usuário, usa as permissões normalmente
+            roles = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+        }
         claims.put("roles", roles);
         return createToken(claims, userDetails);
     }
+
 
     private String createToken(Map<String, Object> claims, UserDetails userDetails) {
         return Jwts.builder()

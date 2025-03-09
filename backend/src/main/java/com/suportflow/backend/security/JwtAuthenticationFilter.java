@@ -57,12 +57,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 userDetails = this.userDetailsService.loadUserByUsername(username);
             } catch (Exception ignored) {
-                try {
-                    userDetails = this.clienteDetailsService.loadUserByUsername(username);
-                } catch (Exception e) {
-                    // Usuário/Cliente não encontrado.
-                }
             }
+             if (userDetails == null) { //adicionado para caso user details seja null
+                 try {
+                     userDetails = this.clienteDetailsService.loadUserByUsername(username);
+                 } catch (Exception e) {
+                     // Usuário/Cliente não encontrado.
+                 }
+             }
 
             if (userDetails != null) {
                 if (jwtUtil.validateToken(jwt, userDetails)) {
