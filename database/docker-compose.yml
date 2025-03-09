@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:17-alpine # Usa a imagem PostgreSQL 17-alpine
     ports:
-      - "5432:5432" # Mapeia a porta 5432 do container para a porta 5432 do host
+      - "10000:5432" # Mapeia a porta 5432 do container para a porta 5432 do host
     env_file:
       - .env
     volumes:
