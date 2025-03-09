@@ -4,6 +4,7 @@ package com.suportflow.backend.controller;
 import com.suportflow.backend.dto.PasswordChangeDTO;
 import com.suportflow.backend.dto.UserDetailsDTO;
 import com.suportflow.backend.dto.UserRegistrationDTO;
+import com.suportflow.backend.dto.UserUpdateDTO; // Import the new DTO
 import com.suportflow.backend.exception.UserNotFoundException;
 import com.suportflow.backend.service.user.UserManagementService;
 import jakarta.validation.Valid;
@@ -32,7 +33,7 @@ public class UserController {
       // GlobalExceptionHandler will handle specific exceptions (like
       // UniqueFieldAlreadyExistsException).
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body("Erro ao registrar usuário: " + e.getMessage());
+              .body("Erro ao registrar usuário: " + e.getMessage());
     }
   }
 
@@ -61,7 +62,7 @@ public class UserController {
   @PutMapping("/me")
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> updateCurrentUser(
-      @Valid @RequestBody UserRegistrationDTO updateDTO) {
+          @Valid @RequestBody UserUpdateDTO updateDTO) { // Use UserUpdateDTO
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String email = authentication.getName(); // Get the email
 
@@ -77,8 +78,7 @@ public class UserController {
 
   @PatchMapping("/me/password")
   @PreAuthorize("isAuthenticated()")
-  public ResponseEntity<?> changePassword(
-      @Valid @RequestBody PasswordChangeDTO passwordChangeDTO) {
+  public ResponseEntity<?> changePassword(@Valid @RequestBody PasswordChangeDTO passwordChangeDTO) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String email = authentication.getName();
 
@@ -90,8 +90,7 @@ public class UserController {
     } catch (IllegalArgumentException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("Erro ao alterar a senha.");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao alterar a senha.");
     }
   }
 
@@ -121,6 +120,20 @@ public class UserController {
       return ResponseEntity.noContent().build();
     } catch (UserNotFoundException e) {
       return ResponseEntity.notFound().build();
+    }
+  }
+
+  @PutMapping("/{id}")
+  @PreAuthorize("isAuthenticated()")
+  public ResponseEntity<?> updateUser(
+          @PathVariable Long id, @Valid @RequestBody UserUpdateDTO updateDTO) { // Use UserUpdateDTO
+    try {
+      UserDetailsDTO updatedUser = userManagementService.updateUser(id, updateDTO);
+      return ResponseEntity.ok(updatedUser);
+    } catch (UserNotFoundException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao atualizar usuário: "+e.getMessage());
     }
   }
 }

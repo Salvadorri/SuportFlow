@@ -18,6 +18,9 @@ public class UserDetailsDTO {
   private String empresaNome; // Or an EmpresaDTO if you need more details
   private LocalDateTime dataCriacao;
   private Boolean ativo;
+  private String telefone;       // Added
+  private String cpfCnpj;      // Added
+
 
   public UserDetailsDTO(User user) {
     this.id = user.getId();
@@ -28,5 +31,7 @@ public class UserDetailsDTO {
     }
     this.dataCriacao = user.getDataCriacao();
     this.ativo = user.getAtivo();
+    this.telefone = user.getTelefone();   // Added
+    this.cpfCnpj = user.getCpfCnpj();      // Added
   }
 }

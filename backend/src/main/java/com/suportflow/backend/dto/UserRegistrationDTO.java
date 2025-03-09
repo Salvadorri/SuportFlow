@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.br.CNPJ;
+import org.hibernate.validator.constraints.br.CPF;
 
 @Getter
 @Setter
@@ -25,6 +27,10 @@ public class UserRegistrationDTO {
     @NotBlank(message = "A senha é obrigatória")
     @Size(min = 6, message = "A senha deve ter pelo menos 6 caracteres")
     private String password;
-
+    private String telefone; //add
     private String empresaNome; // Optional, could be null.  Make sure your service handles this.
+
+    @CPF(message = "CPF inválido") // Validate as CPF by default
+    @CNPJ(message = "CNPJ inválido")  // *Also* validate as CNPJ.  This will fail if *both* fail.
+    private String cpfCnpj;
 }
