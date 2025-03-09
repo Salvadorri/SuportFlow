@@ -1,10 +1,13 @@
-// src/components/dashboard/chamados.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
+import { Pie, Bar } from 'react-chartjs-2';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import logo from "../../assets/logo.png";
 import { Link } from "@tanstack/react-router";
 
-// Best Practice: Define an interface for your Ticket data
 interface Ticket {
-  id: string;
+  id: number;
   title: string;
   status: string;
   priority: string;
@@ -13,10 +16,9 @@ interface Ticket {
 }
 
 const Chamados: React.FC = () => {
-  // Sample data with added dates (using the Ticket interface)
   const initialTickets: Ticket[] = [
     {
-      id: "#101",
+      id: 101,
       title: "Erro no login",
       status: "Em andamento",
       priority: "Alta",
@@ -24,7 +26,7 @@ const Chamados: React.FC = () => {
       date: "2025-02-06",
     },
     {
-      id: "#102",
+      id: 102,
       title: "Problema de pagamento",
       status: "Resolvido",
       priority: "Média",
@@ -32,7 +34,7 @@ const Chamados: React.FC = () => {
       date: "2025-02-05",
     },
     {
-      id: "#103",
+      id: 103,
       title: "Erro na integração",
       status: "Em andamento",
       priority: "Alta",
@@ -42,16 +44,19 @@ const Chamados: React.FC = () => {
   ];
 
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
-  const [sortConfig, setSortConfig] = useState<{ key: keyof Ticket | null; direction: 'asc' | 'desc' }>({ key: 'date', direction: 'desc' }); // Initialize with null or a valid key
+  const [sortConfig, setSortConfig] = useState<{ key: keyof Ticket | null; direction: 'asc' | 'desc' }>({ key: 'date', direction: 'desc' });
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [filterType, setFilterType] = useState<'dateRange' | 'day' | 'week' | 'month' | 'year'>('dateRange');
 
+  const chartWidth = 800;
+  const chartHeight = 600;
 
   const menuItems = [
     { label: "Abrir Chamado", href: "/criar-chamado" },
-    { label: "Editar/Priorizar/Atribuir", href: "/editar-chamado" },
     { label: "Histórico Chamados", href: "/chamados-historico" },
     { label: "Chat Clientes", href: "/meuschatsclientes" },
     { label: "Chat", href: "/chatchamado" }
-
   ];
 
   const cardItems = [
@@ -65,7 +70,7 @@ const Chamados: React.FC = () => {
       title: "Em Andamento",
       description: "Acompanhe chamados ativos",
       buttonText: "Ver Em Andamento",
-      href: "#" //  Keep as # or replace with a suitable route if needed
+      href: "#"
     },
     {
       title: "Histórico",
@@ -81,10 +86,8 @@ const Chamados: React.FC = () => {
     { label: "Resolvidos Hoje", value: 8 },
   ];
 
-
-  // Sorting function (with keyof Ticket for type safety)
   const sortTickets = (key: keyof Ticket) => {
-    let direction: 'asc' | 'desc' = "asc";  // Explicitly type direction
+    let direction: 'asc' | 'desc' = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
       direction = "desc";
     }
@@ -92,46 +95,161 @@ const Chamados: React.FC = () => {
 
     const sortedTickets = [...tickets].sort((a, b) => {
       if (key === 'priority') {
-        // Sort by priority (Alta > Média > Baixa)
-        const priorityOrder = { 'Alta': 3, 'Média': 2, 'Baixa': 1 };
+        const priorityOrder: { [key: string]: number } = { 'Alta': 3, 'Média': 2, 'Baixa': 1 };
         return direction === 'asc'
-          ? priorityOrder[a[key]] - priorityOrder[b[key]]
-          : priorityOrder[b[key]] - priorityOrder[a[key]];
+          ? priorityOrder[a.priority] - priorityOrder[b.priority]
+          : priorityOrder[b.priority] - priorityOrder[a.priority];
+      } else if (key === 'date') {
+        const dateA = new Date(a[key]);
+        const dateB = new Date(b[key]);
+        return direction === 'asc' ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
       } else {
-        // Sort by date or other fields (using localeCompare for strings)
-        // Check if the values are strings before calling localeCompare
         const aValue = a[key];
         const bValue = b[key];
 
         if (typeof aValue === 'string' && typeof bValue === 'string') {
-            return direction === 'asc'
-              ? aValue.localeCompare(bValue)
-              : bValue.localeCompare(aValue);
-        } else {
-          // Handle cases where values might not be strings (optional, depends on your data)
-            return 0; // Or some other default comparison
+          return direction === 'asc'
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
         }
       }
+      return 0;
     });
 
     setTickets(sortedTickets);
   };
 
+  ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
+
+  useEffect(() => {
+    const mockTickets: Ticket[] = [
+      { id: 1, title: 'Problema de rede', status: 'Em andamento', priority: 'Alta', date: '2023-11-15', color: 'text-yellow-500' },
+      { id: 2, title: 'Erro no servidor', status: 'Resolvido', priority: 'Média', date: '2023-11-10', color: 'text-green-500' },
+      { id: 3, title: 'Computador lento', status: 'Em andamento', priority: 'Baixa', date: '2023-11-20', color: 'text-yellow-500' },
+      { id: 4, title: 'Falha na impressora', status: 'Finalizado', priority: 'Alta', date: '2023-11-05', color: 'text-gray-500' },
+      { id: 5, title: 'Software não abre', status: 'Resolvido', priority: 'Média', date: '2023-11-18', color: 'text-green-500' },
+      { id: 6, title: 'Problema de login', status: 'Em andamento', priority: 'Alta', date: '2023-11-22', color: 'text-yellow-500' },
+      { id: 7, title: 'Monitor não liga', status: 'Finalizado', priority: 'Média', date: '2023-11-01', color: 'text-gray-500' },
+    ];
+    setTickets(mockTickets);
+  }, []);
+
+  const filteredTickets = useMemo(() => {
+    if (!startDate || !endDate) {
+      return tickets;
+    }
+
+    return tickets.filter(ticket => {
+      const ticketDate = new Date(ticket.date);
+      return ticketDate >= startDate && ticketDate <= endDate;
+    });
+  }, [tickets, startDate, endDate]);
+
+  const calculateChartData = (ticketsToCount: Ticket[]) => {
+    let emAndamento = 0;
+    let resolvidos = 0;
+    let finalizados = 0;
+
+    ticketsToCount.forEach(ticket => {
+      if (ticket.status === 'Em andamento') {
+        emAndamento++;
+      } else if (ticket.status === 'Resolvido') {
+        resolvidos++;
+      } else if (ticket.status === 'Finalizado') {
+        finalizados++;
+      }
+    });
+
+    return { emAndamento, resolvidos, finalizados };
+  };
+
+  const pieChartData = useMemo(() => {
+    const { emAndamento, resolvidos, finalizados } = calculateChartData(tickets);
+    return {
+      labels: ['Alta', 'Média', 'Baixa'],
+      datasets: [
+        {
+          data: [emAndamento, resolvidos, finalizados],
+          backgroundColor: ['#FFCE56', '#36A2EB', '#999999'],
+        },
+      ],
+    };
+  }, [tickets]);
+
+  const barChartData = useMemo(() => {
+    const { emAndamento, resolvidos } = calculateChartData(filteredTickets);
+    return {
+      labels: ['Em Andamento', 'Resolvidos'],
+      datasets: [
+        {
+          label: '', // Removendo a label aqui
+          data: [emAndamento, resolvidos],
+          backgroundColor: ['#FFCE56', '#36A2EB', '#999999'],
+        },
+      ],
+    };
+  }, [filteredTickets]);
+
+  const barChartOptions = {
+    plugins: {
+      legend: {
+        display: false, // Removendo a legenda
+      },
+    },
+  };
+
+  const handleFilterTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterType(event.target.value as 'dateRange' | 'day' | 'week' | 'month' | 'year');
+
+    const now = new Date();
+    switch (event.target.value) {
+      case 'day':
+        setStartDate(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+        setEndDate(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59));
+        break;
+      case 'week':
+        const firstDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+        const lastDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 6));
+        setStartDate(firstDayOfWeek);
+        setEndDate(lastDayOfWeek);
+        break;
+      case 'month':
+        setStartDate(new Date(now.getFullYear(), now.getMonth(), 1));
+        setEndDate(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+        break;
+      case 'year':
+        setStartDate(new Date(now.getFullYear(), 0, 1));
+        setEndDate(new Date(now.getFullYear(), 11, 31));
+        break;
+      case 'dateRange':
+        setStartDate(null);
+        setEndDate(null);
+        break;
+      default:
+        setStartDate(null);
+        setEndDate(null);
+    }
+  };
 
   return (
-    <div className="flex h-screen">
-      {/* Sidebar */}
+    <div className="flex h-screen overflow-hidden">
       <aside className="w-64 bg-gray-900 text-white p-5">
-        <h1 className="text-2xl font-bold mb-6">Support Flow.AI</h1>
+        <div className="flex mb-6">
+          <img
+            src={logo}
+            alt="SupportFlowAI Logo"
+            className="h-14 w-auto mr-2 items-center"
+          />
+          <h1 className="text-2xl font-bold mb-6 flex items-end">SupportFlow</h1>
+        </div>
         <nav>
           <ul>
-            <li className="mb-4 font-semibold"> Chamados:</li>
             {menuItems.map((item) => (
               <li
                 key={item.label}
-                className="mb-2 hover:bg-gray-700 p-2 rounded"
+                className="mb-2 hover:bg-green-700 p-2 rounded"
               >
-                <Link to={item.href} className="text-blue-400 block w-full h-full">
+                <Link to={item.href} className="text-white hover:text-white block w-full h-full">
                   {item.label}
                 </Link>
               </li>
@@ -140,11 +258,9 @@ const Chamados: React.FC = () => {
         </nav>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-6 overflow-auto">
         <h2 className="text-3xl font-semibold mb-6">Dashboard de Chamados</h2>
 
-        {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {cardItems.map((card) => (
             <div key={card.title} className="bg-white p-6 rounded-lg shadow">
@@ -159,7 +275,6 @@ const Chamados: React.FC = () => {
           ))}
         </div>
 
-        {/* Estatísticas */}
         <div className="bg-white p-6 rounded-lg shadow mb-6">
           <h3 className="text-lg font-semibold mb-4">
             Estatísticas de Chamados
@@ -174,49 +289,74 @@ const Chamados: React.FC = () => {
           </div>
         </div>
 
-        {/* Tabela de Chamados */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Lista de Chamados</h3>
-          <table className="w-full border-collapse border border-gray-200">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border p-2">ID</th>
-                <th className="border p-2">Título</th>
-                <th className="border p-2">Status</th>
-                <th
-                  className="border p-2 cursor-pointer hover:bg-gray-200"
-                  onClick={() => sortTickets('priority')}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow flex flex-col items-center justify-center h-full">
+            <h3 className="text-lg font-semibold mb-4">Status de Prioridade (Tempo Real)</h3>
+            <div className="flex items-center justify-center" style={{ width: '500px', height: '500px' }}>
+              <Pie data={pieChartData} />
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow flex flex-col items-center justify-center h-full">
+            <h3 className="text-lg font-semibold mb-4">Status de Resolução</h3>
+
+            <div className="mb-4 flex flex-wrap items-end">
+              <div className="mr-4 mb-2">
+                <label htmlFor="filterType" className="block text-sm font-medium text-gray-700">Tipo de Filtro:</label>
+                <select
+                  id="filterType"
+                  value={filterType}
+                  onChange={handleFilterTypeChange}
+                  className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 >
-                  Prioridade {sortConfig.key === 'priority' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                </th>
-                <th
-                  className="border p-2 cursor-pointer hover:bg-gray-200"
-                  onClick={() => sortTickets('date')}
-                >
-                  Data de Abertura {sortConfig.key === 'date' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {tickets.map((ticket) => (
-                <tr key={ticket.id}>
-                  <td className="border p-2">
-                    <Link to={`/chamado/${ticket.id}`}><button className="text-blue-600 hover:underline Chamado-button">{ticket.id}</button></Link>
-                  </td>
-                  <td className="border p-2">
-                    <Link to={`/chamado/${ticket.id}`}><button className="text-blue-600 hover:underline Chamado-button">{ticket.title}</button></Link>
-                  </td>
-                  <td className={`border p-2 ${ticket.color}`}>{ticket.status}</td>
-                  <td className="border p-2 text-orange-500">{ticket.priority}</td>
-                  <td className="border p-2">{new Date(ticket.date).toLocaleDateString('pt-BR')}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  <option value="dateRange">Intervalo de Datas</option>
+                  <option value="day">Dia</option>
+                  <option value="week">Semana</option>
+                  <option value="month">Mês</option>
+                  <option value="year">Ano</option>
+                </select>
+              </div>
+
+              {filterType === 'dateRange' && (
+                <>
+                  <div className="mr-4 mb-2">
+                    <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Data Inicial:</label>
+                    <DatePicker
+                      id="startDate"
+                      selected={startDate}
+                      onChange={(date: Date | null) => setStartDate(date)}
+                      selectsStart
+                      startDate={startDate}
+                      endDate={endDate}
+                      className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm"
+                    />
+                  </div>
+
+                  <div className="mr-4 mb-2">
+                    <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">Data Final:</label>
+                    <DatePicker
+                      id="endDate"
+                      selected={endDate}
+                      onChange={(date: Date | null) => setEndDate(date)}
+                      selectsEnd
+                      startDate={startDate}
+                      endDate={endDate}
+                      minDate={startDate}
+                      className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm"
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="flex items-center justify-center flex-grow" style={{ width: `${chartWidth}px`, height: `${chartHeight}px` }}>
+              <Bar data={barChartData} options={barChartOptions} />
+            </div>
+          </div>
         </div>
       </main>
     </div>
   );
-};
+}
 
 export default Chamados;
