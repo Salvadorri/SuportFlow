@@ -4,7 +4,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "10001:8080"
     env_file:
       - .env
     depends_on:
@@ -18,7 +18,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "10003:3000"
     volumes:
       - ./frontend:/app # Sincroniza as alterações em tempo real
       - /app/node_modules # Cria um volume anônimo para a pasta node_modules, evitando sobreposição com a pasta local
@@ -28,7 +28,7 @@ services:
   db:
     image: postgres:17-alpine # Ou mysql:8.0, se preferir MySQL
     ports:
-      - "5432:5432"
+      - "10000:5432"
     env_file:
       - .env
     volumes:

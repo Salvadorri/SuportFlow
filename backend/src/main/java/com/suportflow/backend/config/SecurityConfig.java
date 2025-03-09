@@ -40,11 +40,14 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private ClienteDetailsService clienteDetailsService;
+    //@Autowired  <- REMOVE THIS!
+    //private ClienteDetailsService clienteDetailsService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthenticationHelper authenticationHelper;
 
 
     @Bean
@@ -71,7 +74,7 @@ public class SecurityConfig {
     // Remove @Autowired here!
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(userAuthenticationProvider())
-                .authenticationProvider(clienteAuthenticationProvider());
+                .authenticationProvider(clienteAuthenticationProvider(authenticationHelper));
     }
 
     @Bean
@@ -83,18 +86,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider clienteAuthenticationProvider() {
+    public AuthenticationProvider clienteAuthenticationProvider(AuthenticationHelper authenticationHelper) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(clienteDetailsService);
+        authProvider.setUserDetailsService(clienteDetailsService -> {
+            // This UserDetailsService implementation is used for authentication
+            // It uses the AuthenticationHelper to authenticate the client
+            // and build the UserDetails object.
+            return authenticationHelper.authenticateCliente(clienteDetailsService, "");
+        });
         authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
-    }
-    @Bean
-    public AuthenticationHelper authenticationHelper(
-            UserRepository userRepository,
-            ClienteRepository clienteRepository,
-            PasswordEncoder passwordEncoder) {
-        return new AuthenticationHelper(userRepository, clienteRepository, passwordEncoder);
     }
 
     @Bean

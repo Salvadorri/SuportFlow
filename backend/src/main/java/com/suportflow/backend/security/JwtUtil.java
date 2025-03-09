@@ -6,7 +6,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import java.util.Collections;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -58,20 +57,23 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails, Long entityId) {
         Map<String, Object> claims = new HashMap<>();
-        // Adicione as permissões/roles como uma claim, diferenciando User e Cliente
-        List<String> roles;
-        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE"))) {
-            // Se for um cliente, adiciona apenas a role ROLE_CLIENTE
-            roles = Collections.singletonList("ROLE_CLIENTE");
+        // Check if it's a Cliente
+        boolean isCliente = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE"));
+
+        if (isCliente) {
+            claims.put("Cliente", true); // Add the "Cliente: true" claim
         } else {
-            // Se for um usuário, usa as permissões normalmente
-            roles = userDetails.getAuthorities().stream()
+            // Add roles for regular users
+            List<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
+            claims.put("roles", roles); // ADD ROLES
         }
-        claims.put("roles", roles);
+
+        claims.put("entityId", entityId);
         return createToken(claims, userDetails);
     }
 
@@ -98,6 +100,18 @@ public class JwtUtil {
 
     public List<String> extractRoles(String token) {
         final Claims claims = extractAllClaims(token);
-        return (List<String>) claims.get("roles");
+        return (List<String>) claims.get("roles"); //Keep for possibel use.
+    }
+    public Boolean extractIsCliente(String token) {
+        final Claims claims = extractAllClaims(token);
+        Object clienteClaim = claims.get("Cliente");
+        boolean isCliente = clienteClaim != null && (Boolean) clienteClaim;
+        System.out.println("extractIsCliente: token=" + token + ", clienteClaim=" + clienteClaim + ", isCliente=" + isCliente); // Adicione este log
+        return isCliente;
+    }
+
+    public Long extractEntityId(String token) {
+        final Claims claims = extractAllClaims(token);
+        return ((Number) claims.get("entityId")).longValue();
     }
 }
