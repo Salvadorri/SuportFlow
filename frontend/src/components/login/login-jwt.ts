@@ -14,7 +14,7 @@ interface JWTPayload {
 const login = async (email: string, password: string) => {
   const options = {
     method: 'POST',
-    url: 'http://0.0.0.0:8080/api/auth/login',  // Ensure this URL is correct
+    url: 'http://localhost:10001/api/auth/login',  // Ensure this URL is correct
     headers: { 'content-type': 'application/json' },
     data: { email: email, password: password } // Use the passed-in email and password
   };

@@ -55,8 +55,7 @@ const Chamados: React.FC = () => {
   const menuItems = [
     { label: "Abrir Chamado", href: "/criar-chamado" },
     { label: "Histórico Chamados", href: "/chamados-historico" },
-    { label: "Chat Clientes", href: "/meuschatsclientes" },
-    { label: "Chat", href: "/chatchamado" }
+    { label: "Chat", href: "/chatchamadodash" }
   ];
 
   const cardItems = [
