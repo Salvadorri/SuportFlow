@@ -1,5 +1,11 @@
+// SuportFlow/frontend/src/components/landingPage/index.tsx
 import logo from "../../assets/logo.png";
 import { Link } from "@tanstack/react-router";
+import {
+  FaTicketAlt, // Icon for Ticket System
+  FaComments,   // Icon for Integrated Chat
+  FaChartBar,   // Icon for Analytics/Control
+} from "react-icons/fa"; // Import react-icons
 
 function Index() {
   return (
@@ -11,7 +17,7 @@ function Index() {
             <img
               src={logo}
               alt="SupportFlowAI Logo"
-              className="h-8 w-auto mr-2"
+              className="h-12 w-auto mr-2"
             />
             <span className="text-lg font-bold text-white">SupportFlow</span>
           </div>
@@ -49,29 +55,34 @@ function Index() {
             </nav>
             <Link
               to="/login"
-              className="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition ml-4"
+              className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded transition ml-4"
             >
               {/* ml-4 adicionado */}
-              Login / Signup
+              Login / Singup
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-grow">
+            {/* Main Content */}
+            <main className="flex-grow">
         {/* Banner */}
-        <section className="bg-green-500 text-white py-16 md:py-20 text-center">
+        <section className="bg-green-700 text-white py-16 md:py-20 text-center">
           {/* Ajustado py */}
           <div className="container mx-auto px-4">
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
               SupportFlow
             </h1>{" "}
             {/* Ajustado text-xl */}
-            <p className="text-base md:text-xl">
+            <p className="text-base md:text-xl mb-8">
               A Solução Completa para Suporte ao Cliente
-            </p>{" "}
-            {/* Ajustado text-base */}
+            </p>{""} {/* Adicionado mb-8 para espaçamento */}
+            {/* Image */}
+            <img
+              src="../../assets/imagemsupportflow.png" // Replace with the actual path to your image
+              alt="SupportFlow Banner Image"
+              className="mx-auto w-full md:w-3/4 lg:w-1/2" // Example responsive widths. Adjust as needed.
+            />
           </div>
         </section>
 
@@ -85,13 +96,9 @@ function Index() {
             {/* Ajustado text-2xl e mb */}
             <p className="text-gray-700 text-base md:text-lg text-center">
               {/* Ajustado text-base */}
-              Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod
-              tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim
-              veniam, quis nostrum exercitationem ullam corporis suscipit
-              laboriosam, nisi ut aliquid ex ea commodi consequatur. Quis aute
-              iure reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint obcaecat cupiditat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum.
+              O SupportFlow é uma solução SaaS (Software as a Service) abrangente desenvolvida para otimizar o suporte ao cliente em empresas de todos os portes.
+              Esta plataforma integra múltiplas ferramentas essenciais para o gerenciamento eficiente do atendimento ao cliente.
+              O SupportFlow se destaca pela sua interface intuitiva e pela capacidade de se adaptar ao fluxo de trabalho específico de cada empresa, tornando-se uma ferramenta indispensável para equipes de suporte ao cliente que buscam excelência no atendimento.
             </p>
           </div>
         </section>
@@ -107,41 +114,41 @@ function Index() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {/* Feature Card 1 */}
               <div className="bg-gray-400 rounded-lg shadow-md p-6 hover:shadow-lg transition flex flex-col justify-center items-center">
-                <h3 className="text-black text-lg md:text-xl font-semibold mb-2 md:mb-4 text-center">
-                  Recurso X
+                <h3 className="text-black text-lg md:text-xl font-semibold mb-2 md:mb-4 text-center flex items-center">
+                  <FaTicketAlt className="mr-2" /> {/* Added Icon */}
+                Sistema de Chamados
                 </h3>{" "}
                 {/* Ajustado text-lg e mb */}
                 <p className="text-black text-sm md:text-base text-center">
                   {" "}
                   {/* Ajustado text-sm */}
-                  Lorem ipsum dolor sit amet, consectetur adipisci elit, sed
-                  eiusmod tempor incidunt ut labore et dolore magna aliqua.
+                  Gerenciamento organizado de solicitações de suporte com priorização automática, atribuição de responsáveis e acompanhamento de prazos.
                 </p>
               </div>
               {/* Feature Card 2 */}
               <div className="bg-gray-400 rounded-lg shadow-md p-6 hover:shadow-lg transition flex flex-col justify-center items-center">
-                <h3 className="text-black text-lg md:text-xl font-semibold mb-2 md:mb-4 text-center">
-                  Recurso Y
+                <h3 className="text-black text-lg md:text-xl font-semibold mb-2 md:mb-4 text-center flex items-center">
+                  <FaComments className="mr-2" /> {/* Added Icon */}
+                Chat Integrado
                 </h3>{" "}
                 {/* Ajustado text-lg e mb */}
                 <p className="text-black text-sm md:text-base text-center">
                   {" "}
                   {/* Ajustado text-sm */}
-                  Lorem ipsum dolor sit amet, consectetur adipisci elit, sed
-                  eiusmod tempor incidunt ut labore et dolore magna aliqua.
+                  Comunicação em tempo real entre atendentes e clientes, permitindo resoluções rápidas e eficientes.
                 </p>
               </div>
               {/* Feature Card 3 */}
               <div className="bg-gray-400 rounded-lg shadow-md p-6 hover:shadow-lg transition flex flex-col justify-center items-center">
-                <h3 className="text-black text-lg md:text-xl font-semibold mb-2 md:mb-4 text-center">
-                  Recurso Z
+                <h3 className="text-black text-lg md:text-xl font-semibold mb-2 md:mb-4 text-center flex items-center">
+                  <FaChartBar className="mr-2" /> {/* Added Icon */}
+                Controle de Atendimento
                 </h3>{" "}
                 {/* Ajustado text-lg e mb */}
                 <p className="text-black text-sm md:text-base text-center">
                   {" "}
                   {/* Ajustado text-sm */}
-                  Lorem ipsum dolor sit amet, consectetur adipisci elit, sed
-                  eiusmod tempor incidunt ut labore et dolore magna aliqua.
+                  Métricas detalhadas sobre tempo de resposta, taxa de resolução e satisfação do cliente.
                 </p>
               </div>
             </div>
