@@ -28,6 +28,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(UniqueFieldAlreadyExistsException.class)
+    public ResponseEntity<Object> handleUniqueFieldAlreadyExistsException(UniqueFieldAlreadyExistsException ex, WebRequest request) {
+        Map<String, Object> body = createBody(HttpStatus.CONFLICT, "Campo único já cadastrado", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+    //Generic DataIntegrityViolationException handler
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrityViolationException(org.springframework.dao.DataIntegrityViolationException ex, WebRequest request) {
+          Map<String, Object> body = createBody(HttpStatus.CONFLICT, "Erro de integridade de dados", "Um campo único já está sendo usado.");
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
         // Log the exception for debugging purposes (important!)

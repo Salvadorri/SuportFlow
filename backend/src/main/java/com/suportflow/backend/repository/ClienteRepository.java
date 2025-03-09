@@ -33,6 +33,9 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     boolean existsByEmail(String email);
 
     // Consulta para verificar se existe um cliente com um determinado CPF/CNPJ
+    boolean existsByTelefone(String telefone);
+
+    // Consulta para verificar se existe um cliente com um determinado CPF/CNPJ
     boolean existsByCpfCnpj(String cpfCnpj);
 
     // Consulta para encontrar clientes por empresa e parte do nome (ignorando maiúsculas/minúsculas)
