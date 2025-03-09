@@ -3,6 +3,7 @@ package com.suportflow.backend.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,12 +26,12 @@ public class UserRegistrationDTO {
     private String email;
 
     @NotBlank(message = "A senha é obrigatória")
-    @Size(min = 6, message = "A senha deve ter pelo menos 6 caracteres")
+    @Size(min = 8, message = "A senha deve ter pelo menos 6 caracteres")
     private String password;
     private String telefone; //add
     private String empresaNome; // Optional, could be null.  Make sure your service handles this.
 
-    @CPF(message = "CPF inválido") // Validate as CPF by default
-    @CNPJ(message = "CNPJ inválido")  // *Also* validate as CNPJ.  This will fail if *both* fail.
+    @NotBlank(message = "CPF/CNPJ é obrigatório")
+    @Pattern(regexp = "^\\d{11}$|^\\d{14}$", message = "CPF/CNPJ inválido")
     private String cpfCnpj;
 }
