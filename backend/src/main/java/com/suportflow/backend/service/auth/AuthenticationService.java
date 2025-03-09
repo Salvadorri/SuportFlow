@@ -66,8 +66,6 @@ public class AuthenticationService {
             refreshToken = refreshTokenService.createRefreshToken(entityId);
 
         } catch (UsernameNotFoundException | BadCredentialsException userException) {
-            System.out.println("AuthenticationService: User authentication failed, trying client. " + userException.getMessage());
-            // If user authentication fails, try client authentication
             try {
                 userDetails = authenticationHelper.authenticateCliente(email, password);
                 Cliente cliente = clienteRepository.findByEmail(email)

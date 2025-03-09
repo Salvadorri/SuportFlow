@@ -27,6 +27,10 @@ public class Chamado {
     private String descricao;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "categoria", nullable = false)
+    private CategoriaChamado categoria; // Status do chamado (ver enum abaixo)
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusChamado status; // Status do chamado (ver enum abaixo)
 
@@ -94,6 +98,14 @@ public class Chamado {
 
     public void setStatus(StatusChamado status) {
         this.status = status;
+    }
+
+    public CategoriaChamado getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(CategoriaChamado categoria) {
+        this.categoria = categoria;
     }
 
     public PrioridadeChamado getPrioridade() {

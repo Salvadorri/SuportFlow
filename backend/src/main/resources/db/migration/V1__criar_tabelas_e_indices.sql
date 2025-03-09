@@ -58,6 +58,7 @@ CREATE TABLE chamados (
     usuario_id BIGINT,
     titulo VARCHAR(255) NOT NULL,
     descricao TEXT,
+    categoria VARCHAR(30) NOT NULL,
     status VARCHAR(20) NOT NULL,
     prioridade VARCHAR(20) NOT NULL,
     data_abertura TIMESTAMP NOT NULL,
