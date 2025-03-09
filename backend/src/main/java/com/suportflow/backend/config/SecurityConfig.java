@@ -54,9 +54,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll() // Allow all requests to /api/auth/...
-                        .requestMatchers("/api/users/register").permitAll()
-                        .requestMatchers("/api/clientes/register").permitAll() // Assuming you have client registration
                         .requestMatchers("/h2-console/**").permitAll()  // Allow access to H2 console (for development)
+                        .requestMatchers("/api/clientes/**").authenticated() // Secure all Cliente endpoints
+                        .requestMatchers("/api/chamados/**").authenticated() // Secure all Chamados endpoints
+                        .requestMatchers("/api/permissoes/**").authenticated() // Secure all permissoes endpoints
                         .anyRequest().authenticated() // All other requests require authentication
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Use stateless sessions
