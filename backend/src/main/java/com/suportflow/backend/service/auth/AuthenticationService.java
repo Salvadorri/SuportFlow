@@ -47,7 +47,7 @@ public class AuthenticationService {
         this.clienteRepository = clienteRepository;
     }
 
-    @Transactional
+@Transactional
     public AuthenticationResponse authenticateAndGenerateToken(AuthenticationRequest authenticationRequest) {
         String email = authenticationRequest.getEmail();
         String password = authenticationRequest.getPassword();
@@ -78,8 +78,8 @@ public class AuthenticationService {
             }
         }
 
-        // Generate JWT token
-        String jwt = jwtUtil.generateToken(userDetails);
+        // Generate JWT token,  passing the entityId
+        String jwt = jwtUtil.generateToken(userDetails, entityId);
         return new AuthenticationResponse(jwt, refreshToken.getToken());
     }
     @Transactional
@@ -90,19 +90,22 @@ public class AuthenticationService {
                 .map(refreshTokenService::verifyExpiration)
                 .map(refreshToken -> {
                     UserDetails userDetails = null;
+                    Long entityId = null;
 
                     if (refreshToken.getUser() != null) {
                         System.out.println("Refreshing token for user: " + refreshToken.getUser().getEmail());
                         userDetails = userDetailsService.loadUserByUsername(refreshToken.getUser().getEmail());
+                        entityId = refreshToken.getUser().getId(); // Get User ID
                     } else if (refreshToken.getCliente() != null) {
                         System.out.println("Refreshing token for cliente: " + refreshToken.getCliente().getEmail());
                         userDetails = clienteDetailsService.loadUserByUsername(refreshToken.getCliente().getEmail());
+                        entityId = refreshToken.getCliente().getId(); // Get Cliente ID
                     } else {
                         throw new TokenRefreshException(requestRefreshToken,
                                 "Refresh token not associated with any user or client.");
                     }
 
-                    String token = jwtUtil.generateToken(userDetails);
+                    String token = jwtUtil.generateToken(userDetails, entityId); // Pass entityId
                     return new AuthenticationResponse(token, requestRefreshToken);
                 })
                 .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
