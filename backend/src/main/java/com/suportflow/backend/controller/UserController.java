@@ -96,7 +96,7 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  @PreAuthorize("hasRole('ADMIN')") // Example: Only admins can get user by ID
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<UserDetailsDTO> getUserById(@PathVariable Long id) {
     try {
       UserDetailsDTO user = userManagementService.findDTOById(id);
@@ -107,14 +107,14 @@ public class UserController {
   }
 
   @GetMapping
-  @PreAuthorize("hasRole('ADMIN')") // Example: Only admins can list all users
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<List<UserDetailsDTO>> getAllUsers() {
     List<UserDetailsDTO> users = userManagementService.findAllUsers();
     return ResponseEntity.ok(users);
   }
 
   @DeleteMapping("/{id}")
-  @PreAuthorize("hasRole('ADMIN')") // Example: Only admins can delete a user.
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> deleteUser(@PathVariable Long id) {
     try {
       userManagementService.deleteUser(id);

@@ -25,15 +25,14 @@ public class ClienteController {
   @Autowired private ClienteService clienteService;
 
   @GetMapping
-  @PreAuthorize("hasRole('USER')") // Only users can get all clients
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<List<ClienteDTO>> getAllClientes() {
     List<ClienteDTO> clienteDTOs = clienteService.findAllDTO();
     return new ResponseEntity<>(clienteDTOs, HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
-  @PreAuthorize(
-      "hasRole('USER') or (hasRole('CLIENTE') and #id == @clienteService.findEntityById(#id).getEmail())")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<ClienteDTO> getClienteById(@PathVariable Long id) {
     try {
       ClienteDTO clienteDTO = clienteService.findById(id);
@@ -44,6 +43,7 @@ public class ClienteController {
   }
 
   @PostMapping("/register")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> createCliente(
       @Valid @RequestBody ClienteRegistrationDTO clienteRegistrationDTO) {
     try {
@@ -55,8 +55,7 @@ public class ClienteController {
   }
 
   @PutMapping("/{id}")
-  @PreAuthorize(
-      "hasRole('USER') or (hasRole('CLIENTE') and #id == @clienteService.findEntityById(#id).getEmail())")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> updateCliente(
       @PathVariable Long id, @Valid @RequestBody ClienteUpdateDTO clienteAtualizado) {
     try {
@@ -70,8 +69,7 @@ public class ClienteController {
   }
 
   @PatchMapping("/{id}/password")
-  @PreAuthorize(
-      "hasRole('USER') or (hasRole('CLIENTE') and #id == @clienteService.findEntityById(#id).getEmail())") // Clients can change their own password
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> changePassword(
       @PathVariable Long id, @Valid @RequestBody PasswordChangeDTO passwordChangeDTO) {
     try {
@@ -89,7 +87,7 @@ public class ClienteController {
   }
 
   @DeleteMapping("/{id}")
-  @PreAuthorize("hasRole('USER')") // Only users can delete clients
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<Void> deleteCliente(@PathVariable Long id) {
     try {
       clienteService.delete(id);

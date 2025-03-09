@@ -51,7 +51,6 @@ public class AuthenticationService {
     public AuthenticationResponse authenticateAndGenerateToken(AuthenticationRequest authenticationRequest) {
         String email = authenticationRequest.getEmail();
         String password = authenticationRequest.getPassword();
-        System.out.println("AuthenticationService: Trying to authenticate: " + email);
 
         UserDetails userDetails = null;
         RefreshToken refreshToken = null;
@@ -75,8 +74,6 @@ public class AuthenticationService {
 
 
             } catch (UsernameNotFoundException | BadCredentialsException clientException) {
-                System.out.println("AuthenticationService: Cliente authentication failed" + clientException.getMessage());
-                // If both fail, throw a combined exception
                 throw new BadCredentialsException("Invalid credentials for both user and client.");
             }
         }
