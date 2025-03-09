@@ -13,6 +13,12 @@ public class AuthenticationRequest {
     @NotBlank(message = "A senha é obrigatória")
     private String password; // Agora usado para senha de User e cpfCnpj de Cliente
 
+    public AuthenticationRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
+
     // Construtores (já existem)
 
     // Getters e Setters (já existem)

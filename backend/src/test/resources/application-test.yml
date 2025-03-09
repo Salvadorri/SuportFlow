@@ -2,31 +2,21 @@ spring:
   application:
     name: backend-dev
   datasource:
-    url: jdbc:h2:mem:devdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;INIT=CREATE SCHEMA IF NOT EXISTS test_schema\\;SET SCHEMA test_schema\\;;DB_CLOSE_DELAY=-1
     username: sa
     password:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    show-sql: true
+      ddl-auto: update # ou create-drop se precisar recriar sempre
+    show-sql: false # true para debug, mas false para testes mais limpos
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
 jwt:
-  secret: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.ct7vAd_BpNxhgKAhgXNntnXn8_Ek2ZdZOVhQJarEdvE
-  expiration: 86400000
+  secret: ZXKFvAUFF6NwvQpw0AkzgsTqHT4iQSqb7MkEsTarhPU=
+  expirationMs: 86400000
   refreshExpiration: 604800000
-logging:
-  level:
-    root: INFO
-    org:
-      springframework:
-        web: DEBUG
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql:
-              BasicBinder: TRACE
+admin:
+  email: admin@suportflow.com.br
+  password: suportflow-admin
