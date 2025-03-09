@@ -1,69 +1,35 @@
+// src/main/java/com/suportflow/backend/dto/ClienteRegistrationDTO.java
 package com.suportflow.backend.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import org.hibernate.validator.constraints.br.CNPJ;
-import org.hibernate.validator.constraints.br.CPF;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class ClienteRegistrationDTO {
 
-    @NotBlank(message = "O nome é obrigatório")
-    @Size(min = 2, max = 255, message = "O nome deve ter entre 2 e 255 caracteres")
-    private String nome;
+  @NotBlank(message = "O nome é obrigatório")
+  @Size(min = 2, max = 255, message = "O nome deve ter entre 2 e 255 caracteres")
+  private String nome;
 
-    @NotBlank(message = "O email é obrigatório")
-    @Email(message = "Email inválido")
-    private String email;
+  @NotBlank(message = "O email é obrigatório")
+  @Email(message = "Email inválido")
+  private String email;
 
-    @NotBlank(message = "O telefone é obrigatório.")
-    private String telefone;
+  @NotBlank(message = "O telefone é obrigatório.")
+  private String telefone;
 
+  @NotBlank(message = "O CPF/CNPJ é obrigatório")
+  private String cpfCnpj;
 
-    @NotBlank(message = "O CPF/CNPJ é obrigatório")
-    private String cpfCnpj;
+  private String empresaNome; // O nome da empresa é opcional no registro
 
-    private String empresaNome; // O nome da empresa é opcional no registro
-
-    // Getters e Setters (obrigatório para o framework)
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public String getCpfCnpj() {
-        return cpfCnpj;
-    }
-
-    public void setCpfCnpj(String cpfCnpj) {
-        this.cpfCnpj = cpfCnpj;
-    }
-
-    public String getEmpresaNome() {
-        return empresaNome;
-    }
-
-    public void setEmpresaNome(String empresaNome) {
-        this.empresaNome = empresaNome;
-    }
+  @NotBlank(message = "A senha é obrigatória")
+  @Size(min = 6, message = "A senha deve ter pelo menos 6 caracteres")
+  private String senha;
 }

@@ -1,58 +1,30 @@
+// src/main/java/com/suportflow/backend/dto/UserRegistrationDTO.java
 package com.suportflow.backend.dto;
 
-import java.time.LocalDateTime;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRegistrationDTO {
-    @NotBlank(message = "O nome não pode estar em branco") // Não pode ser vazio nem nulo
-    @Size(min = 3, max = 255, message = "O nome deve ter entre 3 e 255 caracteres")
+
+    @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
-    @NotBlank(message = "O email não pode estar em branco")
-    @Email(message = "Formato de email inválido") // Valida o formato do email
+    @NotBlank(message = "O email é obrigatório")
+    @Email(message = "Email inválido")
     private String email;
 
-    @NotBlank(message = "A senha não pode estar em branco")
-    @Size(min = 8, message = "A senha deve ter pelo menos 8 caracteres") // Exemplo de validação de senha
+    @NotBlank(message = "A senha é obrigatória")
+    @Size(min = 6, message = "A senha deve ter pelo menos 6 caracteres")
     private String password;
-    private String empresaNome;
 
-    // Construtores, Getters e Setters
-
-    public UserRegistrationDTO() {
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getEmpresaNome() {
-        return empresaNome;
-    }
-
-    public void setEmpresaNome(String empresaNome) {
-        this.empresaNome = empresaNome;
-    }
+    private String empresaNome; // Optional, could be null.  Make sure your service handles this.
 }
