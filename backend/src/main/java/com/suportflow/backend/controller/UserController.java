@@ -23,7 +23,7 @@ public class UserController {
 
   @Autowired private UserManagementService userManagementService;
 
-  @PostMapping("/register")
+  @PostMapping
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
     try {
