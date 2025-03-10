@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import React, { useCallback, useEffect, useState } from "react"; // Import useEffect
-import login, { getToken, isTokenExpired } from "./login-jwt"; // Import getToken
-import { validateLoginForm, ValidationResult } from "./validation.ts";
+import login, { getToken, isTokenExpired } from "../../api/login-jwt.ts"; // Import getToken
+import { validateLoginForm, ValidationResult } from "../../api/validation.ts";
 
 function Index() {
   const [email, setEmail] = useState("");

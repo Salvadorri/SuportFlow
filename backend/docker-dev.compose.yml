@@ -1,0 +1,33 @@
+services:
+  java:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "10001:8080"
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - suporteflow-network
+
+  db:
+    image: postgres:17-alpine
+    ports:
+      - "10000:5432"
+    env_file:
+      - .env
+    networks:
+      - suporteflow-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  suporteflow-network:
+    driver: bridge

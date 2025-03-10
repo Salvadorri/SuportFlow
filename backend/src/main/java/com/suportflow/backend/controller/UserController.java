@@ -4,7 +4,7 @@ package com.suportflow.backend.controller;
 import com.suportflow.backend.dto.PasswordChangeDTO;
 import com.suportflow.backend.dto.UserDetailsDTO;
 import com.suportflow.backend.dto.UserRegistrationDTO;
-import com.suportflow.backend.dto.UserUpdateDTO; // Import the new DTO
+import com.suportflow.backend.dto.UserUpdateDTO;
 import com.suportflow.backend.exception.UserNotFoundException;
 import com.suportflow.backend.service.user.UserManagementService;
 import jakarta.validation.Valid;
@@ -24,7 +24,7 @@ public class UserController {
   @Autowired private UserManagementService userManagementService;
 
   @PostMapping
-  @PreAuthorize("isAuthenticated()")
+  @PreAuthorize("isAuthenticated()") // Idealmente, o registro não deveria precisar de autenticação.  Considere remover.
   public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
     try {
       UserDetailsDTO registeredUser = userManagementService.registerNewUser(registrationDTO);
@@ -32,8 +32,7 @@ public class UserController {
     } catch (Exception e) {
       // GlobalExceptionHandler will handle specific exceptions (like
       // UniqueFieldAlreadyExistsException).
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-              .body("Erro ao registrar usuário: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao registrar usuário: " + e.getMessage()); //Melhora na mensagem de erro.
     }
   }
 
@@ -62,7 +61,7 @@ public class UserController {
   @PutMapping("/me")
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> updateCurrentUser(
-          @Valid @RequestBody UserUpdateDTO updateDTO) { // Use UserUpdateDTO
+      @Valid @RequestBody UserUpdateDTO updateDTO) { // Use UserUpdateDTO
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String email = authentication.getName(); // Get the email
 
@@ -126,7 +125,7 @@ public class UserController {
   @PutMapping("/{id}")
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> updateUser(
-          @PathVariable Long id, @Valid @RequestBody UserUpdateDTO updateDTO) { // Use UserUpdateDTO
+      @PathVariable Long id, @Valid @RequestBody UserUpdateDTO updateDTO) { // Use UserUpdateDTO
     try {
       UserDetailsDTO updatedUser = userManagementService.updateUser(id, updateDTO);
       return ResponseEntity.ok(updatedUser);

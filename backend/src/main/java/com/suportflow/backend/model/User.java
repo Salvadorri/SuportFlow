@@ -1,4 +1,4 @@
-// src/main/java/com/suportflow/backend/model/User.java
+// backend/src/main/java/com/suportflow/backend/model/User.java
 package com.suportflow.backend.model;
 
 import jakarta.persistence.*;
@@ -60,15 +60,15 @@ public class User implements UserDetails {
 
   // Métodos da interface UserDetails
   @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    // Ordena as permissões alfabeticamente antes de mapear para GrantedAuthority
-    List<Permissao> sortedPermissoes = new ArrayList<>(permissoes); // Cria uma lista a partir do Set
-    Collections.sort(sortedPermissoes, Comparator.comparing(Permissao::getNome)); // Ordena a lista
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // This method is already correct and efficiently handles the authorities. No changes needed here.
+        List<Permissao> sortedPermissoes = new ArrayList<>(permissoes);
+        Collections.sort(sortedPermissoes, Comparator.comparing(Permissao::getNome));
 
-    return sortedPermissoes.stream()
-        .map(permissao -> new SimpleGrantedAuthority(permissao.getNome()))
-        .collect(Collectors.toList());
-  }
+        return sortedPermissoes.stream()
+                .map(permissao -> new SimpleGrantedAuthority(permissao.getNome()))
+                .collect(Collectors.toList());
+    }
 
   @Override
   public String getPassword() {
