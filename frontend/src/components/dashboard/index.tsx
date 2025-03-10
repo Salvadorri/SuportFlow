@@ -233,13 +233,9 @@ const Chamados: React.FC = () => {
   return (
     <div className="flex h-screen overflow-hidden">
       <aside className="w-64 bg-gray-900 text-white p-5">
-        <div className="flex mb-6">
-          <img
-            src={logo}
-            alt="SupportFlowAI Logo"
-            className="h-14 w-auto mr-2 items-center"
-          />
-          <h1 className="text-2xl font-bold mb-6 flex items-end">SupportFlow</h1>
+        <div className="flex items-center mb-6">
+          <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2"/>
+          <h1 className="text-2xl font-bold">SupportFlow</h1>
         </div>
         <nav>
           <ul>
@@ -258,21 +254,7 @@ const Chamados: React.FC = () => {
       </aside>
 
       <main className="flex-1 p-6 overflow-auto">
-        <h2 className="text-3xl font-semibold mb-6">Dashboard de Chamados</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {cardItems.map((card) => (
-            <div key={card.title} className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-lg font-semibold">{card.title}</h3>
-              <p className="text-gray-600 mb-4">{card.description}</p>
-              <Link to={card.href}>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                  {card.buttonText}
-                </button>
-              </Link>
-            </div>
-          ))}
-        </div>
+        <h2 className="text-3xl font-semibold mb-6">Dashboard Atendente</h2>
 
         <div className="bg-white p-6 rounded-lg shadow mb-6">
           <h3 className="text-lg font-semibold mb-4">
