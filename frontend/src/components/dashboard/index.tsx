@@ -254,21 +254,7 @@ const Chamados: React.FC = () => {
       </aside>
 
       <main className="flex-1 p-6 overflow-auto">
-        <h2 className="text-3xl font-semibold mb-6">Dashboard de Chamados</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {cardItems.map((card) => (
-            <div key={card.title} className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-lg font-semibold">{card.title}</h3>
-              <p className="text-gray-600 mb-4">{card.description}</p>
-              <Link to={card.href}>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                  {card.buttonText}
-                </button>
-              </Link>
-            </div>
-          ))}
-        </div>
+        <h2 className="text-3xl font-semibold mb-6">Dashboard Atendente</h2>
 
         <div className="bg-white p-6 rounded-lg shadow mb-6">
           <h3 className="text-lg font-semibold mb-4">
