@@ -24,13 +24,12 @@ public class ClienteDetailsService implements UserDetailsService {
         Cliente cliente = clienteRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Cliente não encontrado com email: " + email));
 
-        // Return a UserDetails object representing the client.  This is crucial!
         return new org.springframework.security.core.userdetails.User(
                 cliente.getEmail(),
-                cliente.getSenha(), // Use the senha field
+                cliente.getSenha(),
                 cliente.isAtivo(),
                 true, true, true,
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_CLIENTE"))
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_CLIENTE")) // Assign the role here
         );
     }
 }

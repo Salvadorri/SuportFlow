@@ -15,7 +15,7 @@ public class Cliente {
 
     @ManyToOne
     @JoinColumn(name = "empresa_id", nullable = false)
-    private Empresa empresa; // Cada cliente pertence a uma empresa
+    private Empresa empresa;
 
     @Column(name = "nome", nullable = false)
     private String nome;
@@ -27,7 +27,7 @@ public class Cliente {
     private String telefone;
 
     @Column(name = "cpf_cnpj", unique = true)
-    private String cpfCnpj; // Pode ser CPF ou CNPJ
+    private String cpfCnpj;
 
     @Column(name = "data_cadastro")
     private LocalDateTime dataCadastro;
@@ -36,7 +36,7 @@ public class Cliente {
     private String senha;
 
     @Column(name = "ativo", nullable = false)
-    private boolean ativo = true; // Default to true for new clients
+    private boolean ativo = true;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Chamado> chamados;

@@ -45,19 +45,6 @@ public class UserController {
     return ResponseEntity.ok(userDetails);
   }
 
-  @GetMapping("/me/permissions")
-  @PreAuthorize("isAuthenticated()")
-  public ResponseEntity<List<String>> getMyPermissions() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-    if (authentication == null || !authentication.isAuthenticated()) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401 Unauthorized
-    }
-
-    List<String> permissions = userManagementService.getCurrentUserPermissions();
-    return ResponseEntity.ok(permissions);
-  }
-
   @PutMapping("/me")
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> updateCurrentUser(

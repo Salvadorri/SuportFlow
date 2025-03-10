@@ -249,17 +249,4 @@ public class UserManagementService {
 
     userRepository.delete(user);
   }
-
-  @Transactional(readOnly = true)
-  public List<String> getCurrentUserPermissions() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-    if (authentication == null || !authentication.isAuthenticated()) {
-      return Collections.emptyList();
-    }
-
-    return authentication.getAuthorities().stream()
-        .map(GrantedAuthority::getAuthority)
-        .collect(Collectors.toList());
-  }
 }
