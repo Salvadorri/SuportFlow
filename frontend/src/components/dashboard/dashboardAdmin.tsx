@@ -7,6 +7,13 @@ import {
   getUserById,
   updateUser,
 } from "../../api/userApi";
+import logo from "../../assets/logo.png";
+
+const menuItems = [
+  { label: "Abrir Chamado", href: "/criar-chamado" },
+  { label: "Histórico Chamados", href: "/chamados-historico" },
+  { label: "Chat", href: "/chatchamadodash" }
+];
 
 // Definindo a interface para o usuário
 interface User {
@@ -203,27 +210,25 @@ const UserManagement: React.FC = () => {
     <div className="flex h-screen">
       {/* Sidebar */}
       <aside className="w-64 bg-gray-900 text-white p-5">
-        <h1 className="text-2xl font-bold mb-6">User Management</h1>
+        <div className="flex items-center mb-6">
+          <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2"/>
+          <h1 className="text-2xl font-bold">SupportFlow</h1>
+        </div>
         <nav>
           <ul>
-            <li className="mb-4 font-semibold">Menu:</li>
-            <li className="mb-2 hover:bg-gray-700 p-2 rounded">
-              <Link
-                to="/dashboard"
-                className="text-blue-400 block w-full h-full"
+            {menuItems.map((item) => (
+              <li
+                key={item.label}
+                className="mb-2 hover:bg-green-700 p-2 rounded"
               >
-                Dashboard
-              </Link>
-            </li>
-            <li className="mb-2 bg-gray-700 p-2 rounded">
-              <Link to="#" className="text-blue-400">
-                Usuários
-              </Link>
-            </li>
+                <Link to={item.href} className="text-white hover:text-white block w-full h-full">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
       </aside>
-
       {/* Main Content */}
       <main className="flex-1 p-6 bg-gray-100 overflow-auto">
         {/* Message display */}

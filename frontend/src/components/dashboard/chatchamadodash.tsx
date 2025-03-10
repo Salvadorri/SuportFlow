@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from "@tanstack/react-router";
+import logo from "../../assets/logo.png";
 
+const menuItems = [
+  { label: "Abrir Chamado", href: "/criar-chamado" },
+  { label: "Histórico Chamados", href: "/chamados-historico" },
+  { label: "Chat", href: "/chatchamadodash" }
+];
 interface Chat {
   id: number;
   clientName: string;
@@ -388,20 +394,26 @@ const IntegratedChatDashboard: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-48 bg-gray-800 text-white flex flex-col">
-        <div className="p-4 font-bold">
-          Home
+      <aside className="w-64 bg-gray-900 text-white p-5">
+        <div className="flex items-center mb-6">
+          <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2"/>
+          <h1 className="text-2xl font-bold">SupportFlow</h1>
         </div>
-        <div className="p-4 font-bold bg-teal-500">
-          Chamados
-        </div>
-        <div className="p-4 font-bold">
-          Chat Atendente
-        </div>
-        <div className="mt-auto p-4 text-sm">
-          Atendente: Carlos Gomes
-        </div>
-      </div>
+        <nav>
+          <ul>
+            {menuItems.map((item) => (
+              <li
+                key={item.label}
+                className="mb-2 hover:bg-green-700 p-2 rounded"
+              >
+                <Link to={item.href} className="text-white hover:text-white block w-full h-full">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </aside>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
