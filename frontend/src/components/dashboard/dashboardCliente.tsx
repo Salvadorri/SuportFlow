@@ -1,19 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from "@tanstack/react-router";
+import React, { useEffect, useRef, useState } from "react";
 
 interface Chamado {
   id: number;
   titulo: string;
   categoria: string;
-  status: 'Novo' | 'Em Andamento' | 'Aguardando Cliente' | 'Resolvido' | 'Fechado';
-  prioridade: 'Alta' | 'Média' | 'Baixa';
+  status:
+    | "Novo"
+    | "Em Andamento"
+    | "Aguardando Cliente"
+    | "Resolvido"
+    | "Fechado";
+  prioridade: "Alta" | "Média" | "Baixa";
   dataAbertura: string;
   descricao: string;
 }
 
 interface Mensagem {
   id: number;
-  sender: 'cliente' | 'atendente';
+  sender: "cliente" | "atendente";
   text: string;
   timestamp: Date;
 }
@@ -29,13 +33,15 @@ const DashboardCliente: React.FC = () => {
   const [chamados, setChamados] = useState<Chamado[]>([]);
   const [meusChamados, setMeusChamados] = useState<Chamado[]>([]);
   const [chatAberto, setChatAberto] = useState<Chat | null>(null);
-  const [novoTitulo, setNovoTitulo] = useState('');
-  const [novaCategoria, setNovaCategoria] = useState('Bug');
-  const [novaDescricao, setNovaDescricao] = useState('');
-  const [mensagem, setMensagem] = useState('');
+  const [novoTitulo, setNovoTitulo] = useState("");
+  const [novaCategoria, setNovaCategoria] = useState("Bug");
+  const [novaDescricao, setNovaDescricao] = useState("");
+  const [mensagem, setMensagem] = useState("");
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [chamadoSelecionado, setChamadoSelecionado] = useState<Chamado | null>(null);
-  const [aba, setAba] = useState<'chamados' | 'chat'>('chamados');
+  const [chamadoSelecionado, setChamadoSelecionado] = useState<Chamado | null>(
+    null
+  );
+  const [aba, setAba] = useState<"chamados" | "chat">("chamados");
   const mensagensEndRef = useRef<null | HTMLDivElement>(null);
 
   // Simular carregamento de dados
@@ -48,16 +54,18 @@ const DashboardCliente: React.FC = () => {
         status: "Em Andamento",
         prioridade: "Alta",
         dataAbertura: "01/03/2025",
-        descricao: "O sistema apresenta erro ao tentar gerar relatório mensal de vendas."
+        descricao:
+          "O sistema apresenta erro ao tentar gerar relatório mensal de vendas.",
       },
       {
         id: 1002,
         titulo: "Dúvida sobre faturamento",
-        categoria: "Financeiro", 
+        categoria: "Financeiro",
         status: "Aguardando Cliente",
         prioridade: "Média",
         dataAbertura: "28/02/2025",
-        descricao: "Preciso entender como emitir uma nota fiscal para cliente estrangeiro."
+        descricao:
+          "Preciso entender como emitir uma nota fiscal para cliente estrangeiro.",
       },
       {
         id: 1003,
@@ -66,8 +74,9 @@ const DashboardCliente: React.FC = () => {
         status: "Novo",
         prioridade: "Baixa",
         dataAbertura: "05/03/2025",
-        descricao: "Nosso novo funcionário precisa de acesso ao módulo de estoque."
-      }
+        descricao:
+          "Nosso novo funcionário precisa de acesso ao módulo de estoque.",
+      },
     ];
 
     const mockChat: Chat = {
@@ -77,29 +86,29 @@ const DashboardCliente: React.FC = () => {
       mensagens: [
         {
           id: 1,
-          sender: 'cliente',
-          text: 'Olá, estou tendo problemas com o relatório mensal. Podem me ajudar?',
-          timestamp: new Date(2025, 2, 1, 9, 30)
+          sender: "cliente",
+          text: "Olá, estou tendo problemas com o relatório mensal. Podem me ajudar?",
+          timestamp: new Date(2025, 2, 1, 9, 30),
         },
         {
           id: 2,
-          sender: 'atendente',
-          text: 'Bom dia! Claro, estamos verificando o problema. Pode me dizer qual relatório específico está tentando gerar?',
-          timestamp: new Date(2025, 2, 1, 9, 35)
+          sender: "atendente",
+          text: "Bom dia! Claro, estamos verificando o problema. Pode me dizer qual relatório específico está tentando gerar?",
+          timestamp: new Date(2025, 2, 1, 9, 35),
         },
         {
           id: 3,
-          sender: 'cliente',
-          text: 'É o relatório de vendas por região. Quando tento gerar para fevereiro, aparece uma mensagem de erro.',
-          timestamp: new Date(2025, 2, 1, 9, 37)
+          sender: "cliente",
+          text: "É o relatório de vendas por região. Quando tento gerar para fevereiro, aparece uma mensagem de erro.",
+          timestamp: new Date(2025, 2, 1, 9, 37),
         },
         {
           id: 4,
-          sender: 'atendente',
-          text: 'Entendi. Nossa equipe técnica já identificou o problema e está trabalhando em uma correção. Deve ser resolvido até o final do dia de hoje.',
-          timestamp: new Date(2025, 2, 1, 9, 40)
-        }
-      ]
+          sender: "atendente",
+          text: "Entendi. Nossa equipe técnica já identificou o problema e está trabalhando em uma correção. Deve ser resolvido até o final do dia de hoje.",
+          timestamp: new Date(2025, 2, 1, 9, 40),
+        },
+      ],
     };
 
     setChamados(mockChamados);
@@ -112,16 +121,19 @@ const DashboardCliente: React.FC = () => {
   }, [chatAberto]);
 
   const scrollToBottom = () => {
-    mensagensEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    mensagensEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const formatarData = (data: Date): string => {
-    return data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return data.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   const abrirChamado = () => {
-    if (novoTitulo.trim() === '' || novaDescricao.trim() === '') {
-      alert('Por favor, preencha todos os campos obrigatórios.');
+    if (novoTitulo.trim() === "" || novaDescricao.trim() === "") {
+      alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
@@ -129,52 +141,52 @@ const DashboardCliente: React.FC = () => {
       id: Math.floor(1000 + Math.random() * 9000),
       titulo: novoTitulo,
       categoria: novaCategoria,
-      status: 'Novo',
-      prioridade: 'Média',
-      dataAbertura: new Date().toLocaleDateString('pt-BR'),
-      descricao: novaDescricao
+      status: "Novo",
+      prioridade: "Média",
+      dataAbertura: new Date().toLocaleDateString("pt-BR"),
+      descricao: novaDescricao,
     };
 
     const novosChamados = [...chamados, novoChamado];
     setChamados(novosChamados);
     setMeusChamados(novosChamados);
-    setNovoTitulo('');
-    setNovaCategoria('Bug');
-    setNovaDescricao('');
+    setNovoTitulo("");
+    setNovaCategoria("Bug");
+    setNovaDescricao("");
     setMostrarFormulario(false);
   };
 
   const enviarMensagem = () => {
-    if (!chatAberto || mensagem.trim() === '') return;
+    if (!chatAberto || mensagem.trim() === "") return;
 
     const novaMensagem: Mensagem = {
       id: chatAberto.mensagens.length + 1,
-      sender: 'cliente',
+      sender: "cliente",
       text: mensagem,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     const chatAtualizado = {
       ...chatAberto,
-      mensagens: [...chatAberto.mensagens, novaMensagem]
+      mensagens: [...chatAberto.mensagens, novaMensagem],
     };
 
     setChatAberto(chatAtualizado);
-    setMensagem('');
-    
+    setMensagem("");
+
     // Simular resposta do atendente após um tempo
     setTimeout(() => {
       if (chatAberto) {
         const respostaAtendente: Mensagem = {
           id: chatAtualizado.mensagens.length + 1,
-          sender: 'atendente',
-          text: 'Estamos analisando sua solicitação. Em breve retornaremos com mais informações.',
-          timestamp: new Date()
+          sender: "atendente",
+          text: "Estamos analisando sua solicitação. Em breve retornaremos com mais informações.",
+          timestamp: new Date(),
         };
 
         const chatComResposta = {
           ...chatAtualizado,
-          mensagens: [...chatAtualizado.mensagens, respostaAtendente]
+          mensagens: [...chatAtualizado.mensagens, respostaAtendente],
         };
 
         setChatAberto(chatComResposta);
@@ -189,7 +201,7 @@ const DashboardCliente: React.FC = () => {
   const iniciarChat = (chamado: Chamado) => {
     // Verificar se já existe um chat para este chamado
     if (chatAberto && chatAberto.chamadoId === chamado.id) {
-      setAba('chat');
+      setAba("chat");
       return;
     }
 
@@ -198,40 +210,40 @@ const DashboardCliente: React.FC = () => {
       id: Math.floor(1 + Math.random() * 1000),
       chamadoId: chamado.id,
       ativo: true,
-      mensagens: []
+      mensagens: [],
     };
 
     setChatAberto(novoChat);
-    setAba('chat');
+    setAba("chat");
   };
 
   const getStatusClass = (status: string) => {
     switch (status) {
-      case 'Novo':
-        return 'bg-blue-100 text-blue-800';
-      case 'Em Andamento':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'Aguardando Cliente':
-        return 'bg-purple-100 text-purple-800';
-      case 'Resolvido':
-        return 'bg-green-100 text-green-800';
-      case 'Fechado':
-        return 'bg-gray-100 text-gray-800';
+      case "Novo":
+        return "bg-blue-100 text-blue-800";
+      case "Em Andamento":
+        return "bg-yellow-100 text-yellow-800";
+      case "Aguardando Cliente":
+        return "bg-purple-100 text-purple-800";
+      case "Resolvido":
+        return "bg-green-100 text-green-800";
+      case "Fechado":
+        return "bg-gray-100 text-gray-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getPrioridadeClass = (prioridade: string) => {
     switch (prioridade) {
-      case 'Alta':
-        return 'text-red-600';
-      case 'Média':
-        return 'text-yellow-600';
-      case 'Baixa':
-        return 'text-green-600';
+      case "Alta":
+        return "text-red-600";
+      case "Média":
+        return "text-yellow-600";
+      case "Baixa":
+        return "text-green-600";
       default:
-        return 'text-gray-600';
+        return "text-gray-600";
     }
   };
 
@@ -246,16 +258,26 @@ const DashboardCliente: React.FC = () => {
         </div>
         <nav>
           <ul className="space-y-2">
-            <li className={`p-2 rounded cursor-pointer ${aba === 'chamados' ? 'bg-blue-600' : 'hover:bg-gray-700'}`} onClick={() => setAba('chamados')}>
+            <li
+              className={`p-2 rounded cursor-pointer ${
+                aba === "chamados" ? "bg-blue-600" : "hover:bg-gray-700"
+              }`}
+              onClick={() => setAba("chamados")}
+            >
               Meus Chamados
             </li>
-            <li className={`p-2 rounded cursor-pointer ${aba === 'chat' ? 'bg-blue-600' : 'hover:bg-gray-700'}`} onClick={() => setAba('chat')}>
+            <li
+              className={`p-2 rounded cursor-pointer ${
+                aba === "chat" ? "bg-blue-600" : "hover:bg-gray-700"
+              }`}
+              onClick={() => setAba("chat")}
+            >
               Chat com Suporte
             </li>
           </ul>
         </nav>
         <div className="mt-auto pt-6">
-          <button 
+          <button
             onClick={() => setMostrarFormulario(true)}
             className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
           >
@@ -277,7 +299,7 @@ const DashboardCliente: React.FC = () => {
 
         {/* Main content area */}
         <main className="p-6">
-          {aba === 'chamados' ? (
+          {aba === "chamados" ? (
             <>
               {/* Chamados View */}
               <div className="bg-white shadow-md rounded-lg p-6">
@@ -301,27 +323,38 @@ const DashboardCliente: React.FC = () => {
                     </thead>
                     <tbody>
                       {meusChamados.map((chamado) => (
-                        <tr key={chamado.id} className="border-b hover:bg-gray-50">
+                        <tr
+                          key={chamado.id}
+                          className="border-b hover:bg-gray-50"
+                        >
                           <td className="p-3">#{chamado.id}</td>
                           <td className="p-3">{chamado.titulo}</td>
                           <td className="p-3">{chamado.categoria}</td>
                           <td className="p-3">
-                            <span className={`px-2 py-1 rounded-full text-xs ${getStatusClass(chamado.status)}`}>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs ${getStatusClass(
+                                chamado.status
+                              )}`}
+                            >
                               {chamado.status}
                             </span>
                           </td>
-                          <td className={`p-3 ${getPrioridadeClass(chamado.prioridade)}`}>
+                          <td
+                            className={`p-3 ${getPrioridadeClass(
+                              chamado.prioridade
+                            )}`}
+                          >
                             {chamado.prioridade}
                           </td>
                           <td className="p-3">{chamado.dataAbertura}</td>
                           <td className="p-3 flex space-x-2">
-                            <button 
+                            <button
                               onClick={() => verDetalhes(chamado)}
                               className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-sm hover:bg-blue-200"
                             >
                               Detalhes
                             </button>
-                            <button 
+                            <button
                               onClick={() => iniciarChat(chamado)}
                               className="bg-green-100 text-green-600 px-2 py-1 rounded text-sm hover:bg-green-200"
                             >
@@ -338,8 +371,10 @@ const DashboardCliente: React.FC = () => {
                 {chamadoSelecionado && (
                   <div className="mt-6 border rounded-lg p-4 bg-gray-50">
                     <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-semibold">Detalhes do Chamado #{chamadoSelecionado.id}</h3>
-                      <button 
+                      <h3 className="text-lg font-semibold">
+                        Detalhes do Chamado #{chamadoSelecionado.id}
+                      </h3>
+                      <button
                         onClick={() => setChamadoSelecionado(null)}
                         className="text-gray-500 hover:text-gray-700"
                       >
@@ -354,7 +389,11 @@ const DashboardCliente: React.FC = () => {
                       <div>
                         <p className="text-sm text-gray-500">Status:</p>
                         <p>
-                          <span className={`px-2 py-1 rounded-full text-xs ${getStatusClass(chamadoSelecionado.status)}`}>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs ${getStatusClass(
+                              chamadoSelecionado.status
+                            )}`}
+                          >
                             {chamadoSelecionado.status}
                           </span>
                         </p>
@@ -365,7 +404,11 @@ const DashboardCliente: React.FC = () => {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Prioridade:</p>
-                        <p className={getPrioridadeClass(chamadoSelecionado.prioridade)}>
+                        <p
+                          className={getPrioridadeClass(
+                            chamadoSelecionado.prioridade
+                          )}
+                        >
                           {chamadoSelecionado.prioridade}
                         </p>
                       </div>
@@ -377,7 +420,7 @@ const DashboardCliente: React.FC = () => {
                       </p>
                     </div>
                     <div className="mt-4 flex justify-end">
-                      <button 
+                      <button
                         onClick={() => iniciarChat(chamadoSelecionado)}
                         className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                       >
@@ -398,36 +441,50 @@ const DashboardCliente: React.FC = () => {
                     <h2 className="font-bold">Suporte Técnico</h2>
                     {chatAberto && chatAberto.chamadoId && (
                       <p className="text-sm text-gray-500">
-                        Chamado #{chatAberto.chamadoId} - {chamados.find(c => c.id === chatAberto?.chamadoId)?.titulo}
+                        Chamado #{chatAberto.chamadoId} -{" "}
+                        {
+                          chamados.find((c) => c.id === chatAberto?.chamadoId)
+                            ?.titulo
+                        }
                       </p>
                     )}
                   </div>
                   <div>
                     <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                    <span className="text-sm text-gray-600">Atendente online</span>
+                    <span className="text-sm text-gray-600">
+                      Atendente online
+                    </span>
                   </div>
                 </div>
-                
+
                 {/* Messages Area */}
                 <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
                   {chatAberto && chatAberto.mensagens.length > 0 ? (
                     <>
                       {chatAberto.mensagens.map((msg) => (
-                        <div 
-                          key={msg.id} 
-                          className={`mb-4 flex ${msg.sender === 'cliente' ? 'justify-end' : 'justify-start'}`}
+                        <div
+                          key={msg.id}
+                          className={`mb-4 flex ${
+                            msg.sender === "cliente"
+                              ? "justify-end"
+                              : "justify-start"
+                          }`}
                         >
-                          <div 
+                          <div
                             className={`max-w-md rounded-lg p-3 ${
-                              msg.sender === 'cliente' 
-                                ? 'bg-blue-500 text-white' 
-                                : 'bg-white border border-gray-200'
+                              msg.sender === "cliente"
+                                ? "bg-blue-500 text-white"
+                                : "bg-white border border-gray-200"
                             }`}
                           >
                             <p>{msg.text}</p>
-                            <p className={`text-xs mt-1 text-right ${
-                              msg.sender === 'cliente' ? 'text-blue-100' : 'text-gray-500'
-                            }`}>
+                            <p
+                              className={`text-xs mt-1 text-right ${
+                                msg.sender === "cliente"
+                                  ? "text-blue-100"
+                                  : "text-gray-500"
+                              }`}
+                            >
                               {formatarData(msg.timestamp)}
                             </p>
                           </div>
@@ -438,14 +495,14 @@ const DashboardCliente: React.FC = () => {
                   ) : (
                     <div className="h-full flex items-center justify-center">
                       <p className="text-gray-500 text-center">
-                        {chatAberto 
-                          ? "Nenhuma mensagem ainda. Envie uma mensagem para iniciar a conversa." 
+                        {chatAberto
+                          ? "Nenhuma mensagem ainda. Envie uma mensagem para iniciar a conversa."
                           : "Selecione um chamado para iniciar uma conversa com o suporte."}
                       </p>
                     </div>
                   )}
                 </div>
-                
+
                 {/* Input Area */}
                 <div className="p-4 border-t">
                   <div className="flex">
@@ -453,7 +510,7 @@ const DashboardCliente: React.FC = () => {
                       type="text"
                       value={mensagem}
                       onChange={(e) => setMensagem(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && enviarMensagem()}
+                      onKeyPress={(e) => e.key === "Enter" && enviarMensagem()}
                       placeholder="Digite sua mensagem..."
                       className="flex-1 border border-gray-300 rounded-l-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       disabled={!chatAberto}
@@ -479,7 +536,7 @@ const DashboardCliente: React.FC = () => {
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold">Abrir Novo Chamado</h2>
-              <button 
+              <button
                 onClick={() => setMostrarFormulario(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
@@ -488,7 +545,9 @@ const DashboardCliente: React.FC = () => {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Título *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Título *
+                </label>
                 <input
                   type="text"
                   value={novoTitulo}
@@ -498,7 +557,9 @@ const DashboardCliente: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Categoria *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Categoria *
+                </label>
                 <select
                   value={novaCategoria}
                   onChange={(e) => setNovaCategoria(e.target.value)}
@@ -511,7 +572,9 @@ const DashboardCliente: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Descrição *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Descrição *
+                </label>
                 <textarea
                   value={novaDescricao}
                   onChange={(e) => setNovaDescricao(e.target.value)}
