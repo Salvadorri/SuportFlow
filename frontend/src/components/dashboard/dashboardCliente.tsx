@@ -1,10 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const menuItems = [
-  { label: "Abrir Chamado", href: "/criar-chamado" },
-  { label: "Histórico Chamados", href: "/chamados-historico" },
-  { label: "Chat", href: "/chatchamadodash" }
-];
 interface Chamado {
   id: number;
   titulo: string;
@@ -255,10 +250,11 @@ const DashboardCliente: React.FC = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white p-5 ">
-        <div className="flex items-center mb-6">
-          <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2"/>
-          <h1 className="text-2xl font-bold">SupportFlow</h1>
+      <div className="w-64 bg-gray-900 text-white p-6">
+        <h2 className="text-xl font-bold mb-6">Support Flow</h2>
+        <div className="mb-4">
+          <p className="text-sm text-gray-400">Cliente:</p>
+          <p className="font-medium">Empresa ABC Ltda.</p>
         </div>
         <nav>
           <ul className="space-y-2">
@@ -283,11 +279,12 @@ const DashboardCliente: React.FC = () => {
         <div className="mt-auto pt-6">
           <button
             onClick={() => setMostrarFormulario(true)}
-            className="w-full bg-green-700 hover:bg-green-500 text-white py-2 px-4 rounded-md"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
           >
             + Novo Chamado
           </button>
-      </aside>
+        </div>
+      </div>
 
       {/* Main Content */}
       <div className="flex-1">
@@ -594,7 +591,7 @@ const DashboardCliente: React.FC = () => {
                 </button>
                 <button
                   onClick={abrirChamado}
-                  className="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-500"
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                 >
                   Abrir Chamado
                 </button>
