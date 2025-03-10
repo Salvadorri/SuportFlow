@@ -20,3 +20,6 @@ jwt:
 admin:
   email: admin@suportflow.com.br
   password: suportflow-admin
+file:
+  upload:
+    dir: /tmp/uploads

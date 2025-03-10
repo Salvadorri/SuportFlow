@@ -17,8 +17,8 @@ public class Chamado {
     private Cliente cliente; // Cada chamado pertence a um cliente
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")  //Pode ser nulo se não tiver sido atribuido
-    private User atendente; // Atendente (User) responsável pelo chamado
+    @JoinColumn(name = "usuario_id")
+    private User atendente;
 
     @Column(name = "titulo", nullable = false)
     private String titulo;
@@ -44,8 +44,6 @@ public class Chamado {
     @Column(name = "data_fechamento")
     private LocalDateTime dataFechamento;  // Pode ser nulo se o chamado estiver aberto
 
-    @Column(name = "avaliacao")
-    private Integer avaliacao; // Avaliação do cliente (opcional)
 
     // Construtores
     public Chamado() {}
@@ -130,11 +128,5 @@ public class Chamado {
 
     public void setDataFechamento(LocalDateTime dataFechamento) {
         this.dataFechamento = dataFechamento;
-    }
-    public Integer getAvaliacao() {
-        return avaliacao;
-    }
-    public void setAvaliacao(Integer avaliacao) {
-        this.avaliacao = avaliacao;
     }
 }

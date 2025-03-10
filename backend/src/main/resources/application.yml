@@ -27,3 +27,6 @@ logging:
     root: INFO
     com:
       suportflow: DEBUG
+file:
+  upload:
+    dir: /app/upload
