@@ -233,13 +233,9 @@ const Chamados: React.FC = () => {
   return (
     <div className="flex h-screen overflow-hidden">
       <aside className="w-64 bg-gray-900 text-white p-5">
-        <div className="flex mb-6">
-          <img
-            src={logo}
-            alt="SupportFlowAI Logo"
-            className="h-14 w-auto mr-2 items-center"
-          />
-          <h1 className="text-2xl font-bold mb-6 flex items-end">SupportFlow</h1>
+        <div className="flex items-center mb-6">
+          <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2"/>
+          <h1 className="text-2xl font-bold">SupportFlow</h1>
         </div>
         <nav>
           <ul>

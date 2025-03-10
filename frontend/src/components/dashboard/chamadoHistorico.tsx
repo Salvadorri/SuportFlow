@@ -1,5 +1,12 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import logo from "../../assets/logo.png";
+
+const menuItems = [
+  { label: "Abrir Chamado", href: "/criar-chamado" },
+  { label: "Histórico Chamados", href: "/chamados-historico" },
+  { label: "Chat", href: "/chatchamadodash" }
+];
 
 export default function HistoricoChamados() {
   const [chamados, setChamados] = useState([
@@ -139,21 +146,26 @@ export default function HistoricoChamados() {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-900 text-white p-6">
-        <h2 className="text-xl font-bold mb-4">Support Flow.AI</h2>
+      <aside className="w-64 bg-gray-900 text-white p-5">
+        <div className="flex items-center mb-6">
+          <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2"/>
+          <h1 className="text-2xl font-bold">SupportFlow</h1>
+        </div>
         <nav>
           <ul>
-            <li className="mb-2 hover:bg-gray-700 p-2 rounded">
-              <Link to="/dashboard" className="text-blue-400 block w-full h-full">
-                Dashboard
-              </Link>
-            </li>
-            <li className="mb-2 hover:bg-gray-700 p-2 rounded">
-              <a href="#" className="text-blue-400">Meus Chamados</a>
-            </li>
+            {menuItems.map((item) => (
+              <li
+                key={item.label}
+                className="mb-2 hover:bg-green-700 p-2 rounded"
+              >
+                <Link to={item.href} className="text-white hover:text-white block w-full h-full">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
-      </div>
+      </aside>
       
       {/* Content */}
       <div className="p-6 bg-gray-100 flex-1">
