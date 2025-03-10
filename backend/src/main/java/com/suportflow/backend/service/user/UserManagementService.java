@@ -6,9 +6,11 @@ import com.suportflow.backend.dto.UserDetailsDTO;
 import com.suportflow.backend.dto.UserRegistrationDTO;
 import com.suportflow.backend.dto.UserUpdateDTO;
 import com.suportflow.backend.exception.UserNotFoundException;
+import com.suportflow.backend.model.Chamado;
 import com.suportflow.backend.model.Empresa;
 import com.suportflow.backend.model.Permissao;
 import com.suportflow.backend.model.User;
+import com.suportflow.backend.repository.ChamadoRepository;
 import com.suportflow.backend.repository.EmpresaRepository;
 import com.suportflow.backend.repository.PermissaoRepository;
 import com.suportflow.backend.repository.UserRepository;
@@ -38,6 +40,8 @@ public class UserManagementService {
 
   @Autowired private PermissaoRepository permissaoRepository; // Injete o PermissaoRepository
 
+  @Autowired private ChamadoRepository chamadoRepository; // Inject ChamadoRepository
+
   @Transactional
   public UserDetailsDTO registerNewUser(UserRegistrationDTO registrationDTO) {
     // Existing email check
@@ -47,7 +51,7 @@ public class UserManagementService {
 
     // CPF/CNPJ check.  Important:  Handle nulls!
     if (registrationDTO.getCpfCnpj() != null
-        && userRepository.existsByCpfCnpj(registrationDTO.getCpfCnpj())) {
+            && userRepository.existsByCpfCnpj(registrationDTO.getCpfCnpj())) {
       throw new DataIntegrityViolationException("Já existe um usuário com este CPF/CNPJ.");
     }
 
@@ -56,12 +60,12 @@ public class UserManagementService {
     Empresa empresa = null;
     if (registrationDTO.getEmpresaNome() != null) {
       empresa =
-          empresaRepository
-              .findByNome(registrationDTO.getEmpresaNome())
-              .orElseThrow(
-                  () ->
-                      new RuntimeException(
-                          "Empresa não encontrada: " + registrationDTO.getEmpresaNome()));
+              empresaRepository
+                      .findByNome(registrationDTO.getEmpresaNome())
+                      .orElseThrow(
+                              () ->
+                                      new RuntimeException(
+                                              "Empresa não encontrada: " + registrationDTO.getEmpresaNome()));
     }
 
     User user = new User();
@@ -80,13 +84,13 @@ public class UserManagementService {
     if (registrationDTO.getRoles() != null) { // Importante: Verifique se a lista não é nula
       for (String roleName : registrationDTO.getRoles()) {
         Permissao permissao =
-            permissaoRepository
-                .findByNome(roleName)
-                .orElseThrow(
-                    () ->
-                        new RuntimeException(
-                            "Permissão não encontrada: "
-                                + roleName)); // Melhor tratamento de exceção
+                permissaoRepository
+                        .findByNome(roleName)
+                        .orElseThrow(
+                                () ->
+                                        new RuntimeException(
+                                                "Permissão não encontrada: "
+                                                        + roleName)); // Melhor tratamento de exceção
         permissoes.add(permissao);
       }
     }
@@ -104,8 +108,8 @@ public class UserManagementService {
   @Transactional(readOnly = true)
   public User findByEmail(String email) {
     return userRepository
-        .findByEmail(email)
-        .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o email: " + email));
+            .findByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o email: " + email));
   }
 
   @Transactional(readOnly = true)
@@ -117,9 +121,9 @@ public class UserManagementService {
   @Transactional(readOnly = true)
   public UserDetailsDTO findDTOById(Long id) {
     User user =
-        userRepository
-            .findById(id)
-            .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o ID: " + id));
+            userRepository
+                    .findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o ID: " + id));
     return new UserDetailsDTO(user);
   }
 
@@ -134,15 +138,15 @@ public class UserManagementService {
 
     // Check for email conflicts *only if* the email is being changed.
     if (userDTO.getEmail() != null
-        && !user.getEmail().equals(userDTO.getEmail())
-        && userRepository.existsByEmail(userDTO.getEmail())) {
+            && !user.getEmail().equals(userDTO.getEmail())
+            && userRepository.existsByEmail(userDTO.getEmail())) {
       throw new DataIntegrityViolationException("Já existe um usuário com este e-mail.");
     }
 
     // Check for CPF/CNPJ conflicts, *only if* the CPF/CNPJ is being changed.
     if (userDTO.getCpfCnpj() != null
-        && !userDTO.getCpfCnpj().equals(user.getCpfCnpj())
-        && userRepository.existsByCpfCnpj(userDTO.getCpfCnpj())) {
+            && !userDTO.getCpfCnpj().equals(user.getCpfCnpj())
+            && userRepository.existsByCpfCnpj(userDTO.getCpfCnpj())) {
       throw new DataIntegrityViolationException("Já existe um usuário com este CPF/CNPJ.");
     }
     // Only update if the value is present in the DTO
@@ -160,10 +164,10 @@ public class UserManagementService {
     }
     if (userDTO.getEmpresaNome() != null) {
       Empresa empresa =
-          empresaRepository
-              .findByNome(userDTO.getEmpresaNome())
-              .orElseThrow(
-                  () -> new RuntimeException("Empresa não encontrada: " + userDTO.getEmpresaNome()));
+              empresaRepository
+                      .findByNome(userDTO.getEmpresaNome())
+                      .orElseThrow(
+                              () -> new RuntimeException("Empresa não encontrada: " + userDTO.getEmpresaNome()));
       user.setEmpresa(empresa);
     }
 
@@ -175,21 +179,21 @@ public class UserManagementService {
   @Transactional
   public UserDetailsDTO updateUser(Long id, UserUpdateDTO userDTO) { // Use UserUpdateDTO
     User user =
-        userRepository
-            .findById(id)
-            .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o ID: " + id));
+            userRepository
+                    .findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o ID: " + id));
 
     // Check for email conflicts *only if* the email is being changed.
     if (userDTO.getEmail() != null
-        && !user.getEmail().equals(userDTO.getEmail())
-        && userRepository.existsByEmail(userDTO.getEmail())) {
+            && !user.getEmail().equals(userDTO.getEmail())
+            && userRepository.existsByEmail(userDTO.getEmail())) {
       throw new DataIntegrityViolationException("Já existe um usuário com este e-mail.");
     }
 
     // Check for CPF/CNPJ conflicts, *only if* the CPF/CNPJ is being changed.
     if (userDTO.getCpfCnpj() != null
-        && !userDTO.getCpfCnpj().equals(user.getCpfCnpj())
-        && userRepository.existsByCpfCnpj(userDTO.getCpfCnpj())) {
+            && !userDTO.getCpfCnpj().equals(user.getCpfCnpj())
+            && userRepository.existsByCpfCnpj(userDTO.getCpfCnpj())) {
       throw new DataIntegrityViolationException("Já existe um usuário com este CPF/CNPJ.");
     }
 
@@ -209,10 +213,10 @@ public class UserManagementService {
 
     if (userDTO.getEmpresaNome() != null) {
       Empresa empresa =
-          empresaRepository
-              .findByNome(userDTO.getEmpresaNome())
-              .orElseThrow(
-                  () -> new RuntimeException("Empresa não encontrada: " + userDTO.getEmpresaNome()));
+              empresaRepository
+                      .findByNome(userDTO.getEmpresaNome())
+                      .orElseThrow(
+                              () -> new RuntimeException("Empresa não encontrada: " + userDTO.getEmpresaNome()));
       user.setEmpresa(empresa);
     }
 
@@ -243,23 +247,19 @@ public class UserManagementService {
   @Transactional
   public void deleteUser(Long userId) {
     User user =
-        userRepository
-            .findById(userId)
-            .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o ID: " + userId));
+            userRepository
+                    .findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o ID: " + userId));
 
-    userRepository.delete(user);
-  }
+    // No need to nullify refresh tokens, ON DELETE CASCADE will handle it
 
-  @Transactional(readOnly = true)
-  public List<String> getCurrentUserPermissions() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-    if (authentication == null || !authentication.isAuthenticated()) {
-      return Collections.emptyList();
+    // Nullify the user_id in chamados table
+    List<Chamado> chamados = chamadoRepository.findByAtendente(user);
+    for (Chamado chamado : chamados) {
+      chamado.setAtendente(null); // Set the atendente to null
+      chamadoRepository.save(chamado);
     }
 
-    return authentication.getAuthorities().stream()
-        .map(GrantedAuthority::getAuthority)
-        .collect(Collectors.toList());
+    userRepository.delete(user);
   }
 }

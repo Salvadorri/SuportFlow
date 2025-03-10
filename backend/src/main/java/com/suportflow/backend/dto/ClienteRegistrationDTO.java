@@ -1,8 +1,8 @@
-// src/main/java/com/suportflow/backend/dto/ClienteRegistrationDTO.java
 package com.suportflow.backend.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,9 +25,10 @@ public class ClienteRegistrationDTO {
   private String telefone;
 
   @NotBlank(message = "O CPF/CNPJ é obrigatório")
+  @Pattern(regexp = "^\\d{11}$|^\\d{14}$", message = "CPF/CNPJ inválido")
   private String cpfCnpj;
 
-  private String empresaNome; // O nome da empresa é opcional no registro
+  private String empresaNome;
 
   @NotBlank(message = "A senha é obrigatória")
   @Size(min = 6, message = "A senha deve ter pelo menos 6 caracteres")

@@ -4,11 +4,11 @@ import com.suportflow.backend.model.Permissao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional; // Importante
+import java.util.Optional;
 
 @Repository
-public interface PermissaoRepository extends JpaRepository<Permissao, Long> { // Long se o ID for Long
+public interface PermissaoRepository extends JpaRepository<Permissao, Long> {
 
-    Optional<Permissao> findByNome(String nome); // Retorna Optional<Permissao>
-    boolean existsByNome(String nome); //Verifica se existe
+    Optional<Permissao> findByNome(String nome);
+    boolean existsByNome(String nome);
 }

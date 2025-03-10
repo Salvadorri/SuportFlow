@@ -17,7 +17,7 @@ interface UserDataCreate extends Omit<UserData, "password" | "role"> {
   role: string; // Uma única role para criação
 }
 
-const BASE_URL = "http://localhost:8080/api";
+const BASE_URL = "http://localhost:10001/api";
 
 // Function to create a user
 export const createUser = async (userData: UserDataCreate) => {

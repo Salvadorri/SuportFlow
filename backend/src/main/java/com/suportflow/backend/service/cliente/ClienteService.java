@@ -1,4 +1,3 @@
-// src/main/java/com/suportflow/backend/service/cliente/ClienteService.java
 package com.suportflow.backend.service.cliente;
 
 import com.suportflow.backend.dto.ClienteDTO;
@@ -12,9 +11,13 @@ import com.suportflow.backend.model.Empresa;
 import com.suportflow.backend.repository.ClienteRepository;
 import com.suportflow.backend.repository.EmpresaRepository;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,22 +26,26 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClienteService {
 
   @Autowired private ClienteRepository clienteRepository;
-
   @Autowired private EmpresaRepository empresaRepository;
-
   @Autowired private PasswordEncoder passwordEncoder;
 
   @Transactional(readOnly = true)
-  public ClienteDTO findById(Long id) {
-    Cliente cliente =
-        clienteRepository
-            .findById(id)
-            .orElseThrow(() -> new UserNotFoundException("Cliente não encontrado com o ID: " + id));
-    return new ClienteDTO(cliente); // Convert to DTO
+  public ClienteDTO findDTOById(Long id) {
+    return clienteRepository
+        .findById(id)
+        .map(ClienteDTO::new)
+        .orElseThrow(() -> new UserNotFoundException("Cliente não encontrado com o ID: " + id));
   }
 
+    @Transactional(readOnly = true)
+    public ClienteDTO findDTOByEmail(String email) {
+        return clienteRepository.findByEmail(email)
+                .map(ClienteDTO::new)
+                .orElseThrow(() -> new UserNotFoundException("Cliente não encontrado com o email: " + email));
+    }
+
   @Transactional(readOnly = true)
-  public Cliente findEntityById(Long id) { // Added for internal use (security checks)
+  public Cliente findEntityById(Long id) {
     return clienteRepository
         .findById(id)
         .orElseThrow(() -> new UserNotFoundException("Cliente não encontrado com o ID: " + id));
@@ -50,12 +57,12 @@ public class ClienteService {
   }
 
   @Transactional(readOnly = true)
-  public List<Cliente> findAll() {
+  public List<Cliente> findAll() { // Consider removing, as findAllDTO is usually preferred.
     return clienteRepository.findAll();
   }
 
   @Transactional(readOnly = true)
-  public Cliente findByEmail(String email) {
+  public Cliente findByEmail(String email) { // Keep this for internal use.
     return clienteRepository
         .findByEmail(email)
         .orElseThrow(() -> new UserNotFoundException("Cliente não encontrado com o email: " + email));
@@ -63,19 +70,17 @@ public class ClienteService {
 
   @Transactional
   public ClienteDTO save(ClienteRegistrationDTO clienteRegistrationDTO) {
+    // Duplicate checks
     if (clienteRepository.existsByEmail(clienteRegistrationDTO.getEmail())) {
       throw new UniqueFieldAlreadyExistsException("Já existe um cliente com este email.");
     }
-
     if (clienteRepository.existsByCpfCnpj(clienteRegistrationDTO.getCpfCnpj())) {
       throw new UniqueFieldAlreadyExistsException("Já existe um cliente com este CPF/CNPJ.");
     }
-
     if (clienteRepository.existsByTelefone(clienteRegistrationDTO.getTelefone())) {
-      throw new UniqueFieldAlreadyExistsException("Já existe um cliente com este telefone.");
+        throw new UniqueFieldAlreadyExistsException("Já existe um cliente com este telefone.");
     }
 
-    // Find Empresa, if provided
     Empresa empresa = null;
     if (clienteRegistrationDTO.getEmpresaNome() != null) {
       empresa =
@@ -92,46 +97,42 @@ public class ClienteService {
     cliente.setEmail(clienteRegistrationDTO.getEmail());
     cliente.setTelefone(clienteRegistrationDTO.getTelefone());
     cliente.setCpfCnpj(clienteRegistrationDTO.getCpfCnpj());
-    cliente.setEmpresa(empresa); // Set the Empresa
+    cliente.setEmpresa(empresa);
     cliente.setSenha(passwordEncoder.encode(clienteRegistrationDTO.getSenha()));
     cliente.setDataCadastro(LocalDateTime.now());
-    cliente.setAtivo(true); // Ensure new clients are active
+    cliente.setAtivo(true);
 
     Cliente savedCliente = clienteRepository.save(cliente);
-    return new ClienteDTO(savedCliente); // Return the DTO
+    return new ClienteDTO(savedCliente);
   }
 
   @Transactional
   public ClienteDTO update(Long id, ClienteUpdateDTO clienteAtualizado) {
-    Cliente clienteExistente = findEntityById(id); // Use the entity version
+    Cliente clienteExistente = findEntityById(id); // Use consistent findEntityById
 
-    // Check if email is being changed and if the new email already exists
-    if (clienteAtualizado.getEmail() != null
-        && !clienteExistente.getEmail().equals(clienteAtualizado.getEmail())) {
-      if (clienteRepository.existsByEmail(clienteAtualizado.getEmail())) {
-        throw new UniqueFieldAlreadyExistsException("Já existe um cliente com este email.");
+    // Unique field checks (only if changed)
+      if (clienteAtualizado.getEmail() != null && !clienteExistente.getEmail().equals(clienteAtualizado.getEmail())) {
+          if (clienteRepository.existsByEmail(clienteAtualizado.getEmail())) {
+              throw new UniqueFieldAlreadyExistsException("Já existe um cliente com este email.");
+          }
+          clienteExistente.setEmail(clienteAtualizado.getEmail());
       }
-      clienteExistente.setEmail(clienteAtualizado.getEmail());
-    }
 
-    // Check if CPF/CNPJ is being changed and if the new CPF/CNPJ already exists
-    if (clienteAtualizado.getCpfCnpj() != null
-        && !clienteExistente.getCpfCnpj().equals(clienteAtualizado.getCpfCnpj())) {
-      if (clienteRepository.existsByCpfCnpj(clienteAtualizado.getCpfCnpj())) {
-        throw new UniqueFieldAlreadyExistsException("Já existe um cliente com este CPF/CNPJ.");
+      if (clienteAtualizado.getCpfCnpj() != null && !clienteExistente.getCpfCnpj().equals(clienteAtualizado.getCpfCnpj())) {
+          if (clienteRepository.existsByCpfCnpj(clienteAtualizado.getCpfCnpj())) {
+              throw new UniqueFieldAlreadyExistsException("Já existe um cliente com este CPF/CNPJ.");
+          }
+          clienteExistente.setCpfCnpj(clienteAtualizado.getCpfCnpj());
       }
-      clienteExistente.setCpfCnpj(clienteAtualizado.getCpfCnpj());
-    }
 
-    // Check if telephone is being changed
-    if (clienteAtualizado.getTelefone() != null
-        && !clienteExistente.getTelefone().equals(clienteAtualizado.getTelefone())) {
-      if (clienteRepository.existsByTelefone(clienteAtualizado.getTelefone())) {
-        throw new UniqueFieldAlreadyExistsException("Já existe um cliente com este telefone.");
+      if (clienteAtualizado.getTelefone() != null && !clienteExistente.getTelefone().equals(clienteAtualizado.getTelefone())) {
+          if(clienteRepository.existsByTelefone(clienteAtualizado.getTelefone())){
+              throw new UniqueFieldAlreadyExistsException("Já existe um cliente com este telefone.");
+          }
+          clienteExistente.setTelefone(clienteAtualizado.getTelefone());
       }
-      clienteExistente.setTelefone(clienteAtualizado.getTelefone());
-    }
 
+    // Other field updates
     if (clienteAtualizado.getNome() != null) {
       clienteExistente.setNome(clienteAtualizado.getNome());
     }
@@ -151,29 +152,83 @@ public class ClienteService {
     return new ClienteDTO(updatedCliente);
   }
 
-  @Transactional
-  public void changePassword(Long id, PasswordChangeDTO passwordChangeDTO) {
-    Cliente cliente = findEntityById(id); // Use findEntityById
+    @Transactional
+    public ClienteDTO updateByEmail(String email, ClienteUpdateDTO clienteUpdateDTO) {
+        Cliente clienteExistente = findByEmail(email); // Find by email!
 
-    // Verify old password
-    if (!passwordEncoder.matches(passwordChangeDTO.getOldPassword(), cliente.getSenha())) {
-      throw new IllegalArgumentException("Senha antiga incorreta.");
+        // Unique field checks (only if changed), similar to update(Long id, ...)
+        if (clienteUpdateDTO.getEmail() != null && !clienteExistente.getEmail().equals(clienteUpdateDTO.getEmail())) {
+            if (clienteRepository.existsByEmail(clienteUpdateDTO.getEmail())) {
+                throw new UniqueFieldAlreadyExistsException("Já existe um cliente com este email.");
+            }
+            clienteExistente.setEmail(clienteUpdateDTO.getEmail());
+        }
+
+        if (clienteUpdateDTO.getCpfCnpj() != null && !clienteExistente.getCpfCnpj().equals(clienteUpdateDTO.getCpfCnpj())) {
+            if (clienteRepository.existsByCpfCnpj(clienteUpdateDTO.getCpfCnpj())) {
+                throw new UniqueFieldAlreadyExistsException("Já existe um cliente com este CPF/CNPJ.");
+            }
+            clienteExistente.setCpfCnpj(clienteUpdateDTO.getCpfCnpj());
+        }
+
+        if (clienteUpdateDTO.getTelefone() != null && !clienteExistente.getTelefone().equals(clienteUpdateDTO.getTelefone())) {
+          if(clienteRepository.existsByTelefone(clienteUpdateDTO.getTelefone())){
+              throw new UniqueFieldAlreadyExistsException("Já existe um cliente com este telefone.");
+          }
+          clienteExistente.setTelefone(clienteUpdateDTO.getTelefone());
+      }
+
+        // Other field updates (similar to update method)
+        if (clienteUpdateDTO.getNome() != null) {
+            clienteExistente.setNome(clienteUpdateDTO.getNome());
+        }
+        if (clienteUpdateDTO.getEmpresaNome() != null) {
+            Empresa empresa = empresaRepository.findByNome(clienteUpdateDTO.getEmpresaNome())
+                    .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada: " + clienteUpdateDTO.getEmpresaNome()));
+            clienteExistente.setEmpresa(empresa);
+        }
+
+        Cliente updatedCliente = clienteRepository.save(clienteExistente);
+        return new ClienteDTO(updatedCliente);
     }
 
-    // Check if new password and confirmation match
-    if (!passwordChangeDTO.getNewPassword().equals(passwordChangeDTO.getConfirmNewPassword())) {
-      throw new IllegalArgumentException("A nova senha e a confirmação não coincidem.");
-    }
 
-    // Encode and set the new password
-    String encodedNewPassword = passwordEncoder.encode(passwordChangeDTO.getNewPassword());
-    cliente.setSenha(encodedNewPassword);
-    clienteRepository.save(cliente);
-  }
+    @Transactional
+    public void changePasswordByEmail(String email, PasswordChangeDTO passwordChangeDTO) {
+        Cliente cliente = findByEmail(email); // Find by email!
+
+        if (!passwordEncoder.matches(passwordChangeDTO.getOldPassword(), cliente.getSenha())) {
+            throw new IllegalArgumentException("Senha antiga incorreta.");
+        }
+        if (!passwordChangeDTO.getNewPassword().equals(passwordChangeDTO.getConfirmNewPassword())) {
+            throw new IllegalArgumentException("A nova senha e a confirmação não coincidem.");
+        }
+
+        cliente.setSenha(passwordEncoder.encode(passwordChangeDTO.getNewPassword()));
+        clienteRepository.save(cliente);
+    }
+    @Transactional
+    public void changePassword(Long id, PasswordChangeDTO passwordChangeDTO) {
+        Cliente cliente = findEntityById(id); // Use findEntityById
+
+        // Verify old password
+        if (!passwordEncoder.matches(passwordChangeDTO.getOldPassword(), cliente.getSenha())) {
+        throw new IllegalArgumentException("Senha antiga incorreta.");
+        }
+
+        // Check if new password and confirmation match
+        if (!passwordChangeDTO.getNewPassword().equals(passwordChangeDTO.getConfirmNewPassword())) {
+        throw new IllegalArgumentException("A nova senha e a confirmação não coincidem.");
+        }
+
+        // Encode and set the new password
+        String encodedNewPassword = passwordEncoder.encode(passwordChangeDTO.getNewPassword());
+        cliente.setSenha(encodedNewPassword);
+        clienteRepository.save(cliente);
+    }
 
   @Transactional
   public void delete(Long id) {
-    Cliente cliente = findEntityById(id); // Use entity version
-    clienteRepository.delete(cliente);
+    clienteRepository.delete(findEntityById(id)); // Use consistent findEntityById
   }
 }

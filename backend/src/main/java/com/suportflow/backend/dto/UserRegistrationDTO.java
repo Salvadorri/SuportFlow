@@ -38,5 +38,5 @@ public class UserRegistrationDTO {
   private String cpfCnpj;
 
     @NotEmpty(message = "Pelo menos uma permissão deve ser informada") //Valida se a lista não é vazia
-    private List<String> roles; // Lista de nomes de permissões
+    private List<String> roles;
 }

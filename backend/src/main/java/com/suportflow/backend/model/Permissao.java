@@ -33,12 +33,12 @@ public class Permissao {
 
     public void addUsuario(User usuario) {
         this.usuarios.add(usuario);
-        usuario.getPermissoes().add(this); // Mantém a consistência bidirecional
+        usuario.getPermissoes().add(this);
     }
 
     public void removeUsuario(User usuario) {
         this.usuarios.remove(usuario);
-        usuario.getPermissoes().remove(this); // Mantém a consistência bidirecional
+        usuario.getPermissoes().remove(this);
     }
 
 

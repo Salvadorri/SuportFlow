@@ -1,10 +1,14 @@
+// backend/src/main/java/com/suportflow/backend/model/Chamado.java
 package com.suportflow.backend.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "chamados")
+@EntityListeners(AuditingEntityListener.class) // Enable auditing for created date
 public class Chamado {
 
     @Id
@@ -17,8 +21,8 @@ public class Chamado {
     private Cliente cliente; // Cada chamado pertence a um cliente
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")  //Pode ser nulo se não tiver sido atribuido
-    private User atendente; // Atendente (User) responsável pelo chamado
+    @JoinColumn(name = "usuario_id")
+    private User atendente;
 
     @Column(name = "titulo", nullable = false)
     private String titulo;
@@ -38,14 +42,13 @@ public class Chamado {
     @Column(name = "prioridade", nullable = false)
     private PrioridadeChamado prioridade; // Prioridade do chamado
 
-    @Column(name = "data_abertura", nullable = false)
+    @CreatedDate
+    @Column(name = "data_abertura", nullable = false, updatable = false)
     private LocalDateTime dataAbertura;
 
     @Column(name = "data_fechamento")
     private LocalDateTime dataFechamento;  // Pode ser nulo se o chamado estiver aberto
 
-    @Column(name = "avaliacao")
-    private Integer avaliacao; // Avaliação do cliente (opcional)
 
     // Construtores
     public Chamado() {}
@@ -130,11 +133,5 @@ public class Chamado {
 
     public void setDataFechamento(LocalDateTime dataFechamento) {
         this.dataFechamento = dataFechamento;
-    }
-    public Integer getAvaliacao() {
-        return avaliacao;
-    }
-    public void setAvaliacao(Integer avaliacao) {
-        this.avaliacao = avaliacao;
     }
 }

@@ -5,6 +5,5 @@ public enum StatusChamado {
     EM_ANDAMENTO,
     PENDENTE,
     RESOLVIDO,
-    FECHADO,
-    CANCELADO
+    FECHADO
 }
