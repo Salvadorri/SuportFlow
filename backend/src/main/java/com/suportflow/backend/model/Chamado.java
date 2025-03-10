@@ -1,10 +1,14 @@
+// backend/src/main/java/com/suportflow/backend/model/Chamado.java
 package com.suportflow.backend.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "chamados")
+@EntityListeners(AuditingEntityListener.class) // Enable auditing for created date
 public class Chamado {
 
     @Id
@@ -38,7 +42,8 @@ public class Chamado {
     @Column(name = "prioridade", nullable = false)
     private PrioridadeChamado prioridade; // Prioridade do chamado
 
-    @Column(name = "data_abertura", nullable = false)
+    @CreatedDate
+    @Column(name = "data_abertura", nullable = false, updatable = false)
     private LocalDateTime dataAbertura;
 
     @Column(name = "data_fechamento")

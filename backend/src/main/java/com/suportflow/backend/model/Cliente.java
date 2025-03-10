@@ -1,11 +1,16 @@
+// java/com/suportflow/backend/model/Cliente.java
 package com.suportflow.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "clientes")
+@EntityListeners(AuditingEntityListener.class) // Enable auditing for created date
 public class Cliente {
 
     @Id
@@ -17,21 +22,30 @@ public class Cliente {
     @JoinColumn(name = "empresa_id", nullable = false)
     private Empresa empresa;
 
+    @NotBlank(message = "O nome é obrigatório")
+    @Size(max = 255, message = "O nome deve ter no máximo 255 caracteres")
     @Column(name = "nome", nullable = false)
     private String nome;
 
+    @Email(message = "O email deve ser válido")
+    @Size(max = 255, message = "O email deve ter no máximo 255 caracteres")
     @Column(name = "email")
     private String email;
 
+    @Size(max = 20, message = "O telefone deve ter no máximo 20 caracteres")
     @Column(name = "telefone")
     private String telefone;
 
+    @Size(max = 20, message = "O CPF/CNPJ deve ter no máximo 20 caracteres")
     @Column(name = "cpf_cnpj", unique = true)
     private String cpfCnpj;
 
-    @Column(name = "data_cadastro")
+    @CreatedDate
+    @Column(name = "data_cadastro", nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
 
+    @NotBlank(message = "A senha é obrigatória")
+    @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres")
     @Column(name = "senha", nullable = false)
     private String senha;
 
