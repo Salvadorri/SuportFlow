@@ -35,4 +35,4 @@ logging:
               BasicBinder: TRACE
 file:
   upload:
-    dir: /tmp/uploads
+    dir: ./tmp/uploads

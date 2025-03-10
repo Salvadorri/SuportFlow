@@ -29,4 +29,4 @@ logging:
       suportflow: DEBUG
 file:
   upload:
-    dir: /app/upload
+    dir: ./tmp/upload
