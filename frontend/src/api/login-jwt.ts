@@ -1,6 +1,6 @@
 // src/api/login-jwt.ts
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { jwtDecode } from "jwt-decode";
 
 interface JWTPayload {
@@ -14,7 +14,7 @@ interface JWTPayload {
   [key: string]: any;
 }
 
-type AuthResult =
+export type AuthResult =
   | {
       type: "user";
       token: string;
@@ -83,14 +83,15 @@ const login = async (email: string, password: string): Promise<AuthResult> => {
         "Invalid token payload: Unable to determine entity type."
       );
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Login error:", error);
 
     if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<{ message?: string }>; // Explicitly type the error data
       const message =
-        error.response?.data?.message || "Unknown error during login.";
+        axiosError.response?.data?.message || "Unknown error during login.";
       throw new Error(
-        `Login failed with status ${error.response?.status}: ${message}`
+        `Login failed with status ${axiosError.response?.status}: ${message}`
       );
     }
 

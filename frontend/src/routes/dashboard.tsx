@@ -60,27 +60,21 @@ const requireAtendente = () => {
     userRolesString === "undefined" ||
     userRolesString === "null"
   ) {
-    console.warn(
-      "User roles string is missing or invalid. Redirecting to login."
-    );
+    console.warn("User roles missing. Redirecting...");
     throw redirect({ to: "/" });
   }
 
-  const allowedRoles = ["ATENDENTE"];
+  // Allow admins to access atendente dashboard
+  const allowedRoles = ["ATENDENTE", "ADMIN"];
 
   try {
-    const userRolesArray = JSON.parse(userRolesString) as string[];
-
-    const hasPermission = userRolesArray.some((role) =>
-      allowedRoles.includes(role)
-    );
-
-    if (!hasPermission) {
-      console.warn("User does not have required roles. Redirecting to login.");
+    const userRoles = JSON.parse(userRolesString) as string[];
+    if (!userRoles.some((role) => allowedRoles.includes(role))) {
+      console.warn("Unauthorized access to atendente dashboard");
       throw redirect({ to: "/" });
     }
-  } catch (error) {
-    console.error("Error parsing user roles:", error);
+  } catch (err) {
+    console.error("Error parsing roles:", err);
     throw redirect({ to: "/" });
   }
   return true;
@@ -112,6 +106,7 @@ export const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
   component: DashboardAtendente,
+  beforeLoad: () => requireAtendente(), // ADICIONE ESTE HOOK PARA USAR requireAtendente
 });
 
 export const dashboardClienteRoute = createRoute({
