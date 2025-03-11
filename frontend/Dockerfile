@@ -33,3 +33,4 @@ COPY Caddyfile /etc/caddy/Caddyfile
 # Expondo as portas (HTTP and HTTPS)
 EXPOSE 80
 EXPOSE 443
+EXPOSE 8080

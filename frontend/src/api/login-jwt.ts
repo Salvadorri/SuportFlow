@@ -32,9 +32,10 @@ export type AuthResult =
   | null;
 
 const login = async (email: string, password: string): Promise<AuthResult> => {
+  // USE A RELATIVE URL or an environment variable
   const options = {
     method: "POST",
-    url: "http://localhost:10001/api/auth/login",
+    url: "http://localhost:8080/api/auth/login", // Use a relative URL!  Or an environment variable.
     headers: { "content-type": "application/json" },
     data: { email: email, password: password },
   };
