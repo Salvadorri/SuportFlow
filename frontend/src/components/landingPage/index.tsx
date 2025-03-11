@@ -77,7 +77,6 @@ function Index() {
             {/* Ajustado text-xl */}
             <p className="text-base md:text-xl mb-8">
               A Solução Completa para Suporte ao Cliente<br/>
-              Potencializado por Inteligência Artificial  
             </p>{""} {/* Adicionado mb-8 para espaçamento */}
             {/* Image */}
             <img
