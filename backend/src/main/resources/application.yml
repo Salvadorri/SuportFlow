@@ -20,8 +20,8 @@ jwt:
   expirationMs: 86400000
   refreshExpiration: 604800000
 admin:
-  email: admin@suportflow.com.br
-  password: suportflow-admin
+  email: admin@supportflow.com.br
+  password: supportflow
 logging:
   level:
     root: INFO

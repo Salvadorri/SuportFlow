@@ -1,14 +1,10 @@
 // frontend/src/components/dashboard/dashboardAdmin.tsx
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { getUserRolesFromToken, isClienteFromToken } from "../../api/login-jwt";
 import logo from "../../assets/logo.png";
 import ClientManagement from "./clienteManagement";
-import UserManagement from "./userManagement";
 import LogoutButton from "./logoutbutton"; // Import the LogoutButton
-import {
-  getUserRolesFromToken,
-  getClientIdFromToken,
-  isClienteFromToken,
-} from "../../api/login-jwt";
+import UserManagement from "./userManagement";
 
 const menuItems = [
   { label: "Criar Usuário", value: "criar-usuario" },

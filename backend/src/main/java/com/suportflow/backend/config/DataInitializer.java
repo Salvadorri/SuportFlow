@@ -76,8 +76,8 @@ public class DataInitializer implements ApplicationRunner {
         Permissao atendentePermissao = criarPermissaoSeNaoExistir("ATENDENTE", "Permissão de Atendente");
 
         User adminUser = criarUsuarioSeNaoExistir("Administrador do Sistema", adminEmail, adminPassword, suportFlowEmpresa, Set.of(adminPermissao));
-        User gerenteUser = criarUsuarioSeNaoExistir("Gerente", "gerente@suportflow.com", "senhaGerente", suportFlowEmpresa, Set.of(gerentePermissao));
-        User atendenteUser = criarUsuarioSeNaoExistir("Atendente", "atendente@suportflow.com", "senhaAtendente", suportFlowEmpresa, Set.of(atendentePermissao));
+        User gerenteUser = criarUsuarioSeNaoExistir("Gerente", "gerente@supportflow.com", "supportflow", suportFlowEmpresa, Set.of(gerentePermissao));
+        User atendenteUser = criarUsuarioSeNaoExistir("Atendente", "atendente@supportflow.com", "supportflow", suportFlowEmpresa, Set.of(atendentePermissao));
 
 
         Cliente cliente1 = criarClienteSeNaoExistir("cliente@exemplo.com", "12345678901", "Cliente Exemplo", suportFlowEmpresa);

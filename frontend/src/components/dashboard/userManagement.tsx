@@ -70,9 +70,9 @@ const UserManagement: React.FC<UserManagementProps> = ({
     setSelectedRole("ATENDENTE");
   };
 
-  const handleSelectRole = (role: string) => {
-    setSelectedRole(role);
-  };
+  // const handleSelectRole = (role: string) => {
+  //   setSelectedRole(role);
+  // };
 
   const handleCreateUser = async () => {
     if (!validateForm()) return;
