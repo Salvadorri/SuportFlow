@@ -30,7 +30,7 @@ public class DataInitializer implements ApplicationRunner {
     private final String adminEmail;
     private final String adminPassword;
 
-    private static final String DEFAULT_CLIENT_PASSWORD = "clientes";
+    private static final String DEFAULT_CLIENT_PASSWORD = "SenhaPadrao123!";
 
     public DataInitializer(EmpresaRepository empresaRepository, PermissaoRepository permissaoRepository,
                            UserRepository userRepository, ClienteRepository clienteRepository,
@@ -80,8 +80,8 @@ public class DataInitializer implements ApplicationRunner {
         User atendenteUser = criarUsuarioSeNaoExistir("Atendente", "atendente@suportflow.com", "senhaAtendente", suportFlowEmpresa, Set.of(atendentePermissao));
 
 
-        Cliente cliente1 = criarClienteSeNaoExistir("cliente1@exemplo.com", "12345678901", "Cliente 1", suportFlowEmpresa);
-        Cliente cliente2 = criarClienteSeNaoExistir("cliente2@exemplo.com", "12345678901234", "Cliente 2", suportFlowEmpresa);
+        Cliente cliente1 = criarClienteSeNaoExistir("cliente1@example.com", "12345678901", "Cliente 1", suportFlowEmpresa);
+        Cliente cliente2 = criarClienteSeNaoExistir("cliente2@example.com", "12345678901234", "Cliente 2", suportFlowEmpresa);
 
         // Example Chamados and ChatMensagens
         Chamado chamado1 = criarChamado(cliente1, atendenteUser, "Problema de login", "Não consigo acessar minha conta.", CategoriaChamado.SUPORTE_TECNICO, StatusChamado.EM_ANDAMENTO, PrioridadeChamado.ALTA);

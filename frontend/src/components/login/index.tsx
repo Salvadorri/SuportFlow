@@ -1,12 +1,7 @@
-// src/components/login/index.tsx
 import { useNavigate } from "@tanstack/react-router";
-import React, { useCallback, useEffect, useState } from "react";
-import login, {
-  isClientTokenExpired,
-  isUserTokenExpired,
-} from "../../api/login-jwt.ts";
+import React, { useCallback, useEffect, useState } from "react"; // Import useEffect
+import login, { getToken, isTokenExpired } from "../../api/login-jwt.ts"; // Import getToken
 import { validateLoginForm, ValidationResult } from "../../api/validation.ts";
-import { useAuth } from "../../contexts/AuthContext";
 
 function Index() {
   const [email, setEmail] = useState("");
@@ -17,31 +12,15 @@ function Index() {
   const [loginError, setLoginError] = useState<string | null>(null);
 
   const navigate = useNavigate();
-  const { login: authLogin } = useAuth();
-  const { authState } = useAuth();
 
+  // Check for existing token on component mount
   useEffect(() => {
-    const checkAuthAndRedirect = async () => {
-      if (authState.userToken && !isUserTokenExpired()) {
-        if (authState.userRoles?.includes("ADMIN")) {
-          navigate({ to: "/dashboard/admin" });
-        } else if (authState.userRoles?.includes("ATENDENTE")) {
-          navigate({ to: "/dashboard" });
-        } else {
-          navigate({ to: "/dashboard" }); // Generic Route
-        }
-      } else if (authState.clientToken && !isClientTokenExpired()) {
-        navigate({ to: "/dashboard/cliente" });
-      }
-    };
-
-    checkAuthAndRedirect();
-  }, [
-    navigate,
-    authState.userToken,
-    authState.clientToken,
-    authState.userRoles,
-  ]);
+    const token = getToken();
+    if (token && !isTokenExpired()) {
+      // Redirect to dashboard if a valid token exists
+      navigate({ to: "/dashboard" });
+    }
+  }, [navigate]); // Add navigate to the dependency array
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent) => {
@@ -53,24 +32,22 @@ function Index() {
       if (validationResult.isValid) {
         setIsLoading(true);
         try {
-          const authData = await login(email, password);
+          const userData = await login(email, password);
 
-          if (authData) {
-            authLogin(authData);
+          if (userData) {
+            console.log("Login successful. User Data:", userData);
 
-            if (authData.type === "user") {
-              if (authData.userRoles.includes("ADMIN")) {
-                navigate({ to: "/dashboard/admin" });
-              } else if (authData.userRoles.includes("ATENDENTE")) {
-                navigate({ to: "/dashboard" });
-              } else {
-                navigate({ to: "/dashboard" }); // Generic Route
-              }
-            } else if (authData.type === "client") {
-              navigate({ to: "/dashboard/cliente" });
-            }
+            if (userData.userPermissions.includes("ADMIN")) {
+              navigate({ to: "/dashboardAdmin" });
+            } else if (userData.userPermissions.includes("ATENDENTE")) {
+              navigate({ to: "/dashboard" });
+            } else if (userData.userPermissions.includes("GERENTE")) {
+              navigate({ to: "/dashboard" });
+            } else if (!userData.userPermissions || userData.userPermissions.length === 0) {
+              navigate({ to: "/dashboardCliente" });
+          } 
           } else {
-            setLoginError("Login failed. No auth data returned.");
+            setLoginError("Login failed. No user data returned.");
           }
         } catch (error) {
           console.error("Login failed:", error);
@@ -87,7 +64,7 @@ function Index() {
         console.log("Formulário inválido");
       }
     },
-    [email, password, navigate, authLogin]
+    [email, password, navigate]
   );
 
   const handleRememberMeChange = (
@@ -99,7 +76,6 @@ function Index() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
       <div className="w-full max-w-md p-8 space-y-8 bg-gray-800 rounded-xl shadow-2xl">
-        {/* Seu formulário e elementos visuais */}
         <h2 className="text-3xl font-bold text-center text-white">
           SuportFlow
         </h2>

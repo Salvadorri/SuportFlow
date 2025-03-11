@@ -2,19 +2,17 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; //Opcional, para usar react-query no futuro
 import { Outlet, RootRoute, Router } from "@tanstack/react-router";
 import { ChamadoHistoricoRoute } from "./chamadosHistorico";
-import { chatchamadodashRoute } from "./chatchamadodash";
 import { CodigoDeVerificacaoRoute } from "./codigoDeVerificacao";
 import { CriarChamadoRoute } from "./criarChamados";
-import {
-  dashboardAdminRoute,
-  dashboardRoute,
-  dashboardClienteRoute,
-} from "./dashboard"; // Import the unified dashboard route
+import { dashboardRoute } from "./dashboard";
 import { landingRoute } from "./landingPage";
 import { loginRoute } from "./login";
 import { meuschatsclientesRoute } from "./meuschatsclientes";
 import { RecuperarSenhaRoute } from "./recuperarSenha";
 import { TrocarSenhaRoute } from "./trocarSenha";
+import { chatchamadodashRoute } from "./chatchamadodash";
+import { dashboardClienteRoute } from "./dashboardCliente";
+import { dashboardAdminRoute } from "./dashboardAdmin";
 
 // Cria um cliente para react-query (opcional, mas útil para gerenciamento de dados)
 const queryClient = new QueryClient();
@@ -35,6 +33,7 @@ export const rootRoute = new RootRoute({
 const routeTree = rootRoute.addChildren([
   landingRoute,
   loginRoute,
+  dashboardRoute,
   RecuperarSenhaRoute,
   TrocarSenhaRoute,
   CodigoDeVerificacaoRoute,
@@ -43,7 +42,6 @@ const routeTree = rootRoute.addChildren([
   meuschatsclientesRoute,
   chatchamadodashRoute,
   dashboardClienteRoute,
-  dashboardRoute,
   dashboardAdminRoute,
 ]);
 // Cria o roteador

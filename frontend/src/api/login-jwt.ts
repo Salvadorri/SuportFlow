@@ -1,190 +1,118 @@
-// src/api/login-jwt.ts
-
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 interface JWTPayload {
-  sub?: string; // User ID
+  sub: string;
   email?: string;
-  roles?: string[];
-  Cliente?: boolean; // Client flag
-  entityId?: number; // Client ID
+  roles: string[];
   exp: number;
   iat: number;
   [key: string]: any;
 }
 
-export type AuthResult =
-  | {
-      type: "user";
-      token: string;
-      userId: string;
-      userEmail: string;
-      userRoles: string[];
-      expirationTime: number;
-    }
-  | {
-      type: "client";
-      token: string;
-      clientId: number;
-      expirationTime: number;
-    }
-  | null;
-
-const login = async (email: string, password: string): Promise<AuthResult> => {
+// Changed to accept email and password as arguments
+const login = async (email: string, password: string) => {
   const options = {
     method: "POST",
-    url: "http://localhost:10001/api/auth/login",
+    url: "http://localhost:10001/api/auth/login", // Ensure this URL is correct
     headers: { "content-type": "application/json" },
-    data: { email: email, password: password },
+    data: { email: email, password: password }, // Use the passed-in email and password
   };
 
   try {
     const { data } = await axios.request(options);
+    console.log(data);
 
-    if (!data || !data.jwt) {
-      console.error("Token not found in response");
-      throw new Error("Token not found in response");
-    }
+    if (data && data.jwt) {
+      const token = data.jwt;
+      const decodedToken: JWTPayload = jwtDecode(token);
 
-    const token = data.jwt;
-    const decodedToken: JWTPayload = jwtDecode(token);
-    const expirationTime = decodedToken.exp;
+      console.log("Decoded Token:", decodedToken);
+      localStorage.setItem("jwtToken", token);
 
-    if (decodedToken.Cliente === true && decodedToken.entityId !== undefined) {
-      // Client Login
-      const clientId = decodedToken.entityId;
-      setAuthToken("client", token); // Centralized token storage
-      console.log("Client logged in with ID:", clientId);
-      return {
-        type: "client",
-        token: token,
-        clientId: clientId,
-        expirationTime: expirationTime,
-      };
-    } else if (decodedToken.sub && decodedToken.roles) {
-      // User Login
       const userId = decodedToken.sub;
       const userEmail = decodedToken.email || userId;
-      const userRoles = decodedToken.roles || [];
-      setAuthToken("user", token); // Centralized token storage
-      console.log("User logged in with ID:", userId, "and roles:", userRoles);
+      const userPermissions = decodedToken.roles;
+      const expirationTime = decodedToken.exp;
+
+      console.log("User ID:", userId);
+      console.log("User Email:", userEmail);
+      console.log("User Permissions:", userPermissions);
+      console.log("Expiration Timestamp:", expirationTime);
+      console.log("Expiration Date:", new Date(expirationTime * 1000));
+
+      if (userPermissions.includes("ADMIN")) {
+        console.log("User is an admin");
+      }
+
       return {
-        type: "user",
-        token: token,
-        userId: userId,
-        userEmail: userEmail,
-        userRoles: userRoles,
-        expirationTime: expirationTime,
+        token,
+        userId,
+        userEmail,
+        userPermissions,
+        expirationTime,
       };
     } else {
-      console.error("Invalid token payload:", decodedToken);
-      throw new Error(
-        "Invalid token payload: Unable to determine entity type."
-      );
+      console.error("Token not found in response");
+      throw new Error("Token not found in response"); // Consistent error message
     }
-  } catch (error: any) {
-    console.error("Login error:", error);
-
+  } catch (error) {
+    console.error(error);
+    // Throw a more specific error if possible
     if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<{ message?: string }>; // Explicitly type the error data
-      const message =
-        axiosError.response?.data?.message || "Unknown error during login.";
-      throw new Error(
-        `Login failed with status ${axiosError.response?.status}: ${message}`
-      );
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        throw new Error(
+          `Login failed with status ${error.response.status}: ${error.response.data}`
+        );
+      } else if (error.request) {
+        // The request was made but no response was received
+        throw new Error("Login failed: No response received from server.");
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        throw new Error("Login failed: Request setup error: " + error.message);
+      }
     }
-
-    throw new Error(`Login failed: ${error.message}`); // Generic error
+    throw error; // Re-throw other errors
   }
 };
 
-// Centralized token storage
-const setAuthToken = (type: "user" | "client", token: string) => {
-  localStorage.setItem(`${type}-token`, token);
-};
-
-const getAuthToken = (type: "user" | "client"): string | null => {
-  return localStorage.getItem(`${type}-token`);
-};
-
-const clearAuthToken = (type: "user" | "client") => {
-  localStorage.removeItem(`${type}-token`);
-};
-
-// Updated token expiration check
-const isTokenExpired = (tokenType: "user" | "client"): boolean => {
-  const token = getAuthToken(tokenType);
-  if (!token) return true;
-
+export const isTokenExpired = (): boolean => {
+  const token = localStorage.getItem("jwtToken");
+  if (!token) {
+    return true;
+  }
   try {
     const decodedToken: JWTPayload = jwtDecode(token);
     const currentTime = Math.floor(Date.now() / 1000);
     return decodedToken.exp < currentTime;
   } catch (error) {
     console.error("Error decoding token:", error);
-    return true; // Treat as expired if decoding fails
+    return true;
   }
 };
 
-export const isUserTokenExpired = (): boolean => isTokenExpired("user");
-export const isClientTokenExpired = (): boolean => isTokenExpired("client");
+export const getToken = (): string | null => {
+  return localStorage.getItem("jwtToken");
+};
 
-// Separate functions to get tokens
-export const getUserToken = (): string | null => getAuthToken("user");
-export const getClientToken = (): string | null => getAuthToken("client");
-
-// Clear tokens
-export const clearUserToken = () => clearAuthToken("user");
-export const clearClientToken = () => clearAuthToken("client");
-
-// Functions to extract information from the token
-export const getUserIdFromToken = (): string | null => {
-  const token = getAuthToken("user");
-  if (!token) return null;
+export const getUserPermissions = (): string[] | null => {
+  const token = localStorage.getItem("jwtToken");
+  if (!token) {
+    return null;
+  }
   try {
     const decodedToken: JWTPayload = jwtDecode(token);
-    return decodedToken.sub || null;
+    return decodedToken.roles;
   } catch (error) {
-    console.error("Error decoding user token:", error);
+    console.error("Error decoding token", error);
     return null;
   }
 };
 
-export const getUserRolesFromToken = (): string[] | null => {
-  const token = getAuthToken("user");
-  if (!token) return null;
-  try {
-    const decodedToken: JWTPayload = jwtDecode(token);
-    return decodedToken.roles || [];
-  } catch (error) {
-    console.error("Error decoding user token:", error);
-    return null;
-  }
-};
-
-export const getClientIdFromToken = (): number | null => {
-  const token = getAuthToken("client");
-  if (!token) return null;
-  try {
-    const decodedToken: JWTPayload = jwtDecode(token);
-    return decodedToken.entityId || null;
-  } catch (error) {
-    console.error("Error decoding client token:", error);
-    return null;
-  }
-};
-
-export const isClienteFromToken = (): boolean | null => {
-  const token = getAuthToken("client");
-  if (!token) return null;
-  try {
-    const decodedToken: JWTPayload = jwtDecode(token);
-    return decodedToken.Cliente || null;
-  } catch (error) {
-    console.error("Error decoding client token:", error);
-    return null;
-  }
+export const clearToken = () => {
+  localStorage.removeItem("jwtToken");
 };
 
 export default login;
