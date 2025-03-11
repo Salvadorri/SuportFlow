@@ -38,10 +38,14 @@ function Index() {
             console.log("Login successful. User Data:", userData);
 
             if (userData.userPermissions.includes("ADMIN")) {
+              navigate({ to: "/dashboardAdmin" });
+            } else if (userData.userPermissions.includes("ATENDENTE")) {
               navigate({ to: "/dashboard" });
-            } else {
+            } else if (userData.userPermissions.includes("GERENTE")) {
               navigate({ to: "/dashboard" });
-            }
+            } else if (!userData.userPermissions || userData.userPermissions.length === 0) {
+              navigate({ to: "/dashboardCliente" });
+          } 
           } else {
             setLoginError("Login failed. No user data returned.");
           }
@@ -73,7 +77,7 @@ function Index() {
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
       <div className="w-full max-w-md p-8 space-y-8 bg-gray-800 rounded-xl shadow-2xl">
         <h2 className="text-3xl font-bold text-center text-white">
-          SuportFlowAI
+          SuportFlow
         </h2>
 
         <form className="space-y-6" onSubmit={handleSubmit}>

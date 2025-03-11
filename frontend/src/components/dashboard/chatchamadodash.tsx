@@ -396,7 +396,9 @@ const IntegratedChatDashboard: React.FC = () => {
       {/* Sidebar */}
       <aside className="w-64 bg-gray-900 text-white p-5">
         <div className="flex items-center mb-6">
-          <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2"/>
+        <Link to="/dashboard">{/* Added Link here */}
+          <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2 cursor-pointer"/>
+          </Link>          
           <h1 className="text-2xl font-bold">SupportFlow</h1>
         </div>
         <nav>

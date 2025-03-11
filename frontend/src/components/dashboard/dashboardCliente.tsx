@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import logo from "../../assets/logo.png";
+
 
 interface Chamado {
   id: number;
@@ -250,13 +252,13 @@ const DashboardCliente: React.FC = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-900 text-white p-6">
+      <div className="w-64 bg-gray-900 text-white p-6 items-center">
+          <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2 cursor-pointer"/>
         <h2 className="text-xl font-bold mb-6">Support Flow</h2>
         <div className="mb-4">
-          <p className="text-sm text-gray-400">Cliente:</p>
           <p className="font-medium">Empresa ABC Ltda.</p>
         </div>
-        <nav>
+        <nav className="mt-auto pt-1">
           <ul className="space-y-2">
             <li
               className={`p-2 rounded cursor-pointer ${
@@ -279,7 +281,7 @@ const DashboardCliente: React.FC = () => {
         <div className="mt-auto pt-6">
           <button
             onClick={() => setMostrarFormulario(true)}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
+            className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
           >
             + Novo Chamado
           </button>
