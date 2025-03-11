@@ -1,3 +1,4 @@
+// src/main/java/com/suportflow/backend/dto/ClienteRegistrationDTO.java
 package com.suportflow.backend.dto;
 
 import jakarta.validation.constraints.Email;
@@ -21,10 +22,10 @@ public class ClienteRegistrationDTO {
   @Email(message = "Email inválido")
   private String email;
 
-  @NotBlank(message = "O telefone é obrigatório.")
+  //@NotBlank(message = "O telefone é obrigatório.")
   private String telefone;
 
-  @NotBlank(message = "O CPF/CNPJ é obrigatório")
+  //@NotBlank(message = "O CPF/CNPJ é obrigatório")
   @Pattern(regexp = "^\\d{11}$|^\\d{14}$", message = "CPF/CNPJ inválido")
   private String cpfCnpj;
 

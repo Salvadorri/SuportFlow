@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import logo from "../../assets/logo.png";
+import LogoutButton from "./logoutbutton";
 
 
 interface Chamado {
@@ -252,9 +253,11 @@ const DashboardCliente: React.FC = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-900 text-white p-6 items-center">
-          <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2 cursor-pointer"/>
-        <h2 className="text-xl font-bold mb-6">Support Flow</h2>
+      <div className="w-64 bg-gray-900 text-white p-6">
+      <div className="flex items-center justify-center mb-6">
+      <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2 cursor-pointer"/>
+      <h2 className="text-xl font-bold">Support Flow</h2>
+    </div>
         <div className="mb-4">
           <p className="font-medium">Empresa ABC Ltda.</p>
         </div>
@@ -262,7 +265,7 @@ const DashboardCliente: React.FC = () => {
           <ul className="space-y-2">
             <li
               className={`p-2 rounded cursor-pointer ${
-                aba === "chamados" ? "bg-blue-600" : "hover:bg-gray-700"
+                aba === "chamados" ? "bg-green-600" : "hover:bg-green-700"
               }`}
               onClick={() => setAba("chamados")}
             >
@@ -270,7 +273,7 @@ const DashboardCliente: React.FC = () => {
             </li>
             <li
               className={`p-2 rounded cursor-pointer ${
-                aba === "chat" ? "bg-blue-600" : "hover:bg-gray-700"
+                aba === "chat" ? "bg-green-600" : "hover:bg-green-700"
               }`}
               onClick={() => setAba("chat")}
             >
@@ -285,6 +288,9 @@ const DashboardCliente: React.FC = () => {
           >
             + Novo Chamado
           </button>
+        </div>
+        <div className="mt-4">
+      <LogoutButton userType="client" />  {/*Botão "Sair" aqui*/}
         </div>
       </div>
 

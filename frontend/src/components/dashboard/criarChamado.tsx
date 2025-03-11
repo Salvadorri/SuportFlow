@@ -1,18 +1,21 @@
 // src/components/dashboard/criarChamado.tsx
 import { Link } from "@tanstack/react-router";
 import logo from "../../assets/logo.png";
+import LogoutButton from "./logoutbutton";
 
-const menuItems = [
-  { label: "Abrir Chamado", href: "/criar-chamado" },
-  { label: "Histórico Chamados", href: "/chamados-historico" },
-  { label: "Chat", href: "/chatchamadodash" },
+  const menuItems = [
+    { label: "Abrir Chamado", href: "/criar-chamado", destacado: true },
+    { label: "Histórico Chamados", href: "/chamados-historico" },
+    { label: "Chat", href: "/chat-chamado" }
 ];
 
-const CriarChamado = () => {
-  return (
-    <div className="flex h-screen">
-      {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white p-5">
+
+
+  const CriarChamado = () => {
+    return (
+      <div className="flex h-screen">
+        {/* Sidebar */}
+        <aside className="w-64 bg-gray-900 text-white p-5">
         <div className="flex items-center mb-6">
         <Link to="/dashboard">{/* Added Link here */}
           <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2 cursor-pointer" />
@@ -23,9 +26,13 @@ const CriarChamado = () => {
           <ul>
             {menuItems.map((item) => (
               <li
-                key={item.label}
-                className="mb-2 hover:bg-green-700 p-2 rounded"
-              >
+              key={item.label}
+              className={`mb-2 p-2 rounded ${
+                item.destacado
+                  ? "bg-green-700"
+                  : "hover:bg-green-700"
+              }`}
+            >
                 <Link to={item.href} className="text-white hover:text-white block w-full h-full">
                   {item.label}
                 </Link>
@@ -33,6 +40,9 @@ const CriarChamado = () => {
             ))}
           </ul>
         </nav>
+        <div className="mt-auto"> {/* Use mt-auto para empurrar para o final */}
+       <LogoutButton userType="user" />
+    </div>
       </aside>
 
       {/* Main Content */}
