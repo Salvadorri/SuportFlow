@@ -2,11 +2,12 @@
 import { Link } from "@tanstack/react-router";
 import React, { useEffect, useRef, useState } from "react";
 import logo from "../../assets/logo.png";
+import LogoutButton from "./logoutbutton";
 
 const menuItems = [
   { label: "Abrir Chamado", href: "/criar-chamado" },
   { label: "Histórico Chamados", href: "/chamados-historico" },
-  { label: "Chat", href: "/chatchamadodash",destacado: true }
+  { label: "Chat", href: "/chat-chamado",destacado: true }
 ];
 
 interface Chat {
@@ -421,8 +422,8 @@ const IntegratedChatDashboard: React.FC = () => {
               <li
               key={item.label}
               className={`mb-2 p-2 rounded ${
-                item.destacado 
-                  ? "bg-green-700" 
+                item.destacado
+                  ? "bg-green-700"
                   : "hover:bg-green-700"
               }`}
             >
@@ -433,6 +434,9 @@ const IntegratedChatDashboard: React.FC = () => {
             ))}
           </ul>
         </nav>
+        <div className="mt-auto"> {/* Use mt-auto para empurrar para o final */}
+       <LogoutButton userType="user" />
+    </div>
       </aside>
 
       {/* Main Content */}

@@ -80,8 +80,12 @@ public class DataInitializer implements ApplicationRunner {
         User atendenteUser = criarUsuarioSeNaoExistir("Atendente", "atendente@suportflow.com", "senhaAtendente", suportFlowEmpresa, Set.of(atendentePermissao));
 
 
-        Cliente cliente1 = criarClienteSeNaoExistir("cliente1@exemplo.com", "12345678901", "Cliente 1", suportFlowEmpresa);
-        Cliente cliente2 = criarClienteSeNaoExistir("cliente2@exemplo.com", "12345678901234", "Cliente 2", suportFlowEmpresa);
+        Cliente cliente1 = criarClienteSeNaoExistir("cliente@exemplo.com", "12345678901", "Cliente Exemplo", suportFlowEmpresa);
+        Cliente cliente2 = criarClienteSeNaoExistir("Carlos@exemplo.com", "12345678905234", "Carlos Santos", suportFlowEmpresa);
+        Cliente cliente3 = criarClienteSeNaoExistir("joao@exemplo.com", "13245678901", "João Oliveira", suportFlowEmpresa);
+        Cliente cliente4 = criarClienteSeNaoExistir("maria@exemplo.com", "12445678901234", "Maria Silva", suportFlowEmpresa);
+        Cliente cliente5 = criarClienteSeNaoExistir("luiza@exemplo.com", "12545678901", "Luiza Mendes", suportFlowEmpresa);
+        Cliente cliente6 = criarClienteSeNaoExistir("ana@exemplo.com", "12645678901234", "Ana Pereira", suportFlowEmpresa);
 
         // Example Chamados and ChatMensagens
         Chamado chamado1 = criarChamado(cliente1, atendenteUser, "Problema de login", "Não consigo acessar minha conta.", CategoriaChamado.SUPORTE_TECNICO, StatusChamado.EM_ANDAMENTO, PrioridadeChamado.ALTA);

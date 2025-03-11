@@ -4,6 +4,6 @@ import chatchamadodashPage from "../pages/chatchamadodash";
 
 export const chatchamadodashRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/chatchamadodash",
+  path: "/chat-chamado",
   component: chatchamadodashPage,
 });

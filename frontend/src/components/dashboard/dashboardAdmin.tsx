@@ -1,8 +1,14 @@
-// src/components/dashboard/dashboardAdmin.tsx
-import React, { useState } from "react";
+// frontend/src/components/dashboard/dashboardAdmin.tsx
+import React, { useState, useEffect } from "react";
 import logo from "../../assets/logo.png";
 import ClientManagement from "./clienteManagement";
 import UserManagement from "./userManagement";
+import LogoutButton from "./logoutbutton"; // Import the LogoutButton
+import {
+  getUserRolesFromToken,
+  getClientIdFromToken,
+  isClienteFromToken,
+} from "../../api/login-jwt";
 
 const menuItems = [
   { label: "Criar Usuário", value: "criar-usuario" },
@@ -15,6 +21,22 @@ const DashboardAdmin: React.FC = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
   const [selectedMenuItem, setSelectedMenuItem] = useState("criar-usuario");
+  const [userType, setUserType] = useState<"user" | "client" | null>(null); // Add userType state
+
+  useEffect(() => {
+    // Determine user type on component mount
+    const roles = getUserRolesFromToken();
+    const isClient = isClienteFromToken();
+
+    if (roles && roles.length > 0) {
+      setUserType("user");
+    } else if (isClient) {
+      setUserType("client");
+    } else {
+      // Handle the case where user type cannot be determined
+      //   setUserType(null) // Or redirect to login, or show an error
+    }
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   const showMessage = (msg: string, type: "success" | "error") => {
     setMessage(msg);
@@ -53,6 +75,8 @@ const DashboardAdmin: React.FC = () => {
               </li>
             ))}
           </ul>
+          {/* Conditionally render the LogoutButton based on userType */}
+          {userType && <LogoutButton userType={userType} />}
         </nav>
       </aside>
 

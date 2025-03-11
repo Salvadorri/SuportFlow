@@ -1,15 +1,16 @@
 // src/components/dashboard/criarChamado.tsx
 import { Link } from "@tanstack/react-router";
 import logo from "../../assets/logo.png";
+import LogoutButton from "./logoutbutton";
 
   const menuItems = [
     { label: "Abrir Chamado", href: "/criar-chamado", destacado: true },
     { label: "Histórico Chamados", href: "/chamados-historico" },
-    { label: "Chat", href: "/chatchamadodash" }
+    { label: "Chat", href: "/chat-chamado" }
 ];
 
 
-  
+
   const CriarChamado = () => {
     return (
       <div className="flex h-screen">
@@ -27,8 +28,8 @@ import logo from "../../assets/logo.png";
               <li
               key={item.label}
               className={`mb-2 p-2 rounded ${
-                item.destacado 
-                  ? "bg-green-700" 
+                item.destacado
+                  ? "bg-green-700"
                   : "hover:bg-green-700"
               }`}
             >
@@ -39,6 +40,9 @@ import logo from "../../assets/logo.png";
             ))}
           </ul>
         </nav>
+        <div className="mt-auto"> {/* Use mt-auto para empurrar para o final */}
+       <LogoutButton userType="user" />
+    </div>
       </aside>
 
       {/* Main Content */}

@@ -2,11 +2,12 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import logo from "../../assets/logo.png";
+import LogoutButton from "./logoutbutton";
 
 const menuItems = [
   { label: "Abrir Chamado", href: "/criar-chamado" },
   { label: "Histórico Chamados", href: "/chamados-historico", destacado: true },
-  { label: "Chat", href: "/chatchamadodash" }
+  { label: "Chat", href: "/chat-chamado" }
 ];
 
 interface Chamado {
@@ -240,8 +241,8 @@ export default function HistoricoChamados() {
               <li
               key={item.label}
               className={`mb-2 p-2 rounded ${
-                item.destacado 
-                  ? "bg-green-700" 
+                item.destacado
+                  ? "bg-green-700"
                   : "hover:bg-green-700"
               }`}
             >
@@ -252,6 +253,9 @@ export default function HistoricoChamados() {
             ))}
           </ul>
         </nav>
+        <div className="mt-auto"> {/* Use mt-auto para empurrar para o final */}
+       <LogoutButton userType="user" />
+    </div>
       </aside>
 
       {/* Content */}

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import logo from "../../assets/logo.png";
+import LogoutButton from "./logoutbutton";
 
 
 interface Chamado {
@@ -287,6 +288,9 @@ const DashboardCliente: React.FC = () => {
           >
             + Novo Chamado
           </button>
+        </div>
+        <div className="mt-4">
+      <LogoutButton userType="client" />  {/*Botão "Sair" aqui*/}
         </div>
       </div>
 

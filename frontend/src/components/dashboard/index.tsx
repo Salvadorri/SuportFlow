@@ -15,6 +15,7 @@ import { Bar, Pie } from "react-chartjs-2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import logo from "../../assets/logo.png";
+import LogoutButton from "./logoutbutton";
 
 interface Ticket {
   id: number;
@@ -52,7 +53,6 @@ const Chamados: React.FC = () => {
       date: "2025-02-06",
     },
   ];
-  
 
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -67,7 +67,7 @@ const Chamados: React.FC = () => {
   const menuItems = [
     { label: "Abrir Chamado", href: "/criar-chamado" },
     { label: "Histórico Chamados", href: "/chamados-historico" },
-    { label: "Chat", href: "/chatchamadodash" },
+    { label: "Chat", href: "/chat-chamado" },
   ];
 
   const statItems = [
@@ -282,6 +282,11 @@ const Chamados: React.FC = () => {
             ))}
           </ul>
         </nav>
+        <div className="mt-auto">
+          {" "}
+          {/* Use mt-auto para empurrar para o final */}
+          <LogoutButton userType="user" />
+        </div>
       </aside>
 
       <main className="flex-1 p-6 overflow-auto">
