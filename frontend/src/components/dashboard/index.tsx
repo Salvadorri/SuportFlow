@@ -52,6 +52,7 @@ const Chamados: React.FC = () => {
       date: "2025-02-06",
     },
   ];
+  
 
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
   const [startDate, setStartDate] = useState<Date | null>(null);
