@@ -42,6 +42,7 @@ const Chamados: React.FC = () => {
       date: "2025-02-06",
     },
   ];
+  
 
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
   const [sortConfig, setSortConfig] = useState<{ key: keyof Ticket | null; direction: 'asc' | 'desc' }>({ key: 'date', direction: 'desc' });

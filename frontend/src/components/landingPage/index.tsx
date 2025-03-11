@@ -6,6 +6,7 @@ import {
   FaComments,   // Icon for Integrated Chat
   FaChartBar,   // Icon for Analytics/Control
 } from "react-icons/fa"; // Import react-icons
+import baner from "../../assets/imagemsupportflow.png"
 
 function Index() {
   return (
@@ -75,11 +76,12 @@ function Index() {
             </h1>{" "}
             {/* Ajustado text-xl */}
             <p className="text-base md:text-xl mb-8">
-              A Solução Completa para Suporte ao Cliente
+              A Solução Completa para Suporte ao Cliente<br/>
+              Potencializado por Inteligência Artificial  
             </p>{""} {/* Adicionado mb-8 para espaçamento */}
             {/* Image */}
             <img
-              src="../../assets/imagemsupportflow.png" // Replace with the actual path to your image
+              src={baner} // Replace with the actual path to your image
               alt="SupportFlow Banner Image"
               className="mx-auto w-full md:w-3/4 lg:w-1/2" // Example responsive widths. Adjust as needed.
             />

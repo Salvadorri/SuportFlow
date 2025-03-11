@@ -24,7 +24,7 @@ interface User {
 }
 
 // Definição das roles disponíveis
-const AVAILABLE_ROLES = ["ADMIN", "GERENTE", "ATENDENTE"];
+const AVAILABLE_ROLES = [ "GERENTE", "ATENDENTE"];
 
 const UserManagement: React.FC = () => {
   // User form state
@@ -205,25 +205,27 @@ const UserManagement: React.FC = () => {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white p-6 items-center">
-        <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2 cursor-pointer" />
-        <h2 className="text-xl font-bold mb-6">Support Flow</h2>
-        <nav className="mt-auto pt-1">
-          <ul className="space-y-2">
-            {menuItems.map((item) => (
-              <li
-                key={item.value}
-                className={`p-2 rounded cursor-pointer ${
-                  selectedMenuItem === item.value ? "bg-blue-600" : "hover:bg-gray-700"
-                }`}
-                onClick={() => setSelectedMenuItem(item.value)}
-              >
-                {item.label}
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </aside>
+      <aside className="w-64 bg-gray-900 text-white p-6">
+        <div className="flex items-center justify-center mb-6">
+          <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2 cursor-pointer" />
+            <h2 className="text-xl font-bold">Support Flow</h2>
+     </div>
+  <nav className="mt-auto pt-1">
+    <ul className="space-y-2">
+      {menuItems.map((item) => (
+        <li
+          key={item.value}
+          className={`p-2 rounded cursor-pointer ${
+            selectedMenuItem === item.value ? "bg-green-600" : "hover:bg-green-700"
+          }`}
+          onClick={() => setSelectedMenuItem(item.value)}
+        >
+          {item.label}
+        </li>
+      ))}
+    </ul>
+  </nav>
+</aside>
       {/* Main Content */}
       <main className="flex-1 p-6 bg-gray-100 overflow-auto">
         {/* Message display */}
@@ -397,7 +399,7 @@ const UserManagement: React.FC = () => {
                           </td>
                           <td className="p-4">
                             <div className="flex space-x-3">
-                              {user.id !== "1" && (
+                              {user.id !== "1" && String(user.id) !== "1" &&(
                                 <button
                                   onClick={() => handleSelectUser(user.id)}
                                   className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
@@ -405,7 +407,7 @@ const UserManagement: React.FC = () => {
                                   Editar
                                 </button>
                               )}
-                              {user.id !== "1" && (
+                              {user.id !== "1" && String(user.id) !== "1" &&(
                                 <button
                                   onClick={() => handleDeleteUser(user.id)}
                                   className="text-red-600 hover:text-red-800 font-medium transition-colors"

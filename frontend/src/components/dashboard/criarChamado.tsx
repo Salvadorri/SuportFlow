@@ -2,11 +2,13 @@
   import logo from "../../assets/logo.png";
 
   const menuItems = [
-    { label: "Abrir Chamado", href: "/criar-chamado" },
+    { label: "Abrir Chamado", href: "/criar-chamado", destacado: true },
     { label: "Histórico Chamados", href: "/chamados-historico" },
     { label: "Chat", href: "/chatchamadodash" }
-  ];
+];
 
+
+  
   const CriarChamado = () => {
     return (
       <div className="flex h-screen">
@@ -22,9 +24,13 @@
           <ul>
             {menuItems.map((item) => (
               <li
-                key={item.label}
-                className="mb-2 hover:bg-green-700 p-2 rounded"
-              >
+              key={item.label}
+              className={`mb-2 p-2 rounded ${
+                item.destacado 
+                  ? "bg-green-700" 
+                  : "hover:bg-green-700"
+              }`}
+            >
                 <Link to={item.href} className="text-white hover:text-white block w-full h-full">
                   {item.label}
                 </Link>

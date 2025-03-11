@@ -5,7 +5,7 @@ import logo from "../../assets/logo.png";
 const menuItems = [
   { label: "Abrir Chamado", href: "/criar-chamado" },
   { label: "Histórico Chamados", href: "/chamados-historico" },
-  { label: "Chat", href: "/chatchamadodash" }
+  { label: "Chat", href: "/chatchamadodash",destacado: true }
 ];
 interface Chat {
   id: number;
@@ -403,11 +403,15 @@ const IntegratedChatDashboard: React.FC = () => {
         </div>
         <nav>
           <ul>
-            {menuItems.map((item) => (
+          {menuItems.map((item) => (
               <li
-                key={item.label}
-                className="mb-2 hover:bg-green-700 p-2 rounded"
-              >
+              key={item.label}
+              className={`mb-2 p-2 rounded ${
+                item.destacado 
+                  ? "bg-green-700" 
+                  : "hover:bg-green-700"
+              }`}
+            >
                 <Link to={item.href} className="text-white hover:text-white block w-full h-full">
                   {item.label}
                 </Link>
