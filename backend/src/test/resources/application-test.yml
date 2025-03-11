@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop  # Or validate, if you have migrations
+      show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+flyway:
+  enabled: false # Ensure Flyway is disabled
+
+file:
+  upload:
+    dir: ./tmp/uploads
+
+test.property: "test value" # Test Property

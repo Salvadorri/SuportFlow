@@ -1,43 +1,48 @@
 services:
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     env_file:
       - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - suporteflow-network
 
   frontend:
     build:
-      context: .
-      dockerfile: frontend/Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "443:443"
+      - "80:80"
     volumes:
-      - ./frontend:/app # Sincroniza as alterações em tempo real
+      - frontend:/app # Sincroniza as alterações em tempo real
       - /app/node_modules # Cria um volume anônimo para a pasta node_modules, evitando sobreposição com a pasta local
     networks:
       - suporteflow-network
 
   db:
-    image: postgres:17-alpine # Ou mysql:8.0, se preferir MySQL
-    ports:
-      - "5432:5432"
+    image: postgres:17-alpine # Ou mysql:8.0, se preferir MySQL~
     env_file:
       - .env
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql # Inicializa o banco (opcional)
     networks:
       - suporteflow-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   db-data:
+  frontend:
 
 networks:
   suporteflow-network:

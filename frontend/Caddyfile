@@ -1,0 +1,27 @@
+:80 {
+  root * /app/www
+  file_server
+  encode zstd gzip
+  reverse_proxy /api/* backend:8080
+
+  header {
+    Access-Control-Allow-Origin http://localhost # Replace with your domain
+    Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers "Content-Type, Authorization"
+    Access-Control-Allow-Credentials true
+  }
+}
+
+:443 {
+  root * /app/www
+  file_server
+  encode zstd gzip
+  reverse_proxy /api/* backend:8080
+
+  header {
+    Access-Control-Allow-Origin https://localhost # Replace with your domain
+    Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers "Content-Type, Authorization"
+    Access-Control-Allow-Credentials true
+  }
+}
