@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import React, { useEffect, useState } from "react";
 import {
   createUser,
@@ -10,9 +9,8 @@ import {
 import logo from "../../assets/logo.png";
 
 const menuItems = [
-  { label: "Abrir Chamado", href: "/criar-chamado" },
-  { label: "Histórico Chamados", href: "/chamados-historico" },
-  { label: "Chat", href: "/chatchamadodash" }
+  { label: "Criar Usuário", value: "criar-usuario" },
+  { label: "Lista de Usuários", value: "lista-usuarios" },
 ];
 
 // Definindo a interface para o usuário
@@ -45,6 +43,7 @@ const UserManagement: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedMenuItem, setSelectedMenuItem] = useState("criar-usuario");
 
   // Load all users on component mount
   useEffect(() => {
@@ -98,6 +97,7 @@ const UserManagement: React.FC = () => {
         cpfCnpj: cpfCnpj.trim() || undefined,
         password: password,
         roles: [selectedRole],
+        role: selectedRole, // Adicionado para satisfazer o tipo UserDataCreate
       };
       await createUser(newUser);
       showMessage(`Usuário criado com sucesso!`, "success");
@@ -164,10 +164,7 @@ const UserManagement: React.FC = () => {
       setSelectedRole(user.roles?.[0] || "ATENDENTE");
       setEditMode(true);
     } catch (error: any) {
-      showMessage(
-        `Erro ao buscar detalhes do usuário: ${error.message}`,
-        "error"
-      );
+      showMessage(`Erro ao buscar detalhes do usuário: ${error.message}`, "error");
     } finally {
       setIsLoading(false);
     }
@@ -209,21 +206,20 @@ const UserManagement: React.FC = () => {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white p-5">
-        <div className="flex items-center mb-6">
-          <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2"/>
-          <h1 className="text-2xl font-bold">SupportFlow</h1>
-        </div>
-        <nav>
-          <ul>
+      <aside className="w-64 bg-gray-900 text-white p-6 items-center">
+        <img src={logo} alt="SupportFlow Logo" className="h-14 w-auto mr-2 cursor-pointer" />
+        <h2 className="text-xl font-bold mb-6">Support Flow</h2>
+        <nav className="mt-auto pt-1">
+          <ul className="space-y-2">
             {menuItems.map((item) => (
               <li
-                key={item.label}
-                className="mb-2 hover:bg-green-700 p-2 rounded"
+                key={item.value}
+                className={`p-2 rounded cursor-pointer ${
+                  selectedMenuItem === item.value ? "bg-blue-600" : "hover:bg-gray-700"
+                }`}
+                onClick={() => setSelectedMenuItem(item.value)}
               >
-                <Link to={item.href} className="text-white hover:text-white block w-full h-full">
-                  {item.label}
-                </Link>
+                {item.label}
               </li>
             ))}
           </ul>
@@ -244,67 +240,65 @@ const UserManagement: React.FC = () => {
           </div>
         )}
 
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
-            {editMode ? "Editar Usuário" : "Criar Usuário"}
-          </h2>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <form
-              className="space-y-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-                editMode ? handleUpdateUser() : handleCreateUser();
-              }}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-gray-700 mb-2">Nome *</label>
-                  <input
-                    type="text"
-                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                    placeholder="Nome completo"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
+        {selectedMenuItem === "criar-usuario" && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">Criar Usuário</h2>
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <form
+                className="space-y-4"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleCreateUser();
+                }}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-700 mb-2">Nome *</label>
+                    <input
+                      type="text"
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                      placeholder="Nome completo"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 mb-2">Email *</label>
+                    <input
+                      type="email"
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-gray-700 mb-2">Email *</label>
-                  <input
-                    type="email"
-                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-gray-700 mb-2">Telefone</label>
-                  <input
-                    type="text"
-                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                    placeholder="Telefone (opcional)"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-700 mb-2">Telefone</label>
+                    <input
+                      type="text"
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                      placeholder="Telefone (opcional)"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 mb-2">CPF/CNPJ</label>
+                    <input
+                      type="text"
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                      placeholder="CPF ou CNPJ (opcional)"
+                      value={cpfCnpj}
+                      onChange={(e) => setCpfCnpj(e.target.value)}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-gray-700 mb-2">CPF/CNPJ</label>
-                  <input
-                    type="text"
-                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-                    placeholder="CPF ou CNPJ (opcional)"
-                    value={cpfCnpj}
-                    onChange={(e) => setCpfCnpj(e.target.value)}
-                  />
-                </div>
-              </div>
 
-              {!editMode && (
                 <div>
                   <label className="block text-gray-700 mb-2">Senha *</label>
                   <input
@@ -313,48 +307,234 @@ const UserManagement: React.FC = () => {
                     placeholder="Senha"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required={!editMode}
+                    required
                   />
+                </div>
+
+                {/* Role Selection */}
+                <div>
+                  <label className="block text-gray-700 mb-2">Função *</label>
+                  <div className="flex flex-wrap gap-2">
+                    {AVAILABLE_ROLES.map((role) => (
+                      <div
+                        key={role}
+                        onClick={() => handleSelectRole(role)}
+                        className={`cursor-pointer px-4 py-2 rounded-full transition-colors text-sm font-medium ${
+                          selectedRole === role
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        }`}
+                      >
+                        {role}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-6 flex gap-4">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className={`px-6 py-2 ${
+                      isLoading
+                        ? "bg-gray-400"
+                        : "bg-green-500 hover:bg-green-600"
+                    } text-white rounded-lg transition-colors duration-200 font-medium`}
+                  >
+                    {isLoading ? "Processando..." : "Salvar"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {selectedMenuItem === "lista-usuarios" && (
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-semibold">Lista de Usuários</h2>
+              <input
+                type="text"
+                placeholder="Pesquisar usuários..."
+                className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+              {isLoading && (
+                <div className="p-4 text-center text-gray-500">
+                  <div className="animate-pulse flex justify-center">
+                    <div className="h-5 w-24 bg-gray-200 rounded"></div>
+                  </div>
+                  <p className="mt-2">Carregando usuários...</p>
                 </div>
               )}
 
-              {/* Role Selection */}
-              <div>
-                <label className="block text-gray-700 mb-2">Função *</label>
-                <div className="flex flex-wrap gap-2">
-                  {AVAILABLE_ROLES.map((role) => (
-                    <div
-                      key={role}
-                      onClick={() => handleSelectRole(role)}
-                      className={`cursor-pointer px-4 py-2 rounded-full transition-colors text-sm font-medium ${
-                        selectedRole === role
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                      }`}
-                    >
-                      {role}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {!isLoading && (
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-gray-100 text-left border-b border-gray-200">
+                      <th className="p-4 font-semibold text-gray-700">Nome</th>
+                      <th className="p-4 font-semibold text-gray-700">Email</th>
+                      <th className="p-4 font-semibold text-gray-700">Função</th>
+                      <th className="p-4 font-semibold text-gray-700">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredUsers.length > 0 ? (
+                      filteredUsers.map((user) => (
+                        <tr
+                          key={user.id}
+                          className="border-b hover:bg-gray-50 transition-colors"
+                        >
+                          <td className="p-4">{user.nome}</td>
+                          <td className="p-4">{user.email}</td>
+                          <td className="p-4">
+                            <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                              {user.roles?.[0] || ""}
+                              </span>
+                          </td>
+                          <td className="p-4">
+                            <div className="flex space-x-3">
+                              {user.id !== "1" && (
+                                <button
+                                  onClick={() => handleSelectUser(user.id)}
+                                  className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                                >
+                                  Editar
+                                </button>
+                              )}
+                              {user.id !== "1" && (
+                                <button
+                                  onClick={() => handleDeleteUser(user.id)}
+                                  className="text-red-600 hover:text-red-800 font-medium transition-colors"
+                                >
+                                  Excluir
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={4} className="p-6 text-center text-gray-500">
+                          {users.length === 0 ? (
+                            <div>
+                              <p className="text-lg mb-2">
+                                Nenhum usuário encontrado
+                              </p>
+                              <p className="text-sm">
+                                Adicione um novo usuário usando o formulário
+                                acima.
+                              </p>
+                            </div>
+                          ) : (
+                            "Nenhum usuário corresponde à pesquisa."
+                          )}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        )}
 
-              <div className="mt-6 flex gap-4">
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className={`px-6 py-2 ${
-                    isLoading
-                      ? "bg-gray-400"
-                      : "bg-green-500 hover:bg-green-600"
-                  } text-white rounded-lg transition-colors duration-200 font-medium`}
-                >
-                  {isLoading
-                    ? "Processando..."
-                    : editMode
-                    ? "Atualizar"
-                    : "Salvar"}
-                </button>
-                {editMode && (
+        {editMode && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">Editar Usuário</h2>
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <form
+                className="space-y-4"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleUpdateUser();
+                }}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-700 mb-2">Nome *</label>
+                    <input
+                      type="text"
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                      placeholder="Nome completo"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 mb-2">Email *</label>
+                    <input
+                      type="email"
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-700 mb-2">Telefone</label>
+                    <input
+                      type="text"
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                      placeholder="Telefone (opcional)"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 mb-2">CPF/CNPJ</label>
+                    <input
+                      type="text"
+                      className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                      placeholder="CPF ou CNPJ (opcional)"
+                      value={cpfCnpj}
+                      onChange={(e) => setCpfCnpj(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {/* Role Selection */}
+                <div>
+                  <label className="block text-gray-700 mb-2">Função *</label>
+                  <div className="flex flex-wrap gap-2">
+                    {AVAILABLE_ROLES.map((role) => (
+                      <div
+                        key={role}
+                        onClick={() => handleSelectRole(role)}
+                        className={`cursor-pointer px-4 py-2 rounded-full transition-colors text-sm font-medium ${
+                          selectedRole === role
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        }`}
+                      >
+                        {role}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-6 flex gap-4">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className={`px-6 py-2 ${
+                      isLoading
+                        ? "bg-gray-400"
+                        : "bg-green-500 hover:bg-green-600"
+                    } text-white rounded-lg transition-colors duration-200 font-medium`}
+                  >
+                    {isLoading ? "Processando..." : "Atualizar"}
+                  </button>
                   <button
                     type="button"
                     disabled={isLoading}
@@ -363,105 +543,11 @@ const UserManagement: React.FC = () => {
                   >
                     Cancelar
                   </button>
-                )}
-              </div>
-            </form>
-          </div>
-        </div>
-
-        {/* Users List */}
-        <div>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold">Lista de Usuários</h2>
-            <input
-              type="text"
-              placeholder="Pesquisar usuários..."
-              className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-            {isLoading && (
-              <div className="p-4 text-center text-gray-500">
-                <div className="animate-pulse flex justify-center">
-                  <div className="h-5 w-24 bg-gray-200 rounded"></div>
                 </div>
-                <p className="mt-2">Carregando usuários...</p>
-              </div>
-            )}
-
-            {!isLoading && (
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="bg-gray-100 text-left border-b border-gray-200">
-                    <th className="p-4 font-semibold text-gray-700">Nome</th>
-                    <th className="p-4 font-semibold text-gray-700">Email</th>
-                    <th className="p-4 font-semibold text-gray-700">Função</th>
-                    <th className="p-4 font-semibold text-gray-700">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.length > 0 ? (
-                    filteredUsers.map((user) => (
-                      <tr
-                        key={user.id}
-                        className="border-b hover:bg-gray-50 transition-colors"
-                      >
-                        <td className="p-4">{user.nome}</td>
-                        <td className="p-4">{user.email}</td>
-                        <td className="p-4">
-                          <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
-                            {user.roles?.[0] || ""}
-                          </span>
-                        </td>
-                        <td className="p-4">
-                          <div className="flex space-x-3">
-                            {user.id !== 1 && String(user.id) !== "1" && (
-                              <button
-                                onClick={() => handleSelectUser(user.id)}
-                                className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                              >
-                                Editar
-                              </button>
-                            )}
-                            {user.id !== 1 && String(user.id) !== "1" && (
-                              <button
-                                onClick={() => handleDeleteUser(user.id)}
-                                className="text-red-600 hover:text-red-800 font-medium transition-colors"
-                              >
-                                Excluir
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={4} className="p-6 text-center text-gray-500">
-                        {users.length === 0 ? (
-                          <div>
-                            <p className="text-lg mb-2">
-                              Nenhum usuário encontrado
-                            </p>
-                            <p className="text-sm">
-                              Adicione um novo usuário usando o formulário
-                              acima.
-                            </p>
-                          </div>
-                        ) : (
-                          "Nenhum usuário corresponde à pesquisa."
-                        )}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            )}
+              </form>
+            </div>
           </div>
-        </div>
+        )}
       </main>
     </div>
   );

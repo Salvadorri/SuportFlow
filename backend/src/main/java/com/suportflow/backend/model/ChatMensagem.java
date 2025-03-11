@@ -1,4 +1,4 @@
-// backend/src/main/java/com/suportflow/backend/model/ChatMensagem.java
+// src/main/java/com/suportflow/backend/model/ChatMensagem.java
 package com.suportflow.backend.model;
 
 import jakarta.persistence.*;
@@ -31,7 +31,7 @@ public class ChatMensagem {
     @Column(name = "data_envio", nullable = false)
     private LocalDateTime dataEnvio;
 
-   @Column(name = "caminho_arquivo") // Adicionado
+    @Column(name = "caminho_arquivo") // Adicionado
     private String caminhoArquivo;
 
     // Constructors, Getters, and Setters
@@ -84,5 +84,14 @@ public class ChatMensagem {
 
     public void setDataEnvio(LocalDateTime dataEnvio) {
         this.dataEnvio = dataEnvio;
+    }
+
+    // Getter and Setter for caminhoArquivo
+    public String getCaminhoArquivo() {
+        return caminhoArquivo;
+    }
+
+    public void setCaminhoArquivo(String caminhoArquivo) {
+        this.caminhoArquivo = caminhoArquivo;
     }
 }

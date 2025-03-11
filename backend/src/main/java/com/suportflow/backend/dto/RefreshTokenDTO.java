@@ -1,13 +1,14 @@
+// src/main/java/com/suportflow/backend/dto/RefreshTokenDTO.java
 package com.suportflow.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
 public class RefreshTokenDTO {
 
-    @NotBlank //Adicione
+    @NotBlank(message = "Refresh token is required") // Mensagem de erro mais descritiva.
     private String refreshToken;
 
-    // Construtores
+    // Construtores - Manter o construtor padrão é uma boa prática, mesmo se você não o use explicitamente.
     public RefreshTokenDTO() {}
 
     public RefreshTokenDTO(String refreshToken) {

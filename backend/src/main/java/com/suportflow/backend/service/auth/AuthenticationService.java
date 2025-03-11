@@ -5,6 +5,7 @@ import com.suportflow.backend.dto.AuthenticationRequest;
 import com.suportflow.backend.dto.AuthenticationResponse;
 import com.suportflow.backend.dto.RefreshTokenDTO;
 import com.suportflow.backend.exception.TokenRefreshException;
+import com.suportflow.backend.exception.UserNotFoundException; // Import custom exception
 import com.suportflow.backend.model.Cliente;
 import com.suportflow.backend.model.RefreshToken;
 import com.suportflow.backend.model.User;
@@ -26,7 +27,7 @@ public class AuthenticationService {
     private final ClienteDetailsService clienteDetailsService;
     private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
-    private final UserRepository userRepository;  // Added for direct access
+    private final UserRepository userRepository;
     private final ClienteRepository clienteRepository;
 
     @Autowired
@@ -47,7 +48,7 @@ public class AuthenticationService {
         this.clienteRepository = clienteRepository;
     }
 
-@Transactional
+    @Transactional
     public AuthenticationResponse authenticateAndGenerateToken(AuthenticationRequest authenticationRequest) {
         String email = authenticationRequest.getEmail();
         String password = authenticationRequest.getPassword();
@@ -60,21 +61,22 @@ public class AuthenticationService {
             // First, try to authenticate as a regular user
             userDetails = authenticationHelper.authenticateUser(email, password);
             User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+                    .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email)); //Should not happen.
             entityId = user.getId(); // Get User ID
             refreshToken = refreshTokenService.createRefreshToken(entityId);
 
-        } catch (UsernameNotFoundException | BadCredentialsException userException) {
+        } catch (UserNotFoundException | BadCredentialsException userException) {
             try {
                 userDetails = authenticationHelper.authenticateCliente(email, password);
                 Cliente cliente = clienteRepository.findByEmail(email)
-                        .orElseThrow(() -> new UsernameNotFoundException("Cliente not found: "+ email));
+                        .orElseThrow(() -> new UserNotFoundException("Cliente não encontrado: " + email)); //Should not happen.
                 entityId = cliente.getId();
                 refreshToken = refreshTokenService.createRefreshToken(entityId);
 
 
-            } catch (UsernameNotFoundException | BadCredentialsException clientException) {
-                throw new BadCredentialsException("Invalid credentials for both user and client.");
+            } catch (UserNotFoundException | BadCredentialsException clientException) {
+                // Throw a single exception to simplify handling in the controller.
+                throw new BadCredentialsException("Credenciais inválidas.");
             }
         }
 
@@ -82,6 +84,7 @@ public class AuthenticationService {
         String jwt = jwtUtil.generateToken(userDetails, entityId);
         return new AuthenticationResponse(jwt, refreshToken.getToken());
     }
+
     @Transactional
     public AuthenticationResponse refreshToken(RefreshTokenDTO refreshTokenDTO) {
         String requestRefreshToken = refreshTokenDTO.getRefreshToken();
@@ -102,13 +105,13 @@ public class AuthenticationService {
                         entityId = refreshToken.getCliente().getId(); // Get Cliente ID
                     } else {
                         throw new TokenRefreshException(requestRefreshToken,
-                                "Refresh token not associated with any user or client.");
+                                "Refresh token não está associado a nenhum usuário ou cliente.");
                     }
 
                     String token = jwtUtil.generateToken(userDetails, entityId); // Pass entityId
                     return new AuthenticationResponse(token, requestRefreshToken);
                 })
                 .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
-                        "Invalid or missing refresh token."));
+                        "Token de atualização inválido ou ausente."));
     }
 }
