@@ -25,28 +25,28 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
-@Tag(name = "Users", description = "Operations related to user management") // Tag para agrupar no Swagger
+@Tag(name = "Usuários", description = "Operações relacionadas ao gerenciamento de usuários")
 public class UserController {
 
   @Autowired private UserManagementService userManagementService;
 
   @PostMapping
-  @Operation(summary = "Register a new user", description = "Creates a new user account.")
+  @Operation(summary = "Registrar um novo usuário", description = "Cria uma nova conta de usuário.")
   @ApiResponses(
           value = {
                   @ApiResponse(
                           responseCode = "201",
-                          description = "User created successfully",
+                          description = "Usuário criado com sucesso",
                           content = @Content(schema = @Schema(implementation = UserDetailsDTO.class))),
                   @ApiResponse(
                           responseCode = "400",
-                          description = "Bad Request - Invalid input or validation error",
-                          content = @Content), // No specific schema for error
+                          description = "Requisição Inválida - Entrada inválida ou erro de validação",
+                          content = @Content),
                   @ApiResponse(
                           responseCode = "409",
-                          description = "Conflict - User already exists (email or CPF/CNPJ)",
+                          description = "Conflito - Usuário já existe (email ou CPF/CNPJ)",
                           content = @Content),
-                  @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content)
+                  @ApiResponse(responseCode = "500", description = "Erro Interno do Servidor", content = @Content)
           })
   @PreAuthorize("permitAll()") // Permitir registro sem autenticação!
   public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
@@ -60,11 +60,11 @@ public class UserController {
   }
 
   @GetMapping("/me")
-  @Operation(summary = "Get current user", description = "Retrieves the currently logged-in user's details.")
+  @Operation(summary = "Obter usuário atual", description = "Recupera os detalhes do usuário atualmente logado.")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "200", description = "Successfully retrieved user details", content = @Content(schema = @Schema(implementation = UserDetailsDTO.class))),
-          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-          @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content)
+          @ApiResponse(responseCode = "200", description = "Detalhes do usuário recuperados com sucesso", content = @Content(schema = @Schema(implementation = UserDetailsDTO.class))),
+          @ApiResponse(responseCode = "401", description = "Não autorizado", content = @Content),
+          @ApiResponse(responseCode = "500", description = "Erro Interno do Servidor", content = @Content)
   })
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<UserDetailsDTO> getCurrentUser() {
@@ -76,14 +76,14 @@ public class UserController {
 
 
   @PutMapping("/me")
-  @Operation(summary = "Update current user", description = "Updates the currently logged-in user's details.")
+  @Operation(summary = "Atualizar usuário atual", description = "Atualiza os detalhes do usuário atualmente logado.")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "200", description = "User updated successfully", content = @Content(schema = @Schema(implementation = UserDetailsDTO.class))),
-          @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input", content = @Content),
-          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-          @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
-          @ApiResponse(responseCode = "409", description = "Conflict - Email or CPF/CNPJ already exists", content = @Content), // Add 409 response
-          @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content)
+          @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso", content = @Content(schema = @Schema(implementation = UserDetailsDTO.class))),
+          @ApiResponse(responseCode = "400", description = "Requisição Inválida - Entrada inválida", content = @Content),
+          @ApiResponse(responseCode = "401", description = "Não autorizado", content = @Content),
+          @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content),
+          @ApiResponse(responseCode = "409", description = "Conflito - Email ou CPF/CNPJ já existe", content = @Content),
+          @ApiResponse(responseCode = "500", description = "Erro Interno do Servidor", content = @Content)
   })
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> updateCurrentUser(@Valid @RequestBody UserUpdateDTO updateDTO) {
@@ -101,13 +101,13 @@ public class UserController {
   }
 
   @PatchMapping("/me/password")
-  @Operation(summary = "Change password", description = "Changes the currently logged-in user's password.")
+  @Operation(summary = "Alterar senha", description = "Altera a senha do usuário atualmente logado.")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "200", description = "Password changed successfully", content = @Content),
-          @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input or password mismatch", content = @Content),
-          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-          @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
-          @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content)
+          @ApiResponse(responseCode = "200", description = "Senha alterada com sucesso", content = @Content),
+          @ApiResponse(responseCode = "400", description = "Requisição Inválida - Entrada inválida ou senha incorreta", content = @Content),
+          @ApiResponse(responseCode = "401", description = "Não autorizado", content = @Content),
+          @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content),
+          @ApiResponse(responseCode = "500", description = "Erro Interno do Servidor", content = @Content)
   })
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> changePassword(@Valid @RequestBody PasswordChangeDTO passwordChangeDTO) {
@@ -127,12 +127,12 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  @Operation(summary = "Get user by ID", description = "Retrieves a user's details by their ID.")
+  @Operation(summary = "Obter usuário por ID", description = "Recupera os detalhes de um usuário pelo seu ID.")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "200", description = "Successfully retrieved user", content = @Content(schema = @Schema(implementation = UserDetailsDTO.class))),
-          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-          @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
-          @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content)
+          @ApiResponse(responseCode = "200", description = "Usuário recuperado com sucesso", content = @Content(schema = @Schema(implementation = UserDetailsDTO.class))),
+          @ApiResponse(responseCode = "401", description = "Não autorizado", content = @Content),
+          @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content),
+          @ApiResponse(responseCode = "500", description = "Erro Interno do Servidor", content = @Content)
   })
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<UserDetailsDTO> getUserById(@PathVariable Long id) {
@@ -145,11 +145,11 @@ public class UserController {
   }
 
   @GetMapping
-  @Operation(summary = "Get all users", description = "Retrieves a list of all users.")
+  @Operation(summary = "Obter todos os usuários", description = "Recupera uma lista de todos os usuários.")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "200", description = "Successfully retrieved users", content = @Content(schema = @Schema(implementation = UserDetailsDTO.class))),
-          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-          @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content)
+          @ApiResponse(responseCode = "200", description = "Usuários recuperados com sucesso", content = @Content(schema = @Schema(implementation = UserDetailsDTO.class))),
+          @ApiResponse(responseCode = "401", description = "Não autorizado", content = @Content),
+          @ApiResponse(responseCode = "500", description = "Erro Interno do Servidor", content = @Content)
   })
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<List<UserDetailsDTO>> getAllUsers() {
@@ -158,12 +158,12 @@ public class UserController {
   }
 
   @DeleteMapping("/{id}")
-  @Operation(summary = "Delete user", description = "Deletes a user by their ID.")
+  @Operation(summary = "Excluir usuário", description = "Exclui um usuário pelo seu ID.")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "204", description = "User deleted successfully", content = @Content),
-          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-          @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
-          @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content)
+          @ApiResponse(responseCode = "204", description = "Usuário excluído com sucesso", content = @Content),
+          @ApiResponse(responseCode = "401", description = "Não autorizado", content = @Content),
+          @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content),
+          @ApiResponse(responseCode = "500", description = "Erro Interno do Servidor", content = @Content)
   })
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> deleteUser(@PathVariable Long id) {
@@ -176,14 +176,14 @@ public class UserController {
   }
 
   @PutMapping("/{id}")
-  @Operation(summary = "Update user by ID", description = "Updates a user's details by their ID.")
+  @Operation(summary = "Atualizar usuário por ID", description = "Atualiza os detalhes de um usuário pelo seu ID.")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "200", description = "User updated successfully", content = @Content(schema = @Schema(implementation = UserDetailsDTO.class))),
-          @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input", content = @Content),
-          @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-          @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
-          @ApiResponse(responseCode = "409", description = "Conflict - Email or CPF/CNPJ already exists", content = @Content),
-          @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content)
+          @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso", content = @Content(schema = @Schema(implementation = UserDetailsDTO.class))),
+          @ApiResponse(responseCode = "400", description = "Requisição Inválida - Entrada inválida", content = @Content),
+          @ApiResponse(responseCode = "401", description = "Não autorizado", content = @Content),
+          @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content),
+          @ApiResponse(responseCode = "409", description = "Conflito - Email ou CPF/CNPJ já existe", content = @Content),
+          @ApiResponse(responseCode = "500", description = "Erro Interno do Servidor", content = @Content)
   })
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> updateUser(

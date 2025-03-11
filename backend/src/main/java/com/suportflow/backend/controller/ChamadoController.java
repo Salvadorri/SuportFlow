@@ -4,6 +4,13 @@ package com.suportflow.backend.controller;
 import com.suportflow.backend.dto.*;
 import com.suportflow.backend.service.chamado.ChamadoService;
 import com.suportflow.backend.service.chamado.FileStorageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +30,7 @@ import java.nio.file.Path;
 
 @RestController
 @RequestMapping("/api/chamados")
+@Tag(name = "Chamados", description = "Endpoints para gerenciar tickets de suporte (Chamados)")
 public class ChamadoController {
 
     @Autowired
@@ -35,6 +43,13 @@ public class ChamadoController {
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Criar um novo ticket de suporte (Chamado)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Chamado criado com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChamadoDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Entrada inválida"),
+            @ApiResponse(responseCode = "401", description = "Autenticação necessária")
+    })
     public ResponseEntity<?> createChamado(@Valid @RequestBody ChamadoCreateDTO createDTO) {
         try {
             ChamadoDTO createdChamado = chamadoService.createChamado(createDTO);
@@ -46,7 +61,14 @@ public class ChamadoController {
 
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> getChamadoById(@PathVariable Long id) {
+    @Operation(summary = "Obter um ticket de suporte (Chamado) por ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Chamado encontrado",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChamadoDTO.class))),
+            @ApiResponse(responseCode = "401", description = "Autenticação necessária"),
+            @ApiResponse(responseCode = "404", description = "Chamado não encontrado")
+    })
+    public ResponseEntity<?> getChamadoById(@Parameter(description = "ID do Chamado a ser recuperado", example = "1") @PathVariable Long id) {
         try {
             ChamadoDTO chamadoDTO = chamadoService.getChamadoById(id);
             return ResponseEntity.ok(chamadoDTO);
@@ -57,9 +79,15 @@ public class ChamadoController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Obter todos os tickets de suporte (Chamados) com paginação e pesquisa opcional")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Chamados recuperados com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class))),
+            @ApiResponse(responseCode = "401", description = "Autenticação necessária")
+    })
     public ResponseEntity<Page<ChamadoDTO>> getAllChamados(
-            @PageableDefault(size = 10, sort = {"dataAbertura"}) Pageable pageable,
-            @RequestParam(required = false) String search) {
+            @Parameter(hidden = true) @PageableDefault(size = 10, sort = {"dataAbertura"}) Pageable pageable,
+            @Parameter(description = "Termo de pesquisa para filtrar Chamados por título ou descrição", example = "Exemplo de Pesquisa") @RequestParam(required = false) String search) {
 
         Page<ChamadoDTO> chamados;
 
@@ -74,9 +102,15 @@ public class ChamadoController {
 
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Obter todos os tickets de suporte (Chamados) para o cliente autenticado, com paginação e pesquisa opcional")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Chamados recuperados com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class))),
+            @ApiResponse(responseCode = "401", description = "Autenticação necessária")
+    })
     public ResponseEntity<Page<ChamadoDTO>> getAllChamadosByCliente(
-            @PageableDefault(size = 10, sort = {"dataAbertura"}) Pageable pageable,
-            @RequestParam(required = false) String search) {
+            @Parameter(hidden = true) @PageableDefault(size = 10, sort = {"dataAbertura"}) Pageable pageable,
+            @Parameter(description = "Termo de pesquisa para filtrar Chamados por título ou descrição", example = "Exemplo de Pesquisa") @RequestParam(required = false) String search) {
         Page<ChamadoDTO> chamados;
 
         if (search != null && !search.trim().isEmpty()) {
@@ -90,7 +124,15 @@ public class ChamadoController {
 
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateChamado(@PathVariable Long id, @Valid @RequestBody ChamadoUpdateDTO updateDTO) {
+    @Operation(summary = "Atualizar um ticket de suporte existente (Chamado)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Chamado atualizado com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChamadoDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Entrada inválida"),
+            @ApiResponse(responseCode = "401", description = "Autenticação necessária"),
+            @ApiResponse(responseCode = "404", description = "Chamado não encontrado")
+    })
+    public ResponseEntity<?> updateChamado(@Parameter(description = "ID do Chamado a ser atualizado", example = "1") @PathVariable Long id, @Valid @RequestBody ChamadoUpdateDTO updateDTO) {
         try {
             ChamadoDTO updatedChamado = chamadoService.updateChamado(id, updateDTO);
             return ResponseEntity.ok(updatedChamado);
@@ -103,7 +145,13 @@ public class ChamadoController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> deleteChamado(@PathVariable Long id) {
+    @Operation(summary = "Excluir um ticket de suporte (Chamado)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Chamado excluído com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Autenticação necessária"),
+            @ApiResponse(responseCode = "404", description = "Chamado não encontrado")
+    })
+    public ResponseEntity<?> deleteChamado(@Parameter(description = "ID do Chamado a ser excluído", example = "1") @PathVariable Long id) {
         try {
             chamadoService.deleteChamado(id);
             return ResponseEntity.noContent().build();
@@ -116,12 +164,20 @@ public class ChamadoController {
 
     @PostMapping("/mensagens")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Criar uma nova mensagem de chat para um ticket de suporte")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Mensagem criada com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChatMensagemDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Entrada inválida"),
+            @ApiResponse(responseCode = "401", description = "Autenticação necessária"),
+            @ApiResponse(responseCode = "404", description = "Chamado não encontrado")
+    })
     public ResponseEntity<?> createMensagem(
-            @RequestParam("chamadoId") Long chamadoId,
-            @RequestParam(value = "usuarioId", required = false) Long usuarioId,
-            @RequestParam(value = "clienteId", required = false) Long clienteId,
-            @RequestParam("mensagem") String mensagem,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @Parameter(description = "ID do Chamado", example = "1") @RequestParam("chamadoId") Long chamadoId,
+            @Parameter(description = "ID do Usuário (opcional, se enviando como usuário)", example = "1") @RequestParam(value = "usuarioId", required = false) Long usuarioId,
+            @Parameter(description = "ID do Cliente (opcional, se enviando como cliente)", example = "1") @RequestParam(value = "clienteId", required = false) Long clienteId,
+            @Parameter(description = "Conteúdo da mensagem", example = "Esta é uma mensagem de teste") @RequestParam("mensagem") String mensagem,
+            @Parameter(description = "Arquivo para upload (opcional)") @RequestParam(value = "file", required = false) MultipartFile file) {
 
         try {
             String filePath = null;
@@ -149,9 +205,16 @@ public class ChamadoController {
     }
     @GetMapping("/{chamadoId}/mensagens")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Obter todas as mensagens de chat para um ticket de suporte (Chamado) com paginação")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Mensagens recuperadas com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class))),
+            @ApiResponse(responseCode = "401", description = "Autenticação necessária"),
+            @ApiResponse(responseCode = "404", description = "Chamado não encontrado")
+    })
     public ResponseEntity<Page<ChatMensagemDTO>> getMensagensByChamado(
-            @PathVariable Long chamadoId,
-            @PageableDefault(size = 10, sort = {"dataEnvio"}) Pageable pageable) {
+            @Parameter(description = "ID do Chamado", example = "1") @PathVariable Long chamadoId,
+            @Parameter(hidden = true) @PageableDefault(size = 10, sort = {"dataEnvio"}) Pageable pageable) {
         try{
             Page<ChatMensagemDTO> mensagens = chamadoService.getMensagensByChamado(chamadoId, pageable);
             return ResponseEntity.ok(mensagens);
@@ -163,7 +226,14 @@ public class ChamadoController {
 
     @GetMapping("/downloadFile/{fileName:.+}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
+    @Operation(summary = "Baixar um arquivo anexado a uma mensagem de chat")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Arquivo baixado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Autenticação necessária"),
+            @ApiResponse(responseCode = "404", description = "Arquivo não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
+    public ResponseEntity<Resource> downloadFile(@Parameter(description = "Nome do arquivo para baixar", example = "example.txt") @PathVariable String fileName) {
         try {
             Path filePath = fileStorageService.loadFile(fileName);
             Resource resource = new UrlResource(filePath.toUri());

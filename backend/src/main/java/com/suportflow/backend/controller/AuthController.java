@@ -24,20 +24,20 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@Tag(name = "Authentication", description = "Endpoints for user authentication")
+@Tag(name = "Autenticação", description = "Endpoints para autenticação de usuário")
 public class AuthController {
 
     @Autowired
     private AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    @Operation(summary = "Authenticate user and generate JWT", description = "Authenticates a user (or client) and returns a JWT and a refresh token.")
+    @Operation(summary = "Autenticar usuário e gerar JWT", description = "Autentica um usuário (ou cliente) e retorna um JWT e um refresh token.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful authentication", content = @Content(schema = @Schema(implementation = AuthenticationResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Bad Request (validation errors)", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized (invalid credentials)", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "404", description = "User/Client Not Found", content = @Content(schema = @Schema(implementation = ErrorResponse.class))), // Add 404 response
-            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(responseCode = "200", description = "Autenticação bem-sucedida", content = @Content(schema = @Schema(implementation = AuthenticationResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Requisição Inválida (erros de validação)", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Não autorizado (credenciais inválidas)", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Usuário/Cliente não encontrado", content = @Content(schema = @Schema(implementation = ErrorResponse.class))), // Add 404 response
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody AuthenticationRequest authenticationRequest) {
         try {
@@ -56,12 +56,12 @@ public class AuthController {
     }
 
     @PostMapping("/refreshtoken")
-    @Operation(summary = "Refresh JWT", description = "Provides a new JWT using a valid refresh token.")
+    @Operation(summary = "Atualizar JWT", description = "Fornece um novo JWT usando um refresh token válido.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Token refreshed successfully", content = @Content(schema = @Schema(implementation = AuthenticationResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "403", description = "Forbidden (invalid refresh token)", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(responseCode = "200", description = "Token atualizado com sucesso", content = @Content(schema = @Schema(implementation = AuthenticationResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Requisição Inválida", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Proibido (refresh token inválido)", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
         try {
@@ -90,13 +90,4 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(errors));
     }
 
-    // Generic Exception Handler - Consider removing or making it more specific.
-    //  A generic handler at the Controller level is generally discouraged.
-    //  Let GlobalExceptionHandler handle it for better consistency and control.
-    /*
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("An unexpected error occurred: " + ex.getMessage()));
-    }
-    */
 }
