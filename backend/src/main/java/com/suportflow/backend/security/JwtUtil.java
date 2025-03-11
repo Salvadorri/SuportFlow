@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException; // Import SignatureException
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,11 +47,23 @@ public class JwtUtil {
     }
 
     public Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSignKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSignKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (SignatureException e) { // Catch specific exception
+            // Log the exception: VERY IMPORTANT
+            System.err.println("Invalid JWT signature: " + e.getMessage());
+            e.printStackTrace();
+            throw e; // Re-throw to be handled by the filter chain (and eventually Spring Security)
+        } catch (Exception e) {
+            // Log other JWT parsing exceptions
+            System.err.println("Error parsing JWT: " + e.getMessage());
+            e.printStackTrace();
+            throw e; // Re-throw other exceptions
+        }
     }
 
     private Boolean isTokenExpired(String token) {

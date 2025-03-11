@@ -97,6 +97,7 @@ const UserManagement: React.FC = () => {
         cpfCnpj: cpfCnpj.trim() || undefined,
         password: password,
         roles: [selectedRole],
+        role: selectedRole, // Adicionado para satisfazer o tipo UserDataCreate
       };
       await createUser(newUser);
       showMessage(`Usuário criado com sucesso!`, "success");
@@ -555,4 +556,3 @@ const UserManagement: React.FC = () => {
 };
 
 export default UserManagement;
-                

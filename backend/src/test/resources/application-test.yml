@@ -1,25 +1,22 @@
 spring:
-  application:
-    name: backend-dev
   datasource:
-    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;INIT=CREATE SCHEMA IF NOT EXISTS test_schema\\;SET SCHEMA test_schema\\;;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
     username: sa
     password:
-    driver-class-name: org.h2.Driver
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update # ou create-drop se precisar recriar sempre
-    show-sql: false # true para debug, mas false para testes mais limpos
+      ddl-auto: create-drop  # Or validate, if you have migrations
+      show-sql: false
     properties:
       hibernate:
         format_sql: true
-jwt:
-  secret: ZXKFvAUFF6NwvQpw0AkzgsTqHT4iQSqb7MkEsTarhPU=
-  expirationMs: 86400000
-  refreshExpiration: 604800000
-admin:
-  email: admin@suportflow.com.br
-  password: suportflow-admin
+flyway:
+  enabled: false # Ensure Flyway is disabled
+
 file:
   upload:
-    dir: /tmp/uploads
+    dir: ./tmp/uploads
+
+test.property: "test value" # Test Property

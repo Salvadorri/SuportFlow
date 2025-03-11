@@ -1,6 +1,7 @@
 // src/main/java/com/suportflow/backend/service/auth/UserDetailsServiceImpl.java
 package com.suportflow.backend.service.auth;
 
+import com.suportflow.backend.exception.UserNotFoundException; // Import custom exception
 import com.suportflow.backend.model.User;
 import com.suportflow.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com email: " + email));
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com email: " + email)); // Use custom exception
         return user;  // Return the actual User object
     }
 }

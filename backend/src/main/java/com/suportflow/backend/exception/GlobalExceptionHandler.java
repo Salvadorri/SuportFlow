@@ -1,6 +1,7 @@
 // src/main/java/com/suportflow/backend/exception/GlobalExceptionHandler.java
 package com.suportflow.backend.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -34,11 +35,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
-    //Generic DataIntegrityViolationException handler
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDataIntegrityViolationException(org.springframework.dao.DataIntegrityViolationException ex, WebRequest request) {
-          Map<String, Object> body = createBody(HttpStatus.CONFLICT, "Erro de integridade de dados", "Um campo único já está sendo usado.");
+        Map<String, Object> body = createBody(HttpStatus.CONFLICT, "Erro de integridade de dados", "Um campo único já está sendo usado.");
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(TokenRefreshException.class)
+    public ResponseEntity<Object> handleTokenRefreshException(TokenRefreshException ex, WebRequest request) {
+        Map<String, Object> body = createBody(HttpStatus.FORBIDDEN, "Erro de refresh token", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)
@@ -47,11 +53,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         System.err.println("Unhandled exception: " + ex.getMessage());
         ex.printStackTrace(); // Print the stack trace to the console
 
-        Map<String, Object> body = createBody(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno do servidor", "Ocorreu um erro inesperado."); // Generic message
+        Map<String, Object> body = createBody(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno do servidor", "Ocorreu um erro inesperado.");
+        // Generic message
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // Helper method to create the response body
     private Map<String, Object> createBody(HttpStatus status, String message, String details) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());

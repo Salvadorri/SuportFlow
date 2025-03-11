@@ -31,7 +31,7 @@ public class RefreshTokenService {
     return refreshTokenRepository.findByToken(token);
   }
 
-  @Transactional
+    @Transactional
   public RefreshToken createRefreshToken(Long entityId) {
     RefreshToken refreshToken = null;
 
@@ -40,7 +40,7 @@ public class RefreshTokenService {
     if (userOptional.isPresent()) {
       User user = userOptional.get();
       // Check if a refresh token ALREADY exists for this user
-      refreshToken = refreshTokenRepository.findByUser(user).orElse(new RefreshToken());
+      refreshToken = refreshTokenRepository.findByUser(user).orElse(new RefreshToken()); // **THE PROBLEM LINE**
       refreshToken.setUser(user);
     } else {
       // If no user is found, try to find a client

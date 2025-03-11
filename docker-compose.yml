@@ -4,7 +4,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "10001:8080"
+      - "8080:8080"
     env_file:
       - .env
     depends_on:
@@ -18,17 +18,16 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "10003:3000"
+      - "443:443"
+      - "80:80"
     volumes:
-      - ./frontend:/app # Sincroniza as alterações em tempo real
+      - frontend:/app # Sincroniza as alterações em tempo real
       - /app/node_modules # Cria um volume anônimo para a pasta node_modules, evitando sobreposição com a pasta local
     networks:
       - suporteflow-network
 
   db:
-    image: postgres:17-alpine # Ou mysql:8.0, se preferir MySQL
-    ports:
-      - "10000:5432"
+    image: postgres:17-alpine # Ou mysql:8.0, se preferir MySQL~
     env_file:
       - .env
     volumes:
@@ -43,6 +42,7 @@ services:
 
 volumes:
   db-data:
+  frontend:
 
 networks:
   suporteflow-network:

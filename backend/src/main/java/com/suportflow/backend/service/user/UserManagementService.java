@@ -20,6 +20,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.suportflow.backend.exception.UniqueFieldAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
@@ -46,13 +48,13 @@ public class UserManagementService {
   public UserDetailsDTO registerNewUser(UserRegistrationDTO registrationDTO) {
     // Existing email check
     if (userRepository.existsByEmail(registrationDTO.getEmail())) {
-      throw new DataIntegrityViolationException("Já existe um usuário com este e-mail.");
+      throw new UniqueFieldAlreadyExistsException("Já existe um usuário com este e-mail.");
     }
 
     // CPF/CNPJ check.  Important:  Handle nulls!
     if (registrationDTO.getCpfCnpj() != null
             && userRepository.existsByCpfCnpj(registrationDTO.getCpfCnpj())) {
-      throw new DataIntegrityViolationException("Já existe um usuário com este CPF/CNPJ.");
+      throw new UniqueFieldAlreadyExistsException("Já existe um usuário com este CPF/CNPJ.");
     }
 
     String encodedPassword = passwordEncoder.encode(registrationDTO.getPassword());
@@ -64,7 +66,7 @@ public class UserManagementService {
                       .findByNome(registrationDTO.getEmpresaNome())
                       .orElseThrow(
                               () ->
-                                      new RuntimeException(
+                                      new RuntimeException( //Use a more generic exception here.
                                               "Empresa não encontrada: " + registrationDTO.getEmpresaNome()));
     }
 
@@ -88,7 +90,7 @@ public class UserManagementService {
                         .findByNome(roleName)
                         .orElseThrow(
                                 () ->
-                                        new RuntimeException(
+                                        new RuntimeException( //Use a more generic exception here
                                                 "Permissão não encontrada: "
                                                         + roleName)); // Melhor tratamento de exceção
         permissoes.add(permissao);
@@ -99,7 +101,9 @@ public class UserManagementService {
     try {
       user = userRepository.save(user);
     } catch (DataIntegrityViolationException e) {
-      throw new DataIntegrityViolationException("Já existe um usuário com este e-mail.", e);
+      // This catch block is likely redundant now, handled by GlobalExceptionHandler,
+      // but kept for extra safety.  You could log the specific cause here.
+      throw new UniqueFieldAlreadyExistsException("Já existe um usuário com este e-mail ou CPF/CNPJ.", e);
     }
 
     return new UserDetailsDTO(user);
@@ -140,14 +144,14 @@ public class UserManagementService {
     if (userDTO.getEmail() != null
             && !user.getEmail().equals(userDTO.getEmail())
             && userRepository.existsByEmail(userDTO.getEmail())) {
-      throw new DataIntegrityViolationException("Já existe um usuário com este e-mail.");
+      throw new UniqueFieldAlreadyExistsException("Já existe um usuário com este e-mail.");
     }
 
     // Check for CPF/CNPJ conflicts, *only if* the CPF/CNPJ is being changed.
     if (userDTO.getCpfCnpj() != null
             && !userDTO.getCpfCnpj().equals(user.getCpfCnpj())
             && userRepository.existsByCpfCnpj(userDTO.getCpfCnpj())) {
-      throw new DataIntegrityViolationException("Já existe um usuário com este CPF/CNPJ.");
+      throw new UniqueFieldAlreadyExistsException("Já existe um usuário com este CPF/CNPJ.");
     }
     // Only update if the value is present in the DTO
     if (userDTO.getNome() != null) {
@@ -187,14 +191,14 @@ public class UserManagementService {
     if (userDTO.getEmail() != null
             && !user.getEmail().equals(userDTO.getEmail())
             && userRepository.existsByEmail(userDTO.getEmail())) {
-      throw new DataIntegrityViolationException("Já existe um usuário com este e-mail.");
+      throw new UniqueFieldAlreadyExistsException("Já existe um usuário com este e-mail.");
     }
 
     // Check for CPF/CNPJ conflicts, *only if* the CPF/CNPJ is being changed.
     if (userDTO.getCpfCnpj() != null
             && !userDTO.getCpfCnpj().equals(user.getCpfCnpj())
             && userRepository.existsByCpfCnpj(userDTO.getCpfCnpj())) {
-      throw new DataIntegrityViolationException("Já existe um usuário com este CPF/CNPJ.");
+      throw new UniqueFieldAlreadyExistsException("Já existe um usuário com este CPF/CNPJ.");
     }
 
     // Only update if the value is present in the DTO
@@ -230,12 +234,12 @@ public class UserManagementService {
 
     // Verify old password
     if (!passwordEncoder.matches(passwordChangeDTO.getOldPassword(), user.getSenha())) {
-      throw new IllegalArgumentException("Senha antiga incorreta.");
+      throw new IllegalArgumentException("Senha antiga incorreta."); // This is fine, GlobalExceptionHandler will catch it
     }
 
     // Check if new password and confirmation match
     if (!passwordChangeDTO.getNewPassword().equals(passwordChangeDTO.getConfirmNewPassword())) {
-      throw new IllegalArgumentException("A nova senha e a confirmação não coincidem.");
+      throw new IllegalArgumentException("A nova senha e a confirmação não coincidem."); // This is fine
     }
 
     // Encode and set the new password

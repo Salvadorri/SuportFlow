@@ -1,4 +1,4 @@
-// src/main/java/com/suportflow/backend/dto/AuthenticationRequest.java (Já existe, sem alterações)
+// src/main/java/com/suportflow/backend/dto/AuthenticationRequest.java
 package com.suportflow.backend.dto;
 
 import jakarta.validation.constraints.Email;
@@ -11,7 +11,7 @@ public class AuthenticationRequest {
     private String email;
 
     @NotBlank(message = "A senha é obrigatória")
-    private String password; // Agora usado para senha de User e cpfCnpj de Cliente
+    private String password;
 
     public AuthenticationRequest(String email, String password) {
         this.email = email;
@@ -22,7 +22,7 @@ public class AuthenticationRequest {
     // Construtores (já existem)
 
     // Getters e Setters (já existem)
-     public String getEmail() {
+    public String getEmail() {
         return email;
     }
 

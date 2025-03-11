@@ -29,4 +29,11 @@ logging:
       suportflow: DEBUG
 file:
   upload:
-    dir: /app/upload
+    dir: ./tmp/upload
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha

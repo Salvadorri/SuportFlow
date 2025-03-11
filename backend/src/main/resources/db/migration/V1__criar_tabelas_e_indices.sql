@@ -93,9 +93,11 @@ CREATE TABLE refresh_tokens (
     expiry_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     user_id BIGINT,
     cliente_id BIGINT,
-    FOREIGN KEY (user_id) REFERENCES usuarios(usuario_id) ON DELETE CASCADE,  -- Changed to CASCADE
-    FOREIGN KEY (cliente_id) REFERENCES clientes(cliente_id),
-    CONSTRAINT check_token_association CHECK ((user_id IS NULL AND cliente_id IS NOT NULL) OR (user_id IS NOT NULL AND cliente_id IS NULL))
+    FOREIGN KEY (user_id) REFERENCES usuarios(usuario_id) ON DELETE CASCADE,  -- Keep CASCADE
+    FOREIGN KEY (cliente_id) REFERENCES clientes(cliente_id) ON DELETE CASCADE,  -- ADD CASCADE HERE!!
+    CONSTRAINT check_token_association CHECK ((user_id IS NULL AND cliente_id IS NOT NULL) OR (user_id IS NOT NULL AND cliente_id IS NULL)),
+    CONSTRAINT unique_user_token UNIQUE (user_id),   -- Unique constraint for user_id
+    CONSTRAINT unique_cliente_token UNIQUE (cliente_id)  -- Unique constraint for cliente_id
     -- Sem restrição única no user_id ou cliente_id
 );
 
