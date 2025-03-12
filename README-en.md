@@ -15,9 +15,9 @@
 
 ## 🤝 Our Team
 
-- [Rodrigo Schaucoksi Salvadori](https://www.google.com/url?sa=E&q=https%3A%2F%2Fgithub.com%2FSalvadorri)
-- [João Vitor Dalmas Zabala](https://www.google.com/url?sa=E&q=https%3A%2F%2Fgithub.com%2FJoaoZabala)
-- [Matheus Schaucoski Salvadori](https://www.google.com/url?sa=E&q=https%3A%2F%2Fgithub.com%2FMatheusSalvadori)
+- [Rodrigo Schaucoksi Salvadori](https://github.com/Salvadorri)
+- [João Vitor Dalmas Zabala](https://github.com/JvZabala)
+- [Matheus Schaucoski Salvadori](https://github.com/MatSalva)
 
 ## 🛠️ How to Use (Quick Installation)
 
