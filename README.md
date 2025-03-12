@@ -16,8 +16,8 @@ Nossa plataforma combina o melhor dos dois mundos: a eficiência da gestão de t
 ## 🤝 Nossa Equipe
 
 * [Rodrigo Schaucoksi Salvadori](https://github.com/Salvadorri)
-* [João Vitor Dalmas Zabala](https://github.com/JoaoZabala)
-* [Matheus Schaucoski Salvadori](https://github.com/MatheusSalvadori)
+* [João Vitor Dalmas Zabala](https://github.com/JvZabala)
+* [Matheus Schaucoski Salvadori](https://github.com/MatSalva)
 
 ## 🛠️ Como Usar (Instalação Rápida)
 
