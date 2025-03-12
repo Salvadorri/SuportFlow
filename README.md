@@ -1,15 +1,63 @@
-# SuportFlow AI
+# 🚀 SupportFlow AI: Revolucione Seu Atendimento ao Cliente com IA
 
-##### Este repositorio é dedicado ao projeto final do bootcamp Fullstack Codifica +praTI
+**[Bootcamp Fullstack Codifica +praTI - Projeto Final]**
 
- **Bem-vindo ao repositório do **SupportFlow AI**, uma solução SaaS inovadora projetada para revolucionar o atendimento ao cliente! Em um mundo onde a experiência do cliente é fundamental para o sucesso de qualquer negócio, o SupportFlow AI surge como uma ferramenta poderosa para empresas que desejam não apenas atender, mas superar as expectativas de seus clientes.
+Bem-vindo ao SupportFlow AI, a solução SaaS que eleva o atendimento ao cliente a um novo patamar! Em um mercado onde a experiência do cliente é crucial, o SupportFlow AI capacita empresas a superar expectativas e construir relacionamentos duradouros.
 
- **Nossa plataforma foi desenvolvida pensando nas necessidades das equipes de suporte modernas. Combinando a eficiência da gestão de chamados tradicional com o poder da Inteligência Artificial, o SupportFlow AI oferece um sistema completo e intuitivo que facilita a comunicação, agiliza processos e, acima de tudo, melhora significativamente a satisfação do cliente.**
+## ✨ Por que o SupportFlow AI?
 
-### Integrantes
+Nossa plataforma combina o melhor dos dois mundos: a eficiência da gestão de tickets tradicional com o poder da Inteligência Artificial. Com o SupportFlow AI, sua equipe pode:
 
-###### Rodrigo Schaucoksi Salvadori
+* **Centralizar e organizar:** Gerencie todos os chamados em um só lugar, de forma intuitiva.
+* **Agilizar o atendimento:** Automatize tarefas repetitivas e priorize solicitações urgentes.
+* **Personalizar a experiência:** Utilize IA para entender as necessidades dos clientes e oferecer respostas mais rápidas e precisas.
+* **Melhorar continuamente:** Acesse relatórios detalhados e insights valiosos para aprimorar seu atendimento.
 
-###### **João Vitor Dalmas Zabala**
+## 🤝 Nossa Equipe
 
-###### **Matheus Schaucoski Salvadori**
+* [Rodrigo Schaucoksi Salvadori](https://github.com/Salvadorri)
+* [João Vitor Dalmas Zabala](https://github.com/JoaoZabala)
+* [Matheus Schaucoski Salvadori](https://github.com/MatheusSalvadori)
+
+## 🛠️ Como Usar (Instalação Rápida)
+
+1. **Clone o repositório:**
+
+   ```bash
+   git clone https://github.com/Salvadorri/SuportFlow.git
+   ```
+2. **Navegue até a pasta do projeto:**
+
+   ```bash
+   cd SuportFlow
+   ```
+3. **Inicie os serviços com Docker Compose:**
+
+   ```bash
+   docker-compose up
+   ```
+4. **Acesse o SupportFlow AI:**
+
+   Abra seu navegador e vá para `http://localhost`. O frontend estará pronto para uso!
+5. **Credenciais de Acesso:**
+
+   * **Usuário:** `admin@supportflow.com.br`
+   * **Senha:** `supportflow`
+6. **Documentação Swagger (API):**
+
+   Para explorar a documentação completa da API, acesse:  `http://localhost:8080/swagger-ui/index.html`
+
+## ⚙️ Tecnologias e Ferramentas Utilizadas
+
+* **Prototipagem:** Figma
+* **Frontend:**
+  * React (com Vite)
+  * Tailwind CSS
+  * TanStack Router
+* **Backend (API):**
+  * Java (com Spring Boot)
+* **Banco de Dados:** PostgreSQL
+
+## 📝 Licença
+
+Este projeto está sob a licença [MIT License](LICENSE)
